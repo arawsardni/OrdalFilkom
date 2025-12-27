@@ -19,12 +19,19 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Load Env
-# Load Env
 load_dotenv()
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-INDEX_NAME = "ordal-filkom" # Must match ingest.py
+
+try:
+    GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
+    PINECONE_API_KEY = st.secrets["PINECONE_API_KEY"]
+    GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
+    
+except:
+    GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+    PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
+    GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+
+INDEX_NAME = "ordal-filkom"
 
 # Page Config
 st.set_page_config(
