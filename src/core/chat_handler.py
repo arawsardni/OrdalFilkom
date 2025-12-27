@@ -26,7 +26,7 @@ class ChatHandler:
         max_retries: int = None
     ) -> Tuple[Optional[str], Optional[List[Dict]], Optional[str]]:
         """
-        Process user query with retry logic for rate limiting
+        Process user query with retry logic and model fallback for rate limiting
         
         Args:
             query: User's question
@@ -42,6 +42,7 @@ class ChatHandler:
             max_retries = Settings.MAX_RETRIES
         
         retry_count = 0
+        current_model_index = -1  # -1 means primary model, 0+ means fallback model
         
         while retry_count < max_retries:
             try:
@@ -62,18 +63,49 @@ class ChatHandler:
                 error_str = str(e)
                 
                 # Handle rate limiting errors
-                if "429" in error_str or "RESOURCE_EXHAUSTED" in error_str:
+                if "429" in error_str or "RESOURCE_EXHAUSTED" in error_str or "rate" in error_str.lower():
                     retry_count += 1
                     
-                    if retry_count < max_retries:
+                    # Try fallback model if available
+                    if current_model_index < len(Settings.FALLBACK_MODELS) - 1:
+                        current_model_index += 1
+                        fallback_model, tpm_limit, description = Settings.FALLBACK_MODELS[current_model_index]
+                        
+                        logger.warning(
+                            f"Rate limit hit on primary model. "
+                            f"Switching to fallback model: {fallback_model} ({description})"
+                        )
+                        
+                        try:
+                            # Switch to fallback model
+                            from llama_index.llms.groq import Groq
+                            from llama_index.core import Settings as LISettings
+                            
+                            LISettings.llm = Groq(
+                                model=fallback_model,
+                                api_key=Settings.get_groq_api_key(),
+                                temperature=Settings.LLM_TEMPERATURE
+                            )
+                            
+                            # Update chat engine's LLM
+                            self.chat_engine._llm = LISettings.llm
+                            
+                            # Retry immediately with new model
+                            continue
+                            
+                        except Exception as fallback_error:
+                            logger.error(f"Fallback model switch failed: {fallback_error}")
+                    
+                    # If no more fallbacks or retry limit reached
+                    if retry_count < max_retries and current_model_index >= len(Settings.FALLBACK_MODELS) - 1:
                         wait_time = Settings.RETRY_WAIT_BASE * retry_count
                         logger.warning(
-                            f"Rate limit hit. Waiting {wait_time}s before retry "
+                            f"All fallback models exhausted. Waiting {wait_time}s before retry "
                             f"({retry_count}/{max_retries})"
                         )
                         time.sleep(wait_time)
                         continue
-                    else:
+                    elif retry_count >= max_retries:
                         error_msg = "Server atau kuota sedang penuh. Silakan coba lagi nanti."
                         logger.error(f"Max retries exceeded: {error_str}")
                         return None, None, error_msg

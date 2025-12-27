@@ -81,19 +81,33 @@ if prompt := st.chat_input("Tanya seputar akademik FILKOM..."):
                     st.error(f"❌ {error}")
                     logger.error(f"Query processing failed: {error}")
                 else:
-                    # Display response with streaming effect
-                    def response_generator():
-                        """Generator to simulate typing effect"""
-                        import time
-                        words = response_text.split()
-                        for i, word in enumerate(words):
-                            # Yield word with space (except last word)
-                            yield word + (" " if i < len(words) - 1 else "")
-                            # Small delay for smoother effect (optional)
-                            time.sleep(0.02)  # 20ms delay per word
+                    # Display response with streaming effect (preserving markdown)
+                    message_placeholder = st.empty()
+                    full_response = ""
                     
-                    # Stream the response
-                    st.write_stream(response_generator())
+                    # Stream word by word while preserving newlines and formatting
+                    import time
+                    import re
+                    
+                    # Split but keep whitespace and newlines
+                    # This regex splits on spaces but keeps newlines
+                    tokens = re.findall(r'\S+|\n', response_text)
+                    
+                    for i, token in enumerate(tokens):
+                        if token == '\n':
+                            full_response += '\n'
+                        else:
+                            full_response += token
+                            # Add space after word (except before newline or at end)
+                            if i < len(tokens) - 1 and tokens[i + 1] != '\n':
+                                full_response += ' '
+                        
+                        # Update placeholder with accumulated text (with markdown rendering)
+                        message_placeholder.markdown(full_response + "▌")  
+                        time.sleep(0.05)
+                    
+                    # Final render without cursor
+                    message_placeholder.markdown(full_response)
                     
                     # Display sources with PDF preview
                     if sources:

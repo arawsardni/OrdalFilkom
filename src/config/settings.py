@@ -39,9 +39,18 @@ class Settings:
     
     # Model Configuration
     EMBEDDING_MODEL = "models/text-embedding-004"
-    LLM_MODEL = "llama-3.3-70b-versatile"
+    
+    # LLM Configuration with Fallback
+    LLM_MODEL = "llama-3.3-70b-versatile"  # Primary model
     LLM_TEMPERATURE = 0.2
     SIMILARITY_TOP_K = 7
+    
+    # Fallback models (ordered by priority when primary hits rate limit)
+    # Format: (model_name, TPM_limit, description)
+    FALLBACK_MODELS = [
+        ("meta-llama/llama-4-scout-17b-16e-instruct", 30000, "Llama 4 Scout - Higher TPM"),
+        ("llama-3.1-8b-instant", 6000, "Llama 3.1 8B - Fast & Efficient"),
+    ]
     
     # Paths
     DATASET_DIR = "dataset"
