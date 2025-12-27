@@ -7,3 +7,4 @@ llama-index-llms-google-genai
 llama-index-llms-groq
 llama-index-embeddings-google-genai
 llama-index-vector-stores-pinecone
+PyMuPDF>=1.23.0

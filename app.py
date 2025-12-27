@@ -2,6 +2,7 @@ import os
 import streamlit as st
 import logging
 from dotenv import load_dotenv
+from utils import render_pdf_page
 
 from llama_index.core import (
     VectorStoreIndex,
@@ -24,8 +25,7 @@ load_dotenv()
 try:
     GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
     PINECONE_API_KEY = st.secrets["PINECONE_API_KEY"]
-    GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
-    
+    GROQ_API_KEY = st.secrets["GROQ_API_KEY"]   
 except:
     GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
     PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
@@ -108,6 +108,41 @@ chat_engine = init_chat_engine()
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
+        
+        # Display sources if available (for assistant messages)
+        if message["role"] == "assistant" and "sources" in message and message["sources"]:
+            st.markdown("---")
+            st.markdown("### 📚 Sumber Referensi")
+            
+            for idx, source_info in enumerate(message["sources"], 1):
+                with st.container():
+                    col1, col2 = st.columns([3, 1])
+                    with col1:
+                        st.markdown(f"**{idx}. {source_info['file_name']}**")
+                        st.caption(f"📄 Halaman {source_info['page']} • 📁 {source_info['category']}")
+                    with col2:
+                        st.metric("Relevansi", source_info['score'], label_visibility="collapsed")
+                    
+                    # Show PDF page preview
+                    with st.expander("👁️ Lihat halaman PDF"):
+                        pdf_path = os.path.join("dataset", source_info['category'], source_info['file_name'])
+                        
+                        if os.path.exists(pdf_path):
+                            try:
+                                page_num = int(source_info['page']) - 1 if source_info['page'] != 'Unknown' else 0
+                                img = render_pdf_page(pdf_path, page_num, dpi=120)
+                                
+                                if img:
+                                    st.image(img, caption=f"Halaman {source_info['page']} dari {source_info['file_name']}", use_container_width=True)
+                                else:
+                                    st.warning("Gagal merender halaman PDF")
+                            except Exception as e:
+                                st.error(f"Error menampilkan PDF: {e}")
+                        else:
+                            st.warning(f"File tidak ditemukan: {pdf_path}")
+                    
+                    if idx < len(message["sources"]):
+                        st.divider()
 
 # Chat Input
 if prompt := st.chat_input("Tanya seputar akademik FILKOM..."):
@@ -127,25 +162,68 @@ if prompt := st.chat_input("Tanya seputar akademik FILKOM..."):
                         response = chat_engine.chat(prompt)
                         st.markdown(response.response)
                         
-                        # PRIMARY REFERENCE (Top 1)
+                        # DISPLAY SOURCES IN USER-FRIENDLY FORMAT
+                        sources_data = []  # Store sources for session state
+                        
                         if response.source_nodes:
-                            top_node = response.source_nodes[0]
-                            file_name = top_node.metadata.get('file_name', 'Unknown')
-                            page = top_node.metadata.get('page_label', 'Unknown')
-                            # Handle potential None score
-                            score = f"{top_node.score:.2f}" if top_node.score is not None else "N/A"
+                            st.markdown("---")
+                            st.markdown("### 📚 Sumber Referensi")
                             
-                            st.info(f"📖 **Referensi Utama:** {file_name} (Halaman {page}) | Relevansi: {score}")
+                            # Show top 3 most relevant sources
+                            for idx, node in enumerate(response.source_nodes[:3], 1):
+                                file_name = node.metadata.get('file_name', 'Unknown')
+                                page = node.metadata.get('page_label', 'Unknown')
+                                category = node.metadata.get('category', 'Unknown')
+                                score = f"{node.score:.0%}" if node.score is not None else "N/A"
+                                
+                                # Store source info for later display
+                                sources_data.append({
+                                    'file_name': file_name,
+                                    'page': page,
+                                    'category': category,
+                                    'score': score
+                                })
+                                
+                                # Create a nice card for each source
+                                with st.container():
+                                    col1, col2 = st.columns([3, 1])
+                                    with col1:
+                                        st.markdown(f"**{idx}. {file_name}**")
+                                        st.caption(f"📄 Halaman {page} • 📁 {category}")
+                                    with col2:
+                                        st.metric("Relevansi", score, label_visibility="collapsed")
+                                    
+                                    # Show PDF page preview
+                                    with st.expander("👁️ Lihat halaman PDF"):
+                                        # Construct PDF path
+                                        pdf_path = os.path.join("dataset", category, file_name)
+                                        
+                                        if os.path.exists(pdf_path):
+                                            try:
+                                                # Convert page label to 0-indexed page number
+                                                page_num = int(page) - 1 if page != 'Unknown' else 0
+                                                
+                                                # Render PDF page
+                                                img = render_pdf_page(pdf_path, page_num, dpi=120)
+                                                
+                                                if img:
+                                                    st.image(img, caption=f"Halaman {page} dari {file_name}", use_container_width=True)
+                                                else:
+                                                    st.warning("Gagal merender halaman PDF")
+                                            except Exception as e:
+                                                st.error(f"Error menampilkan PDF: {e}")
+                                        else:
+                                            st.warning(f"File tidak ditemukan: {pdf_path}")
+                                    
+                                    if idx < len(response.source_nodes[:3]):
+                                        st.divider()
 
-                        # DEBUG: Show Source Nodes
-                        with st.expander("🔍 Lihat Semua Sumber (Debug)"):
-                            for node in response.source_nodes:
-                                st.markdown(f"**File:** `{node.metadata.get('file_name', 'Unknown')}`")
-                                st.markdown(f"**Page:** `{node.metadata.get('page_label', 'Unknown')}`")
-                                st.caption(node.text[:300] + "...")
-                                st.divider()
-
-                        st.session_state.messages.append({"role": "assistant", "content": response.response})
+                        # Save message WITH sources to session state
+                        st.session_state.messages.append({
+                            "role": "assistant", 
+                            "content": response.response,
+                            "sources": sources_data  # Include sources!
+                        })
                         break # Success, exit loop
                     except Exception as e:
                         error_str = str(e)
