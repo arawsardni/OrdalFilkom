@@ -1,6 +1,10 @@
 import os
+import sys
 import logging
 from dotenv import load_dotenv
+
+# Add parent directory to path to import src modules
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from llama_index.core import (
     VectorStoreIndex,
@@ -13,7 +17,7 @@ from llama_index.llms.google_genai import GoogleGenAI
 from llama_index.embeddings.google_genai import GoogleGenAIEmbedding
 from llama_index.core.node_parser import SentenceSplitter
 from pinecone import Pinecone, ServerlessSpec
-from utils import get_meta
+from src.utils.metadata import get_meta
 from tqdm import tqdm
 import time
 
@@ -26,7 +30,7 @@ load_dotenv()
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
 PINECONE_ENV = os.getenv("PINECONE_ENV", "us-east-1")
-INDEX_NAME = "ordal-filkom" # Should define this or get from env
+INDEX_NAME = "ordal-filkom"
 
 # Configure LlamaIndex Settings
 def init_settings():
