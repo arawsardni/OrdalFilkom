@@ -81,17 +81,29 @@ if prompt := st.chat_input("Tanya seputar akademik FILKOM..."):
                     st.error(f"❌ {error}")
                     logger.error(f"Query processing failed: {error}")
                 else:
-                    # Display response
-                    st.markdown(response_text)
+                    # Display response with streaming effect
+                    def response_generator():
+                        """Generator to simulate typing effect"""
+                        import time
+                        words = response_text.split()
+                        for i, word in enumerate(words):
+                            # Yield word with space (except last word)
+                            yield word + (" " if i < len(words) - 1 else "")
+                            # Small delay for smoother effect (optional)
+                            time.sleep(0.02)  # 20ms delay per word
+                    
+                    # Stream the response
+                    st.write_stream(response_generator())
                     
                     # Display sources with PDF preview
-                    display_sources(sources)
+                    if sources:
+                        display_sources(sources)
                     
                     # Save to session state (with sources for persistence)
                     st.session_state.messages.append({
                         "role": "assistant",
                         "content": response_text,
-                        "sources": sources
+                        "sources": sources if sources else []
                     })
     else:
         st.error("❌ Sistem belum siap. Cek API Keys di .env file.")

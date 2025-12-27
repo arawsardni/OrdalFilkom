@@ -81,7 +81,7 @@ def _display_pdf_preview(source_info: Dict):
                 st.image(
                     img, 
                     caption=f"Halaman {source_info['page']} dari {source_info['file_name']}", 
-                    use_column_width=True
+                    width="content"
                 )
             else:
                 st.warning("Gagal merender halaman PDF")

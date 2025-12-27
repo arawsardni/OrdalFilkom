@@ -1,7 +1,6 @@
 """
 Streamlit Cloud Compatibility Wrapper
-This file exists for Streamlit Community Cloud deployment.
-The actual app is in frontend/app.py
+Executes the actual app from frontend/app.py
 """
 import os
 import sys
@@ -9,5 +8,7 @@ import sys
 # Ensure we can import from current directory
 sys.path.insert(0, os.path.dirname(__file__))
 
-# Import and run the actual app
-import frontend.app
+# Execute the actual Streamlit app
+app_path = os.path.join(os.path.dirname(__file__), 'frontend', 'app.py')
+with open(app_path, 'r', encoding='utf-8') as f:
+    exec(f.read())
