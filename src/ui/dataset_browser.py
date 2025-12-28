@@ -1,12 +1,11 @@
 """Dataset browser components for sidebar"""
 import os
 import fitz
-import base64
 import streamlit as st
+from streamlit_pdf_viewer import pdf_viewer
 from typing import Dict, List
 from src.config.settings import Settings
 from src.utils.metadata import get_meta
-from src.utils.pdf_renderer import render_pdf_page
 
 
 def get_dataset_files() -> Dict[str, List[Dict]]:
@@ -135,7 +134,7 @@ def render_dataset_browser():
 
 @st.dialog("📄 PDF Viewer", width="medium")
 def show_pdf_viewer():
-    """Modal dialog with native browser PDF viewer"""
+    """Modal dialog with streamlit-pdf-viewer component"""
     if 'selected_pdf' not in st.session_state or not st.session_state['selected_pdf']:
         st.warning("No PDF selected")
         return
@@ -146,38 +145,61 @@ def show_pdf_viewer():
     file_name = file_info['filename'].replace('.pdf', '')
     file_name = file_name[4:].replace('_', ' ')
     display_name = file_name if len(file_name) <= 50 else file_name[:47] + "..."
+    total_pages = file_info['page_count']
+    
+    # Initialize current page in session state
+    if 'current_pdf_page' not in st.session_state:
+        st.session_state['current_pdf_page'] = 1
+    
+    # Track current PDF path and reset page to 1 if PDF changed
+    if 'current_pdf_path' not in st.session_state:
+        st.session_state['current_pdf_path'] = pdf_path
+    
+    if st.session_state['current_pdf_path'] != pdf_path:
+        st.session_state['current_pdf_path'] = pdf_path
+        st.session_state['current_pdf_page'] = 1
     
     # Header
     st.markdown(f"<strong>{display_name}</strong>", unsafe_allow_html=True)
-    st.caption(f"📅 {file_info['year']} | 💾 {file_info['size_mb']:.2f} MB | 📁 {file_info['category'].replace('_', ' ').title()[2:]}")
+    st.caption(f"📅 {file_info['year']} | 💾 {file_info['size_mb']:.2f} MB | 📁 {file_info['category'].replace('_', ' ').title()[2:]} | 📄 {total_pages} halaman")
     st.markdown("---")
     
-    # Read PDF and encode to base64
+    # Page Navigation Controls - Only page number input
+    col1, col2 = st.columns([2, 3])
+    
+    with col1:
+        page_input = st.number_input(
+            "Halaman",
+            min_value=1,
+            max_value=max(1, total_pages),
+            value=st.session_state['current_pdf_page'],
+            step=1,
+            key="page_number_input"
+        )
+        if page_input != st.session_state['current_pdf_page']:
+            st.session_state['current_pdf_page'] = page_input
+            st.rerun()
+        
+    # Display PDF using streamlit-pdf-viewer component
     try:
-        with open(pdf_path, "rb") as f:
-            pdf_bytes = f.read()
-        
-        # Encode to base64
-        base64_pdf = base64.b64encode(pdf_bytes).decode('utf-8')
-        
-        # Display PDF using browser's native viewer
-        pdf_display = f'''
-        <iframe
-            src="data:application/pdf;base64,{base64_pdf}"
-            width="100%"
-            height="700"
-            type="application/pdf"
-            style="border: none;"
-        >
-            <p>Browser Anda tidak support PDF viewer. 
-            <a href="data:application/pdf;base64,{base64_pdf}" download="{filename}">Download PDF</a></p>
-        </iframe>
-        '''
-        
-        st.markdown(pdf_display, unsafe_allow_html=True)
+        # Use streamlit-pdf-viewer component (works on Streamlit Cloud)
+        pdf_viewer(
+            input=pdf_path,
+            width=700,
+            pages_to_render=[st.session_state['current_pdf_page']],  # Show specific page
+            rendering="unwrap"
+        )
                 
     except Exception as e:
         st.error(f"Error loading PDF: {e}")
+        # Fallback: provide download button
+        with open(pdf_path, "rb") as f:
+            st.download_button(
+                label="📥 Download PDF",
+                data=f,
+                file_name=filename,
+                mime="application/pdf"
+            )
 
 
 def render_pdf_preview():

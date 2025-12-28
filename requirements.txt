@@ -1,5 +1,6 @@
 llama-index
 streamlit
+streamlit[pdf]
 pinecone
 google-generativeai
 python-dotenv
