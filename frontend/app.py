@@ -11,6 +11,7 @@ from src.config.settings import Settings
 from src.core.rag_engine import RAGEngine
 from src.core.chat_handler import ChatHandler
 from src.ui.source_display import display_sources
+from src.ui.dataset_browser import render_dataset_browser, render_pdf_preview
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -22,6 +23,10 @@ st.set_page_config(
     page_icon=Settings.PAGE_ICON,
     layout=Settings.LAYOUT
 )
+
+
+# Render dataset browser in sidebar
+render_dataset_browser()
 
 # Initialize RAG Engine & Chat Handler
 @st.cache_resource
@@ -53,6 +58,9 @@ if "messages" not in st.session_state:
 # Load Chat Handler
 chat_handler = init_chat_handler()
 
+# Render PDF viewer dialog if selected from sidebar
+render_pdf_preview()
+
 # Display Chat History
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
@@ -63,7 +71,7 @@ for message in st.session_state.messages:
             display_sources(message["sources"])
 
 # Chat Input
-if prompt := st.chat_input("Tanya seputar akademik FILKOM..."):
+if prompt := st.chat_input("tanya apapun tentang akademik FILKOM..."):
     # Display user message
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
@@ -72,7 +80,7 @@ if prompt := st.chat_input("Tanya seputar akademik FILKOM..."):
     # Generate assistant response
     if chat_handler:
         with st.chat_message("assistant"):
-            with st.spinner("Sedang mencari di dokumen..."):
+            with st.spinner("sbar, msih cari ingfo dari dokumen..."):
                 # Process query with retry logic
                 response_text, sources, error = chat_handler.process_query(prompt)
                 
@@ -124,4 +132,4 @@ if prompt := st.chat_input("Tanya seputar akademik FILKOM..."):
 
 # Footer
 st.markdown("---")
-st.caption("⚠️ Disclaimer: Ordal Filkom adalah asisten AI. Mohon cek kembali dokumen asli untuk kepastian hukum.")
+st.caption("⚠️ Disclaimer: Ordal Filkom cuma asisten AI, pls cek dokumen aslinya, kalo salah salah ya maap :)")

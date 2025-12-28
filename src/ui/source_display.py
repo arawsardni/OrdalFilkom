@@ -39,7 +39,7 @@ def _display_source_card(idx: int, source_info: Dict, total_sources: int):
         
         with col1:
             st.markdown(f"**{idx}. {source_info['file_name']}**")
-            st.caption(f"📄 Halaman {source_info['page']} • 📁 {source_info['category']}")
+            st.caption(f"📄 Halaman {source_info['page']} • 📁 {source_info['category'].replace('_', ' ').title()[2:]}")
         
         with col2:
             st.metric("Relevansi", source_info['score'], label_visibility="collapsed")
