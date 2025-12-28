@@ -1,6 +1,6 @@
 llama-index
 streamlit
-streamlit[pdf]
+streamlit-pdf-viewer
 pinecone
 google-generativeai
 python-dotenv
