@@ -40,6 +40,7 @@ class ChatHandler:
         
         retry_count = 0
         current_model_index = -1  # -1 means primary model, 0+ means fallback model
+        rate_limit_encountered = False  # Track if we've hit rate limit before
         
         while retry_count < max_retries:
             try:
@@ -59,8 +60,13 @@ class ChatHandler:
             except Exception as e:
                 error_str = str(e)
                 
-                # Handle rate limiting errors
+                # Handle rate limiting errors FIRST
+                # (because quota exhaustion can cause misleading "context size" errors)
                 if "429" in error_str or "RESOURCE_EXHAUSTED" in error_str or "rate" in error_str.lower():
+                    # Check if this is a daily quota exhaustion (tokens per day limit)
+                    is_daily_quota = "tokens per day" in error_str.lower() or "tpd" in error_str.lower()
+                    
+                    rate_limit_encountered = True  # Mark that we've encountered rate limit
                     retry_count += 1
                     
                     # Try fallback model if available
@@ -92,9 +98,30 @@ class ChatHandler:
                             
                         except Exception as fallback_error:
                             logger.error(f"Fallback model switch failed: {fallback_error}")
+                            # If fallback also failed due to daily quota, show quota message
+                            if is_daily_quota or "tokens per day" in str(fallback_error).lower():
+                                error_msg = (
+                                    "🚫 **Kuota harian sudah habis!**\n\n"
+                                    "Maaf, sistem telah mencapai batas kuota API harian. "
+                                    "Silakan coba lagi besok.\n\n"
+                                    "_Terima kasih atas pengertiannya :)._"
+                                )
+                                logger.error("Daily quota exhausted on all models")
+                                return None, None, error_msg
                     
                     # If no more fallbacks or retry limit reached
                     if retry_count < max_retries and current_model_index >= len(Settings.FALLBACK_MODELS) - 1:
+                        # Check if this is daily quota issue
+                        if is_daily_quota:
+                            error_msg = (
+                                "🚫 **Kuota harian sudah habis!**\n\n"
+                                "Maaf, sistem telah mencapai batas kuota API harian. "
+                                "Silakan coba lagi besok.\n\n"
+                                "_Terima kasih atas pengertiannya :)._"
+                            )
+                            logger.error("Daily quota exhausted")
+                            return None, None, error_msg
+                        
                         wait_time = Settings.RETRY_WAIT_BASE * retry_count
                         logger.warning(
                             f"All fallback models exhausted. Waiting {wait_time}s before retry "
@@ -103,8 +130,38 @@ class ChatHandler:
                         time.sleep(wait_time)
                         continue
                     elif retry_count >= max_retries:
-                        error_msg = "Server atau kuota sedang penuh. Silakan coba lagi nanti."
+                        if is_daily_quota:
+                            error_msg = (
+                                "🚫 **Kuota harian sudah habis!**\n\n"
+                                "Maaf, sistem telah mencapai batas kuota API harian. "
+                                "Silakan coba lagi besok.\n\n"
+                                "_Terima kasih atas pengertiannya :)._"
+                            )
+                        else:
+                            error_msg = "⚠️ Server sedang sibuk. Silakan coba lagi dalam beberapa saat."
                         logger.error(f"Max retries exceeded: {error_str}")
+                        return None, None, error_msg
+                # Check for context size overflow error
+                # BUT if we've previously hit rate limit, this might be a false "context size" error
+                # caused by quota exhaustion on the fallback model
+                elif "context size" in error_str.lower() and "not non-negative" in error_str.lower():
+                    if rate_limit_encountered:
+                        # This is likely a quota issue disguised as context size error
+                        logger.error(f"Context size error after rate limit (likely quota exhausted): {error_str}")
+                        error_msg = (
+                            "🚫 **Kuota harian sudah habis!**\n\n"
+                            "Maaf, sistem telah mencapai batas kuota API harian. "
+                            "Silakan coba lagi besok.\n\n"
+                            "_Terima kasih atas pengertiannya :)._"
+                        )
+                        return None, None, error_msg
+                    else:
+                        # Genuine context size issue
+                        logger.error(f"Context size overflow: {error_str}")
+                        error_msg = (
+                            "⚠️ Maaf, pertanyaan Anda terlalu kompleks atau dokumen yang relevan terlalu besar. "
+                            "Silakan coba dengan pertanyaan yang lebih singkat atau spesifik."
+                        )
                         return None, None, error_msg
                 else:
                     # Non-rate-limit error
