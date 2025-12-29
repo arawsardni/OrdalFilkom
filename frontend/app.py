@@ -1,4 +1,3 @@
-"""Streamlit frontend for Ordal Filkom - RAG Academic Assistant"""
 import os
 import sys
 import streamlit as st
@@ -31,7 +30,6 @@ render_dataset_browser()
 # Initialize RAG Engine & Chat Handler
 @st.cache_resource
 def init_chat_handler():
-    """Initialize RAG engine and chat handler (cached for performance)"""
     try:
         logger.info("Initializing RAG engine...")
         engine = RAGEngine()
@@ -39,11 +37,11 @@ def init_chat_handler():
         logger.info("Initialization successful")
         return handler
     except ValueError as e:
-        st.error(f"❌ {str(e)}")
+        st.error(f"Error: {str(e)}")
         logger.error(f"Initialization failed: {e}")
         return None
     except Exception as e:
-        st.error(f"❌ Gagal menginisialisasi sistem: {e}")
+        st.error(f"Error: {str(e)}")
         logger.error(f"Unexpected initialization error: {e}")
         return None
 
@@ -86,7 +84,7 @@ if prompt := st.chat_input("tanya apapun tentang akademik FILKOM..."):
                 
                 if error:
                     # Handle errors
-                    st.error(f"❌ {error}")
+                    st.error(f"Error: {error}")
                     logger.error(f"Query processing failed: {error}")
                 else:
                     # Display response with streaming effect (preserving markdown)
@@ -98,7 +96,6 @@ if prompt := st.chat_input("tanya apapun tentang akademik FILKOM..."):
                     import re
                     
                     # Split but keep whitespace and newlines
-                    # This regex splits on spaces but keeps newlines
                     tokens = re.findall(r'\S+|\n', response_text)
                     
                     for i, token in enumerate(tokens):
@@ -106,15 +103,12 @@ if prompt := st.chat_input("tanya apapun tentang akademik FILKOM..."):
                             full_response += '\n'
                         else:
                             full_response += token
-                            # Add space after word (except before newline or at end)
                             if i < len(tokens) - 1 and tokens[i + 1] != '\n':
                                 full_response += ' '
                         
-                        # Update placeholder with accumulated text (with markdown rendering)
                         message_placeholder.markdown(full_response + "▌")  
                         time.sleep(0.05)
                     
-                    # Final render without cursor
                     message_placeholder.markdown(full_response)
                     
                     # Display sources with PDF preview
@@ -128,7 +122,7 @@ if prompt := st.chat_input("tanya apapun tentang akademik FILKOM..."):
                         "sources": sources if sources else []
                     })
     else:
-        st.error("❌ Sistem belum siap. Cek API Keys di .env file.")
+        st.error("Sistem msih kocaks. Coba cek API Keys di .env file.")
 
 # Footer
 st.markdown("---")

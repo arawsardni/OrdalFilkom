@@ -1,7 +1,3 @@
-"""
-Streamlit Cloud Compatibility Wrapper
-Executes the actual app from frontend/app.py
-"""
 import os
 import sys
 

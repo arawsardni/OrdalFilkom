@@ -1,4 +1,3 @@
-"""Source citation display components"""
 import os
 from typing import List, Dict
 import streamlit as st
@@ -8,12 +7,6 @@ from src.config.settings import Settings
 
 
 def display_sources(sources_data: List[Dict]):
-    """
-    Display source citations with PDF preview
-    
-    Args:
-        sources_data: List of source dicts with file_name, page, category, score
-    """
     if not sources_data:
         return
     
@@ -25,14 +18,6 @@ def display_sources(sources_data: List[Dict]):
 
 
 def _display_source_card(idx: int, source_info: Dict, total_sources: int):
-    """
-    Display single source card with file info and PDF preview
-    
-    Args:
-        idx: Source index (1-based)
-        source_info: Dict with file_name, page, category, score
-        total_sources: Total number of sources (for divider logic)
-    """
     with st.container():
         # Header with file info and relevance score
         col1, col2 = st.columns([3, 1])
@@ -47,19 +32,13 @@ def _display_source_card(idx: int, source_info: Dict, total_sources: int):
         # PDF preview
         _display_pdf_preview(source_info)
         
-        # Divider between sources (but not after last one)
+        # Divider between sources
         if idx < total_sources:
             st.divider()
 
 
 def _display_pdf_preview(source_info: Dict):
-    """
-    Display PDF page preview in expander
-    
-    Args:
-        source_info: Dict with file_name, page, category
-    """
-    with st.expander("👁️ Lihat halaman PDF"):
+    with st.expander("Lihat halaman PDF"):
         pdf_path = os.path.join(
             Settings.DATASET_DIR, 
             source_info['category'], 

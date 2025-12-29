@@ -1,5 +1,3 @@
-"""Configuration management module"""
-
 from src.config.settings import Settings
 from src.config.prompts import QA_PROMPT_TEMPLATE
 

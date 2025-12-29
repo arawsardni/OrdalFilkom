@@ -1,36 +1,60 @@
 # 🎓 Ordal Filkom
 
-**Production-Ready RAG System untuk Akademik FILKOM UB**
+**RAG System untuk Akademik FILKOM UB**
 
 ![Python](https://img.shields.io/badge/python-3.10+-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
-> Agentic RAG-powered academic assistant dengan systematic evaluation, modern architecture, dan user-friendly interface.
+## 🌐 Live Demo
+
+**Try it now:** [https://ordalfilkom.streamlit.app/](https://ordalfilkom.streamlit.app/)
+
+## 📸 Preview
+
+### Chat Interface
+![Main Chat Interface](assets/Screenshot%202025-12-29%20091311.png)
+*Clean and intuitive chat interface untuk bertanya tentang akademik FILKOM*
+
+### Source Citations
+![Source Citations](assets/Screenshot%202025-12-29%20091402.png)
+*Top-3 source ranking dengan file, halaman, dan relevance score*
+
+### Document Browser
+![Document Browser 1](assets/Screenshot%202025-12-29%20091413.png)
+![Document Browser 2](assets/Screenshot%202025-12-29%20091423.png)
+*Multiple sources dengan citations yang jelas*
 
 ## ✨ Key Features
 
-### 🤖 Advanced RAG Capabilities
-- **Zero-Hallucination Protocol** - Strict prompt engineering untuk jawaban akurat
-- **Visual Source Citations** - PDF page preview untuk verifikasi mudah
+### 🤖 RAG Capabilities
+- **Hybrid Chunking Strategy** - LlamaParse + Hierarchical + Semantic
+- **Table & Diagram Aware** - Tables extracted as markdown, diagrams described
+- **Zero-Hallucination Protocol** - Balanced prompt engineering
+- **High Retrieval Coverage** - top_k=30
+- **Visual Source Citations** - PDF page preview untuk verifikasi sumber
 - **Top-3 Source Ranking** - Menampilkan sumber paling relevan dengan confidence score
 - **Conversation Memory** - Source citations persist di chat history
 
 ### 🏗️ Production Architecture
 - **Modular Design** - Separated concerns (config, core, UI, utils)
 - **Reusable Components** - DRY principle, easy maintenance
-- **Type Hints** - Better IDE support dan code documentation
+- **Type Hints** - Better IDE support and code documentation
 - **Centralized Configuration** - Single source of truth untuk settings
 
-### 📚 Comprehensive Dataset
+### 📚 Dataset
 - 19 dokumen akademik resmi FILKOM UB
 - 4 kategori: Akademik Umum, Kurikulum, Skripsi/PKL, Kemahasiswaan
-- Update 2024-2025
+- Update 2025 Desember
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 - Python 3.10+
-- API Keys: Google (Gemini), Pinecone, Groq
+- API Keys: 
+  - Google (Gemini) - for embeddings
+  - Pinecone - for vector storage
+  - Groq - for LLM inference
+  - LlamaCloud - for PDF parsing
 
 ### Installation
 
@@ -41,7 +65,7 @@ cd ordal-filkom
 
 # 2. Create virtual environment
 python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
+source venv/bin/activate  # Windows
 
 # 3. Install dependencies
 pip install -r requirements.txt
@@ -95,58 +119,20 @@ OrdalFIlkom/
 
 ### AI/ML
 - **RAG Framework**: LlamaIndex 0.10+
-- **Vector Store**: Pinecone (managed, production-grade)
-- **LLM**: Groq (Llama 3.3 70B Versatile) - ultra-fast inference
-- **Embeddings**: Google Gemini text-embedding-004 (768 dims)
+- **PDF Parser**: LlamaParse (tables → markdown, images → descriptions)
+- **Chunking**: Hybrid strategy (Hierarchical + Semantic + Guardrails)
+- **Vector Store**: Pinecone
+- **LLM**: Groq (Llama 3.3 70B Versatile)
+- **Embeddings**: Google Gemini text-embedding-004
 
 ### Backend
 - **Language**: Python 3.10+
-- **PDF Processing**: PyMuPDF (fitz)
+- **PDF Processing**: PyMuPDF (fitz) + LlamaParse
 - **Image Processing**: Pillow
 
 ### Frontend
 - **Framework**: Streamlit 1.31+
 - **UI**: Interactive chat interface dengan source citations
-
-## ⚙️ Configuration
-
-Edit `src/config/settings.py` untuk customize:
-
-```python
-# Model Configuration
-EMBEDDING_MODEL = "models/text-embedding-004"
-LLM_MODEL = "llama-3.3-70b-versatile"
-LLM_TEMPERATURE = 0.2
-SIMILARITY_TOP_K = 7
-
-# Display Configuration
-TOP_SOURCES_TO_DISPLAY = 3
-PDF_RENDER_DPI = 120
-```
-
-## 📖 Usage Examples
-
-### Basic Query
-```
-User: "Berapa SKS untuk lulus S1 di FILKOM?"
-
-Ordal: "Untuk lulus S1 di FILKOM, mahasiswa harus menempuh 
-        minimal 145 SKS..."
-
-📚 Sumber Referensi:
-1. 2020_Pedoman_Akademik_FILKOM.pdf
-   📄 Halaman 12 • 📁 01_Akademik_Umum
-   Relevansi: 87%
-   [👁️ Lihat halaman PDF - shows actual page]
-```
-
-### Complex Query
-```
-User: "Apa saja mata kuliah untuk learning path NLP Engineer?"
-
-Ordal: "Learning Path NLP Engineer di S1 Teknik Informatika meliputi..."
-[Shows top 3 relevant sources with page previews]
-```
 
 ## 🔧 Development
 
@@ -165,35 +151,25 @@ Edit `src/config/prompts.py` untuk experiment dengan prompt engineering.
 
 ## 🎯 Roadmap
 
+### ✅ Completed
 - [x] Core RAG implementation
 - [x] Visual PDF citations
 - [x] Modular architecture
-- [ ] FastAPI REST API backend
-- [ ] React TypeScript frontend
-- [ ] Agentic features (multi-tool orchestration)
-- [ ] RAG evaluation framework
+- [x] **LlamaParse integration** (table/diagram extraction)
+- [x] **Hybrid chunking strategy** (Hierarchical + Semantic + Guardrails)
+
+### 🚧 In Progress / Future
+- [ ] Hybrid retrieval (Vector + BM25)
+- [ ] RAG evaluation
 - [ ] Automated testing (pytest)
-- [ ] Docker deployment
-- [ ] CI/CD pipeline
 
 ## 📝 License
 
 MIT License - feel free to use for your projects!
 
-## 🙏 Acknowledgments
-
-- **FILKOM UB** untuk dataset dokumen akademik
-- **DOT Indonesia** untuk inspirasi tech stack
-- **LlamaIndex** untuk RAG framework
-- **Streamlit** untuk rapid UI development
-
 ## 🤝 Contributing
 
 Contributions welcome! Please feel free to submit a Pull Request.
-
-## 📧 Contact
-
-Built by [Your Name] as portfolio project untuk AI Engineer internship application.
 
 ---
 

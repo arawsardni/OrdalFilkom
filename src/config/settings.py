@@ -1,4 +1,3 @@
-"""Configuration management for Ordal Filkom"""
 import os
 from dotenv import load_dotenv
 import streamlit as st
@@ -6,13 +5,10 @@ import streamlit as st
 load_dotenv()
 
 
-class Settings:
-    """Application settings and configuration"""
-    
+class Settings:    
     # API Keys
     @staticmethod
     def get_google_api_key():
-        """Get Google API key from secrets or environment"""
         try:
             return st.secrets["GOOGLE_API_KEY"]
         except:
@@ -20,7 +16,6 @@ class Settings:
     
     @staticmethod
     def get_pinecone_api_key():
-        """Get Pinecone API key from secrets or environment"""
         try:
             return st.secrets["PINECONE_API_KEY"]
         except:
@@ -28,7 +23,6 @@ class Settings:
     
     @staticmethod
     def get_groq_api_key():
-        """Get Groq API key from secrets or environment"""
         try:
             return st.secrets["GROQ_API_KEY"]
         except:
@@ -48,8 +42,8 @@ class Settings:
     # Fallback models (ordered by priority when primary hits rate limit)
     # Format: (model_name, TPM_limit, description)
     FALLBACK_MODELS = [
-        ("meta-llama/llama-4-scout-17b-16e-instruct", 30000, "Llama 4 Scout - Higher TPM"),
-        ("llama-3.1-8b-instant", 6000, "Llama 3.1 8B - Fast & Efficient"),
+        ("meta-llama/llama-4-scout-17b-16e-instruct", 30000, "Llama 4 Scout"),
+        ("llama-3.1-8b-instant", 6000, "Llama 3.1 8B"),
     ]
     
     # Paths
@@ -62,6 +56,6 @@ class Settings:
     
     # Chat Configuration
     MAX_RETRIES = 3
-    RETRY_WAIT_BASE = 25  # seconds
+    RETRY_WAIT_BASE = 25
     TOP_SOURCES_TO_DISPLAY = 3
     PDF_RENDER_DPI = 120

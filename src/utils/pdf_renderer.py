@@ -1,4 +1,3 @@
-"""PDF rendering utilities"""
 import fitz  # PyMuPDF
 from PIL import Image
 import io
@@ -17,11 +16,6 @@ def render_pdf_page(pdf_path: str, page_number: int, dpi: int = 150) -> Optional
     
     Returns:
         PIL Image object of the rendered page, or None if error occurs
-    
-    Example:
-        >>> img = render_pdf_page("document.pdf", 0, dpi=120)
-        >>> if img:
-        ...     img.show()
     """
     try:
         # Open PDF document

@@ -1,4 +1,4 @@
-"""Prompt templates for RAG system"""
+# Prompt templates for RAG Zero Hallucination Protocol
 
 QA_PROMPT_TEMPLATE = (
     "Anda adalah Ordal Filkom, asisten akademik yang membantu mahasiswa FILKOM UB.\n\n"

@@ -1,4 +1,3 @@
-"""RAG engine initialization and configuration"""
 import logging
 from llama_index.core import VectorStoreIndex, Settings, PromptTemplate
 from llama_index.vector_stores.pinecone import PineconeVectorStore
@@ -12,17 +11,13 @@ from src.config.prompts import QA_PROMPT_TEMPLATE
 logger = logging.getLogger(__name__)
 
 
-class RAGEngine:
-    """Handles RAG engine initialization and configuration"""
-    
+class RAGEngine:    
     def __init__(self):
-        """Initialize RAG engine with LlamaIndex components"""
         self.chat_engine = None
         self._validate_api_keys()
         self._initialize()
     
     def _validate_api_keys(self):
-        """Validate that all required API keys are present"""
         google_key = AppSettings.get_google_api_key()
         pinecone_key = AppSettings.get_pinecone_api_key()
         groq_key = AppSettings.get_groq_api_key()
@@ -31,17 +26,16 @@ class RAGEngine:
             raise ValueError("Missing required API keys. Check your .env file.")
     
     def _initialize(self):
-        """Initialize LlamaIndex settings and chat engine"""
         logger.info("Initializing RAG engine...")
         
-        # Configure embedding model
+        # Embedding model
         Settings.embed_model = GoogleGenAIEmbedding(
             model_name=AppSettings.EMBEDDING_MODEL,
             api_key=AppSettings.get_google_api_key()
         )
         logger.info(f"Embedding model configured: {AppSettings.EMBEDDING_MODEL}")
         
-        # Configure LLM
+        # LLM
         Settings.llm = Groq(
             model=AppSettings.LLM_MODEL,
             api_key=AppSettings.get_groq_api_key(),
@@ -70,10 +64,5 @@ class RAGEngine:
         logger.info("RAG engine initialized successfully")
     
     def get_engine(self):
-        """
-        Get initialized chat engine
-        
-        Returns:
-            ChatEngine: Initialized LlamaIndex chat engine
-        """
+
         return self.chat_engine

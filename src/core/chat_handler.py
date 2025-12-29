@@ -1,4 +1,3 @@
-"""Chat processing and response handling"""
 import logging
 import time
 from typing import Tuple, List, Dict, Optional
@@ -8,9 +7,7 @@ from src.config.settings import Settings
 logger = logging.getLogger(__name__)
 
 
-class ChatHandler:
-    """Handles chat interactions and response processing"""
-    
+class ChatHandler:    
     def __init__(self, chat_engine):
         """
         Initialize chat handler

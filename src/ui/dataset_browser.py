@@ -1,4 +1,3 @@
-"""Dataset browser components for sidebar"""
 import os
 import fitz
 import streamlit as st
@@ -7,23 +6,14 @@ from typing import Dict, List
 from src.config.settings import Settings
 from src.utils.metadata import get_meta
 
-
 def get_dataset_files() -> Dict[str, List[Dict]]:
-    """
-    Scan dataset directory and organize files by category
-    
-    Returns:
-        Dict with category as key and list of file info dicts as value
-    """
-    
-
     dataset_dir = Settings.DATASET_DIR
     files_by_category = {}
     
     if not os.path.exists(dataset_dir):
         return {}
     
-    # Iterate through categories (subdirectories)
+    # Iterate through subdirectories
     for category in sorted(os.listdir(dataset_dir)):
         category_path = os.path.join(dataset_dir, category)
         
@@ -65,8 +55,6 @@ def get_dataset_files() -> Dict[str, List[Dict]]:
 
 
 def render_dataset_browser():
-    """Render dataset browser in sidebar with VSCode-style tree structure"""
-    
     # Custom CSS to reduce spacing
     st.markdown("""
         <style>
@@ -99,7 +87,7 @@ def render_dataset_browser():
         st.sidebar.warning("Dokumen tidak ditemukan")
         return
     
-    # tree view with expanders for each category
+    # Tree view with expanders for each category
     for category, files in files_by_category.items():
         with st.sidebar.expander(f"📁 {category.replace('_', ' ').title()[2:]}", expanded=False):            
             # List files in this category
@@ -134,7 +122,6 @@ def render_dataset_browser():
 
 @st.dialog("📄 PDF Viewer", width="medium")
 def show_pdf_viewer():
-    """Modal dialog with streamlit-pdf-viewer component"""
     if 'selected_pdf' not in st.session_state or not st.session_state['selected_pdf']:
         st.warning("No PDF selected")
         return
@@ -164,7 +151,7 @@ def show_pdf_viewer():
     st.caption(f"📅 {file_info['year']} | 💾 {file_info['size_mb']:.2f} MB | 📁 {file_info['category'].replace('_', ' ').title()[2:]} | 📄 {total_pages} halaman")
     st.markdown("---")
     
-    # Page Navigation Controls - Only page number input
+    # Page Navigation Controls / Page number input
     col1, col2 = st.columns([2, 3])
     
     with col1:
@@ -182,7 +169,6 @@ def show_pdf_viewer():
         
     # Display PDF using streamlit-pdf-viewer component
     try:
-        # Use streamlit-pdf-viewer component (works on Streamlit Cloud)
         pdf_viewer(
             input=pdf_path,
             width=700,
@@ -192,7 +178,7 @@ def show_pdf_viewer():
                 
     except Exception as e:
         st.error(f"Error loading PDF: {e}")
-        # Fallback: provide download button
+        # Fallback: provide download the pdf button
         with open(pdf_path, "rb") as f:
             st.download_button(
                 label="📥 Download PDF",
@@ -203,6 +189,5 @@ def show_pdf_viewer():
 
 
 def render_pdf_preview():
-    """Check if PDF is selected and open viewer dialog"""
     if 'selected_pdf' in st.session_state and st.session_state['selected_pdf']:
         show_pdf_viewer()
