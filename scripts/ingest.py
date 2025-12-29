@@ -1,21 +1,27 @@
 import os
 import sys
 import logging
+from pathlib import Path
 from dotenv import load_dotenv
+import nest_asyncio
+
+# Apply nest_asyncio for LlamaParse async operations
+nest_asyncio.apply()
 
 # Add parent directory to path to import src modules
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from llama_index.core import (
     VectorStoreIndex,
-    SimpleDirectoryReader,
     StorageContext,
     Settings,
+    Document,
 )
 from llama_index.vector_stores.pinecone import PineconeVectorStore
 from llama_index.llms.google_genai import GoogleGenAI
 from llama_index.embeddings.google_genai import GoogleGenAIEmbedding
-from llama_index.core.node_parser import SentenceSplitter
+from llama_index.core.node_parser import HierarchicalNodeParser, get_leaf_nodes
+from llama_parse import LlamaParse
 from pinecone import Pinecone, ServerlessSpec
 from src.utils.metadata import get_meta
 from tqdm import tqdm
@@ -29,6 +35,7 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
+LLAMA_CLOUD_API_KEY = os.getenv("LLAMA_CLOUD_API_KEY")
 PINECONE_ENV = os.getenv("PINECONE_ENV", "us-east-1")
 INDEX_NAME = "ordal-filkom"
 
@@ -50,18 +57,68 @@ def main():
     if not GOOGLE_API_KEY or not PINECONE_API_KEY:
         logger.error("API Keys missing in .env")
         return
+    
+    if not LLAMA_CLOUD_API_KEY:
+        logger.error("LLAMA_CLOUD_API_KEY missing in .env - required for PDF parsing")
+        logger.error("Get free API key at: https://cloud.llamaindex.ai/")
+        return
 
     init_settings()
 
-    logger.info("Step A: Loading Documents...")
-    # Using recursive=True as per SRS
-    reader = SimpleDirectoryReader(
-        input_dir="./dataset",
-        recursive=True,
-        file_metadata=get_meta 
+    logger.info("Step A: Loading Documents with LlamaParse (Enhanced PDF Extraction)...")
+    logger.info("This will take longer but provides MUCH better table/diagram extraction")
+    
+    # Initialize LlamaParse for better PDF extraction
+    parser = LlamaParse(
+        api_key=LLAMA_CLOUD_API_KEY,
+        result_type="markdown",  # Preserves tables as markdown!
+        verbose=True,
+        language="id",  # Indonesian
+        num_workers=4,  # Parallel processing
+        parsing_instruction="""
+        This is an Indonesian academic document (curriculum, handbook, or guideline).
+        Please:
+        - Extract all text content with proper structure
+        - Convert all tables to markdown format (IMPORTANT for course/SKS data)
+        - Preserve document hierarchy (headings, sections, subsections)
+        - For diagrams/images with text, provide brief descriptions
+        - Maintain bullet points and numbered lists
+        """
     )
-    documents = reader.load_data()
-    logger.info(f"Loaded {len(documents)} document pages.")
+    
+    # Get all PDF files
+    pdf_files = [str(p) for p in Path("./dataset").rglob("*.pdf")]
+    logger.info(f"Found {len(pdf_files)} PDF files")
+    
+    # Parse with LlamaParse
+    logger.info("⏳ Parsing PDFs with LlamaParse (this may take 5-15 minutes)...")
+    logger.info("Quality improvement: Tables preserved, diagrams described")
+    
+    # Parse each file separately to maintain file-to-document mapping
+    documents = []
+    for pdf_file in tqdm(pdf_files, desc="Parsing PDFs"):
+        try:
+            parsed_docs = parser.load_data(pdf_file)
+            
+            # Get metadata for this file
+            file_metadata = get_meta(pdf_file)
+            
+            # Add metadata to each document from this file
+            for page_idx, doc in enumerate(parsed_docs):
+                # LlamaParse returns empty metadata, so we need to add everything
+                doc.metadata.update(file_metadata)
+                
+                # Add page_label (LlamaParse docs are typically one per page or whole doc)
+                # Use page index + 1 for 1-indexed page numbers
+                doc.metadata['page_label'] = str(page_idx + 1)
+                
+                documents.append(doc)
+                
+        except Exception as e:
+            logger.error(f"Failed to parse {pdf_file}: {e}")
+            continue
+    
+    logger.info(f"✅ Parsed {len(documents)} document pages with enhanced extraction")
 
     logger.info("Step B: Chunking & Indexing to Pinecone...")
     
@@ -92,16 +149,121 @@ def main():
         pinecone_index=pc.Index(INDEX_NAME),
     )
     
-    storage_context = StorageContext.from_defaults(vector_store=vector_store)
     
-    # Strategic Splitting
-    splitter = SentenceSplitter(chunk_size=1024, chunk_overlap=200)
-    Settings.text_splitter = splitter
-
-    # BATCH PROCESSING to handle Rate Limits
-    logger.info("Splitting documents into nodes...")
-    nodes = splitter.get_nodes_from_documents(documents, show_progress=True)
-    logger.info(f"Total nodes created: {len(nodes)}")
+    # HYBRID CHUNKING STRATEGY - BEST OF ALL WORLDS  
+    # Step 1: LlamaParse extracted tables/images as markdown ✅
+    # Step 2: Hierarchical parsing for structure
+    # Step 3: Semantic refinement for coherence
+    logger.info("Initializing HYBRID chunking (Hierarchical + Semantic + Table-aware)...")
+    
+    chunk_sizes = [2048, 512, 128]
+    
+    node_parser = HierarchicalNodeParser.from_defaults(
+        chunk_sizes=chunk_sizes
+    )
+    
+    logger.info(f"Chunk hierarchy: {chunk_sizes}")
+    logger.info("Creating hierarchical nodes...")
+    
+    all_nodes = node_parser.get_nodes_from_documents(documents, show_progress=True)
+    leaf_nodes = get_leaf_nodes(all_nodes)
+    
+    logger.info(f"✅ Hierarchical: {len(all_nodes)} total, {len(leaf_nodes)} leaf nodes")
+    
+    # Optional: Semantic refinement with GUARDRAILS for large chunks
+    USE_SEMANTIC = True  # Set False to skip (faster)
+    
+    if USE_SEMANTIC:
+        logger.info("\nApplying semantic refinement with SAFETY GUARDRAILS...")
+        logger.info("Guardrails: Table lock, Heading-aware, Policy-safe")
+        
+        from llama_index.core.node_parser import SemanticSplitterNodeParser
+        from llama_index.core import Document as LlamaDocument
+        import re
+        
+        semantic_parser = SemanticSplitterNodeParser(
+            buffer_size=1,
+            breakpoint_percentile_threshold=95,
+            embed_model=Settings.embed_model
+        )
+        
+        # Helper functions for guardrails
+        def contains_markdown_table(text):
+            """Check if text contains markdown table"""
+            return '|' in text and '---' in text
+        
+        def has_heading(text):
+            """Check if text starts with markdown heading"""
+            return text.strip().startswith('#')
+        
+        def contains_policy_keywords(text):
+            """Check if text contains normative policy keywords"""
+            policy_words = ['wajib', 'harus', 'dikecualikan', 'tidak berlaku jika', 
+                          'syarat', 'ketentuan', 'peraturan', 'kecuali']
+            return any(word in text.lower() for word in policy_words)
+        
+        nodes = []
+        skipped_table = 0
+        skipped_heading = 0
+        skipped_policy = 0
+        refined = 0
+        
+        for node in tqdm(leaf_nodes, desc="Semantic refinement (with guardrails)"):
+            node_text = node.text
+            
+            # GUARDRAIL 1: Table Lock - Don't split tables
+            if contains_markdown_table(node_text):
+                nodes.append(node)
+                skipped_table += 1
+                continue
+            
+            # GUARDRAIL 2: Heading-aware - Don't split if starts with heading
+            if has_heading(node_text):
+                nodes.append(node)
+                skipped_heading += 1
+                continue
+            
+            # GUARDRAIL 3: Policy-safe - Don't split normative clauses
+            if contains_policy_keywords(node_text) and len(node_text) < 1000:
+                # Keep policy clauses atomic if reasonably sized
+                nodes.append(node)
+                skipped_policy += 1
+                continue
+            
+            # Only refine large, safe-to-split chunks
+            if len(node_text) > 600:
+                try:
+                    temp_doc = LlamaDocument(text=node_text, metadata=node.metadata)
+                    chunks = semantic_parser.get_nodes_from_documents([temp_doc])
+                    
+                    if len(chunks) > 1:
+                        # Semantic split successful
+                        nodes.extend(chunks)
+                        refined += 1
+                    else:
+                        nodes.append(node)
+                except:
+                    nodes.append(node)
+            else:
+                nodes.append(node)
+        
+        logger.info(f"✅ Semantic refinement complete:")
+        logger.info(f"   Tables protected: {skipped_table}")
+        logger.info(f"   Headings protected: {skipped_heading}")
+        logger.info(f"   Policy clauses protected: {skipped_policy}")
+        logger.info(f"   Chunks refined: {refined}")
+        logger.info(f"   Final chunks: {len(nodes)}")
+    else:
+        nodes = leaf_nodes
+    
+    logger.info(f"\n📊 HYBRID PARSING COMPLETE:")
+    logger.info(f"  ✅ LlamaParse: Tables + Images")
+    logger.info(f"  ✅ Hierarchical: Multi-level structure")
+    logger.info(f"  ✅ Semantic: {'Enabled' if USE_SEMANTIC else 'Disabled'}")
+    logger.info(f"  ✅ Final chunks: {len(nodes)}")
+    
+    # Create storage context for Pinecone
+    storage_context = StorageContext.from_defaults(vector_store=vector_store)
 
     BATCH_SIZE = 20  # Conservative batch size
     DELAY_SECONDS = 5 # Wait time between batches

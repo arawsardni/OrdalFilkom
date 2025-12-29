@@ -43,7 +43,7 @@ class Settings:
     # LLM Configuration with Fallback
     LLM_MODEL = "llama-3.3-70b-versatile"  # Primary model
     LLM_TEMPERATURE = 0.2
-    SIMILARITY_TOP_K = 7
+    SIMILARITY_TOP_K = 30
     
     # Fallback models (ordered by priority when primary hits rate limit)
     # Format: (model_name, TPM_limit, description)
