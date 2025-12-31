@@ -46,6 +46,35 @@ class Settings:
         ("llama-3.1-8b-instant", 6000, "Llama 3.1 8B"),
     ]
     
+    @staticmethod
+    def get_all_available_models():
+        """
+        Get list of all available models (primary + fallbacks)
+        
+        Returns:
+            list: List of dicts with model metadata
+                - model: model identifier
+                - description: human-readable name
+                - tpm: tokens per minute limit
+        """
+        models = [
+            {
+                "model": Settings.LLM_MODEL,
+                "description": "Llama 3.3 70B Versatile",
+                "tpm": "100,000"
+            }
+        ]
+        
+        # Add fallback models
+        for model_name, tpm_limit, description in Settings.FALLBACK_MODELS:
+            models.append({
+                "model": model_name,
+                "description": description,
+                "tpm": f"{tpm_limit:,}"
+            })
+        
+        return models
+    
     # Paths
     DATASET_DIR = "dataset"
     

@@ -96,8 +96,9 @@ OrdalFIlkom/
 │   ├── core/                   # Business logic
 │   │   ├── rag_engine.py       # RAG initialization
 │   │   └── chat_handler.py     # Query processing
-│   ├── ui/                     # UI components
-│   │   └── source_display.py  # Source citation UI
+│   ├── ui/                     # User interface
+│   │   ├── document_browser.py # Document browser UI
+│   │   └── source_display.py   # Source citation UI
 │   └── utils/                  # Utilities
 │       ├── metadata.py         # Metadata extraction
 │       └── pdf_renderer.py     # PDF to image

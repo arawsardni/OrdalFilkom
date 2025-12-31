@@ -53,6 +53,12 @@ st.markdown("*Asisten Akademik Virtual FILKOM UB (Zero Hallucination Protocol)*"
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+# Initialize session state for retry mechanism
+if "pending_retry" not in st.session_state:
+    st.session_state.pending_retry = None
+if "available_models" not in st.session_state:
+    st.session_state.available_models = None
+
 # Load Chat Handler
 chat_handler = init_chat_handler()
 
@@ -68,7 +74,103 @@ for message in st.session_state.messages:
         if message["role"] == "assistant" and "sources" in message and message["sources"]:
             display_sources(message["sources"])
 
-# Chat Input
+# Show retry UI if there's a pending retry with model options
+if st.session_state.pending_retry and st.session_state.available_models:
+    st.warning(f"⚠️ Rate limit pada model sebelumnya. Pilih model alternatif untuk retry:")
+    
+    col1, col2 = st.columns([3, 1])
+    
+    with col1:
+        retry_model = st.selectbox(
+            "Pilih Model Alternatif:",
+            options=[m["model"] for m in st.session_state.available_models],
+            format_func=lambda x: next(
+                (f"{m['description']} ({m['tpm']} TPM)" for m in st.session_state.available_models if m["model"] == x),
+                x
+            ),
+            key="retry_model_selector"
+        )
+    
+    with col2:
+        if st.button("🔄 Coba Lagi", type="primary"):
+            # Update selected model in session state
+            st.session_state.selected_model = retry_model
+            
+            # Retry the query with new model
+            if chat_handler:
+                with st.chat_message("assistant"):
+                    with st.spinner("Mencoba dengan model alternatif..."):
+                        response_text, sources, error, model_options = chat_handler.process_query(
+                            st.session_state.pending_retry,
+                            model_name=retry_model
+                        )
+                        
+                        if error:
+                            st.error(error)
+                            logger.error(f"Retry failed: {error}")
+                            # Update available models if new options returned
+                            if model_options:
+                                st.session_state.available_models = model_options
+                        else:
+                            # Success - clear retry state
+                            st.session_state.pending_retry = None
+                            st.session_state.available_models = None
+                            
+                            # Display response
+                            st.markdown(response_text)
+                            
+                            # Display sources
+                            if sources:
+                                display_sources(sources)
+                            
+                            # Save to session state
+                            st.session_state.messages.append({
+                                "role": "assistant",
+                                "content": response_text,
+                                "sources": sources if sources else []
+                            })
+                            
+                            st.rerun()
+
+# Custom CSS to make dropdown immutable (read-only)
+st.markdown("""
+<style>
+/* Make selectbox input read-only - prevent user from typing */
+div[data-baseweb="select"] input {
+    caret-color: transparent !important;
+    pointer-events: none !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# Initialize session state
+if "selected_model" not in st.session_state:
+    st.session_state.selected_model = Settings.LLM_MODEL
+
+# Get all models
+all_models = Settings.get_all_available_models()
+
+# Model selector in sidebar bottom
+with st.sidebar:
+    st.markdown("---")
+    st.markdown("##### 🤖 Model")
+    selected_model = st.selectbox(
+        "Model",
+        options=[m["model"] for m in all_models],
+        format_func=lambda x: next(
+            (m['description'] for m in all_models if m["model"] == x),
+            x
+        ),
+        index=[m["model"] for m in all_models].index(st.session_state.selected_model)
+            if st.session_state.selected_model in [m["model"] for m in all_models]
+            else 0,
+        key="model_selector",
+        help="Pilih model AI",
+        label_visibility="collapsed"
+    )
+    st.session_state.selected_model = selected_model
+
+# Normal sticky chat input
 if prompt := st.chat_input("tanya apapun tentang akademik FILKOM..."):
     # Display user message
     st.session_state.messages.append({"role": "user", "content": prompt})
@@ -79,12 +181,22 @@ if prompt := st.chat_input("tanya apapun tentang akademik FILKOM..."):
     if chat_handler:
         with st.chat_message("assistant"):
             with st.spinner("sbar, msih cari ingfo dari dokumen..."):
-                # Process query with retry logic
-                response_text, sources, error = chat_handler.process_query(prompt)
+                # Process query with user-selected model
+                response_text, sources, error, model_options = chat_handler.process_query(
+                    prompt, 
+                    model_name=st.session_state.selected_model
+                )
                 
-                if error:
-                    # Handle errors
-                    st.error(f"Error: {error}")
+                if error and model_options:
+                    # Rate limit with alternative models available
+                    st.warning(error)
+                    st.session_state.pending_retry = prompt
+                    st.session_state.available_models = model_options
+                    logger.warning(f"Rate limit on {st.session_state.selected_model}. Offering alternatives.")
+                    st.rerun()  # Rerun to show retry UI
+                elif error:
+                    # Error without alternative models (e.g., all quota exhausted)
+                    st.error(error)
                     logger.error(f"Query processing failed: {error}")
                 else:
                     # Display response with streaming effect (preserving markdown)
@@ -127,3 +239,4 @@ if prompt := st.chat_input("tanya apapun tentang akademik FILKOM..."):
 # Footer
 st.markdown("---")
 st.caption("⚠️ Disclaimer: Ordal Filkom cuma asisten AI, pls cek dokumen aslinya, kalo salah salah ya maap :)")
+
