@@ -171,7 +171,6 @@ def show_pdf_viewer():
     try:
         pdf_viewer(
             input=pdf_path,
-            width=700,
             pages_to_render=[st.session_state['current_pdf_page']],  # Show specific page
             rendering="unwrap"
         )

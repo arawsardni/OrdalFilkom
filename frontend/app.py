@@ -158,7 +158,7 @@ with st.sidebar:
         "Model",
         options=[m["model"] for m in all_models],
         format_func=lambda x: next(
-            (m['description'] for m in all_models if m["model"] == x),
+            (f"{m['description']} - {m['note']}" for m in all_models if m["model"] == x),
             x
         ),
         index=[m["model"] for m in all_models].index(st.session_state.selected_model)

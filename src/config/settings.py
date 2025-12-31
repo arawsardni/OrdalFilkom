@@ -40,10 +40,10 @@ class Settings:
     SIMILARITY_TOP_K = 30
     
     # Fallback models (ordered by priority when primary hits rate limit)
-    # Format: (model_name, TPM_limit, description)
+    # Format: (model_name, TPM_limit, description, note)
     FALLBACK_MODELS = [
-        ("meta-llama/llama-4-scout-17b-16e-instruct", 30000, "Llama 4 Scout"),
-        ("llama-3.1-8b-instant", 6000, "Llama 3.1 8B"),
+        ("meta-llama/llama-4-scout-17b-16e-instruct", 30000, "Llama 4 Scout", "mid 🙂"),
+        ("llama-3.1-8b-instant", 6000, "Llama 3.1 8B", "agak kocaks 😹"),
     ]
     
     @staticmethod
@@ -56,21 +56,24 @@ class Settings:
                 - model: model identifier
                 - description: human-readable name
                 - tpm: tokens per minute limit
+                - note: fun description
         """
         models = [
             {
                 "model": Settings.LLM_MODEL,
-                "description": "Llama 3.3 70B Versatile",
-                "tpm": "100,000"
+                "description": "Llama 3.3 70B",
+                "tpm": "12,000",
+                "note": "paling bagus 🔥"
             }
         ]
         
         # Add fallback models
-        for model_name, tpm_limit, description in Settings.FALLBACK_MODELS:
+        for model_name, tpm_limit, description, note in Settings.FALLBACK_MODELS:
             models.append({
                 "model": model_name,
                 "description": description,
-                "tpm": f"{tpm_limit:,}"
+                "tpm": f"{tpm_limit:,}",
+                "note": note
             })
         
         return models
