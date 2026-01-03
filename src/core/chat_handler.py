@@ -18,6 +18,14 @@ class ChatHandler:
         """
         self.chat_engine = chat_engine
     
+    def reset_memory(self):
+        """Reset chat engine memory to free up context window"""
+        if hasattr(self.chat_engine, 'reset'):
+            self.chat_engine.reset()
+            logger.info("Chat memory reset successfully")
+            return True
+        return False
+    
     def _parse_rate_limit_info(self, error_str: str) -> Dict:
         """
         Parse rate limit information from Groq API error message
@@ -157,11 +165,26 @@ class ChatHandler:
                 logger.warning(f"Rate limit on {current_model_name}: {error_str}")
                 return None, None, error_msg, alternative_models if alternative_models else None
             
-            # Context size overflow error
+            # Context size overflow error - AUTO-RECOVERY
             elif "context size" in error_str.lower() and "not non-negative" in error_str.lower():
                 logger.error(f"Context size overflow: {error_str}")
-                error_msg = "⚠️ **Context Overflow** | Pertanyaan terlalu panjang/kompleks"
-                return None, None, error_msg, None
+                
+                # Auto-recovery: reset memory and retry once
+                logger.info("Attempting auto-recovery by resetting chat memory...")
+                self.reset_memory()
+                
+                try:
+                    # Retry the query after memory reset
+                    response = self.chat_engine.chat(query)
+                    sources_data = self._extract_sources(
+                        response.source_nodes[:Settings.TOP_SOURCES_TO_DISPLAY]
+                    )
+                    logger.info("Query succeeded after memory reset (auto-recovery)")
+                    return response.response, sources_data, None, None
+                except Exception as retry_e:
+                    logger.error(f"Retry after reset also failed: {retry_e}")
+                    error_msg = "⚠️ **Context Overflow** | Memory sudah di-reset, tapi masih gagal. Coba pertanyaan lebih singkat."
+                    return None, None, error_msg, None
             
             # Other errors - show raw error
             else:

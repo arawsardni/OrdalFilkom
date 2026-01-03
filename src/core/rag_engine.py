@@ -64,5 +64,9 @@ class RAGEngine:
         logger.info("RAG engine initialized successfully")
     
     def get_engine(self):
-
         return self.chat_engine
+    
+    def reset_memory(self):
+        """Reset chat engine memory to free up context window"""
+        if self.chat_engine and hasattr(self.chat_engine, 'reset'):
+            self.chat_engine.reset()

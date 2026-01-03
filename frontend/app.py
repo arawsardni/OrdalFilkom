@@ -153,7 +153,7 @@ all_models = Settings.get_all_available_models()
 # Model selector in sidebar bottom
 with st.sidebar:
     st.markdown("---")
-    st.markdown("##### 🤖 Model")
+    st.markdown("##### Pilih Model")
     selected_model = st.selectbox(
         "Model",
         options=[m["model"] for m in all_models],
@@ -169,6 +169,17 @@ with st.sidebar:
         label_visibility="collapsed"
     )
     st.session_state.selected_model = selected_model
+    
+    # Reset chat memory button
+    st.markdown("---")
+    if st.button("🔄 Reset Chat", help="Reset memory jika respons mulai error"):
+        if chat_handler:
+            chat_handler.reset_memory()
+        st.session_state.messages = []
+        st.session_state.pending_retry = None
+        st.session_state.available_models = None
+        st.toast("✅ Chat memory berhasil di-reset!")
+        st.rerun()
 
 # Normal sticky chat input
 if prompt := st.chat_input("tanya apapun tentang akademik FILKOM..."):
