@@ -24,3 +24,6 @@ build/
 Thumbs.db
 .venv/
 data/
+
+# Claude Code
+.claude/launch.json
