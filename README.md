@@ -63,22 +63,20 @@
 git clone https://github.com/yourusername/ordal-filkom.git
 cd ordal-filkom
 
-# 2. Create virtual environment
-python -m venv venv
-source venv/bin/activate  # Windows
+# 2. Install dependencies (membuat .venv otomatis via uv)
 
-# 3. Install dependencies
-pip install -r requirements.txt
+# (uv: https://docs.astral.sh/uv/getting-started/installation/)
+uv sync
 
-# 4. Setup environment variables
+# 3. Setup environment variables
 cp .env.example .env
 # Edit .env dengan API keys Anda
 
-# 5. Ingest documents ke Pinecone
-python scripts/ingest.py
+# 4. Ingest documents ke Pinecone
+uv run scripts/ingest.py
 
-# 6. Run application
-streamlit run frontend/app.py
+# 5. Run application
+uv run streamlit run frontend/app.py
 ```
 
 ### Access
@@ -112,7 +110,8 @@ OrdalFIlkom/
 │   ├── 03_Skripsi_dan_PKL/
 │   └── 04_Kemahasiswaan_dan_Lomba/
 ├── .env.example                # Environment template
-├── requirements.txt            # Dependencies
+├── pyproject.toml              # Dependencies (uv)
+├── uv.lock                     # Lockfile
 └── README.md                   # This file
 ```
 
@@ -140,7 +139,7 @@ OrdalFIlkom/
 ### Adding New Documents
 1. Place PDF in appropriate `dataset/` category folder
 2. Follow naming convention: `YYYY_Kategori_Judul.pdf`
-3. Run ingestion: `python scripts/ingest.py`
+3. Run ingestion: `uv run scripts/ingest.py`
 
 ### Modifying Prompts
 Edit `src/config/prompts.py` untuk experiment dengan prompt engineering.
