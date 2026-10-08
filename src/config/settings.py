@@ -8,13 +8,6 @@ load_dotenv()
 class Settings:    
     # API Keys
     @staticmethod
-    def get_google_api_key():
-        try:
-            return st.secrets["GOOGLE_API_KEY"]
-        except:
-            return os.getenv("GOOGLE_API_KEY")
-    
-    @staticmethod
     def get_pinecone_api_key():
         try:
             return st.secrets["PINECONE_API_KEY"]
@@ -29,21 +22,22 @@ class Settings:
             return os.getenv("GROQ_API_KEY")
     
     # Vector Store Configuration
-    INDEX_NAME = "ordal-filkom"
+    INDEX_NAME = "ordal-filkom-v2"
     
     # Model Configuration
-    EMBEDDING_MODEL = "models/text-embedding-004"
+    EMBEDDING_MODEL = "llama-text-embed-v2"  # hosted by Pinecone inference
+    EMBEDDING_DIM = 768
     
     # LLM Configuration with Fallback
-    LLM_MODEL = "llama-3.3-70b-versatile"  # Primary model
+    LLM_MODEL = "openai/gpt-oss-120b"  # Primary model
     LLM_TEMPERATURE = 0.2
     SIMILARITY_TOP_K = 30
     
     # Fallback models (ordered by priority when primary hits rate limit)
     # Format: (model_name, TPM_limit, description, note)
     FALLBACK_MODELS = [
-        ("meta-llama/llama-4-scout-17b-16e-instruct", 30000, "Llama 4 Scout", "mid 🙂"),
-        ("llama-3.1-8b-instant", 6000, "Llama 3.1 8B", "agak kocaks 😹"),
+        ("qwen/qwen3.8-27b", 8000, "Qwen3.8 27B", "mid 🙂"),
+        ("openai/gpt-oss-20b", 8000, "GPT-OSS 20B", "agak kocaks 😹"),
     ]
     
     @staticmethod
@@ -61,8 +55,8 @@ class Settings:
         models = [
             {
                 "model": Settings.LLM_MODEL,
-                "description": "Llama 3.3 70B",
-                "tpm": "12,000",
+                "description": "GPT-OSS 120B",
+                "tpm": "8,000",
                 "note": "paling bagus 🔥"
             }
         ]

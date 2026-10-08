@@ -2,11 +2,11 @@ import logging
 from llama_index.core import VectorStoreIndex, Settings, PromptTemplate
 from llama_index.vector_stores.pinecone import PineconeVectorStore
 from llama_index.llms.groq import Groq
-from llama_index.embeddings.google_genai import GoogleGenAIEmbedding
 from pinecone import Pinecone
 
 from src.config.settings import Settings as AppSettings
 from src.config.prompts import QA_PROMPT_TEMPLATE
+from src.core.embeddings import PineconeEmbedding
 
 logger = logging.getLogger(__name__)
 
@@ -18,20 +18,20 @@ class RAGEngine:
         self._initialize()
     
     def _validate_api_keys(self):
-        google_key = AppSettings.get_google_api_key()
         pinecone_key = AppSettings.get_pinecone_api_key()
         groq_key = AppSettings.get_groq_api_key()
         
-        if not all([google_key, pinecone_key, groq_key]):
+        if not all([pinecone_key, groq_key]):
             raise ValueError("Missing required API keys. Check your .env file.")
     
     def _initialize(self):
         logger.info("Initializing RAG engine...")
         
         # Embedding model
-        Settings.embed_model = GoogleGenAIEmbedding(
+        Settings.embed_model = PineconeEmbedding(
             model_name=AppSettings.EMBEDDING_MODEL,
-            api_key=AppSettings.get_google_api_key()
+            api_key=AppSettings.get_pinecone_api_key(),
+            dimension=AppSettings.EMBEDDING_DIM
         )
         logger.info(f"Embedding model configured: {AppSettings.EMBEDDING_MODEL}")
         

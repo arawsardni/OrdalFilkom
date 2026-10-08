@@ -17,13 +17,14 @@ from llama_index.core import (
     Document,
 )
 from llama_index.vector_stores.pinecone import PineconeVectorStore
-from llama_index.llms.google_genai import GoogleGenAI
-from llama_index.embeddings.google_genai import GoogleGenAIEmbedding
 from llama_index.core.node_parser import HierarchicalNodeParser, get_leaf_nodes
 from llama_parse import LlamaParse
 from pinecone import Pinecone, ServerlessSpec
+from src.config.settings import Settings as AppSettings
+from src.core.embeddings import PineconeEmbedding
 from src.utils.metadata import get_meta
 from tqdm import tqdm
+import json
 import time
 
 # Config Logging
@@ -32,27 +33,27 @@ logger = logging.getLogger(__name__)
 
 # Load Env
 load_dotenv()
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
 LLAMA_CLOUD_API_KEY = os.getenv("LLAMA_CLOUD_API_KEY")
 PINECONE_ENV = os.getenv("PINECONE_ENV", "us-east-1")
-INDEX_NAME = "ordal-filkom"
+INDEX_NAME = AppSettings.INDEX_NAME
+
+# LlamaParse output is cached per PDF so re-ingesting doesn't re-spend parse credits
+PARSED_CACHE_DIR = Path("./data/parsed")
 
 # Configure LlamaIndex Settings
 def init_settings():
-    # Embedding Model
-    Settings.embed_model = GoogleGenAIEmbedding(
-        model_name="models/text-embedding-004", 
-        api_key=GOOGLE_API_KEY,
+    # Embedding Model (must match the one used by the app at query time)
+    Settings.embed_model = PineconeEmbedding(
+        model_name=AppSettings.EMBEDDING_MODEL,
+        api_key=PINECONE_API_KEY,
+        dimension=AppSettings.EMBEDDING_DIM,
     )
-    Settings.llm = GoogleGenAI(
-        model_name="models/gemini-1.5-flash", 
-        api_key=GOOGLE_API_KEY,
-        temperature=0.2
-    )
+    # No LLM is needed during ingestion
+    Settings.llm = None
 
 def main():
-    if not GOOGLE_API_KEY or not PINECONE_API_KEY:
+    if not PINECONE_API_KEY:
         logger.error("API Keys missing in .env")
         return
     
@@ -92,10 +93,16 @@ def main():
     
     # Parse each file separately to maintain file-to-document mapping
     documents = []
+    PARSED_CACHE_DIR.mkdir(parents=True, exist_ok=True)
     for pdf_file in tqdm(pdf_files, desc="Parsing PDFs"):
         try:
-            parsed_docs = parser.load_data(pdf_file)
-            
+            cache_file = PARSED_CACHE_DIR / f"{Path(pdf_file).stem}.json"
+            if cache_file.exists():
+                parsed_docs = [Document.from_dict(d) for d in json.loads(cache_file.read_text(encoding="utf-8"))]
+            else:
+                parsed_docs = parser.load_data(pdf_file)
+                cache_file.write_text(json.dumps([d.to_dict() for d in parsed_docs], ensure_ascii=False), encoding="utf-8")
+
             # Get metadata for this file
             file_metadata = get_meta(pdf_file)
             
@@ -133,7 +140,7 @@ def main():
     logger.info(f"Creating Pinecone index: {INDEX_NAME}")
     pc.create_index(
         name=INDEX_NAME,
-        dimension=768, # text-embedding-004 default
+        dimension=AppSettings.EMBEDDING_DIM,
         metric="cosine",
         spec=ServerlessSpec(
             cloud="aws",
@@ -251,30 +258,35 @@ def main():
     # Create storage context for Pinecone
     storage_context = StorageContext.from_defaults(vector_store=vector_store)
 
-    BATCH_SIZE = 20  
-    DELAY_SECONDS = 5
+    BATCH_SIZE = 96  # max inputs per Pinecone embed call
+    DELAY_SECONDS = 2
+    MAX_BATCH_ATTEMPTS = 5
 
     logger.info(f"Indexing in batches of {BATCH_SIZE} with {DELAY_SECONDS}s delay...")
-    
+
     index = None
 
     for i in tqdm(range(0, len(nodes), BATCH_SIZE), desc="Indexing Batches"):
         batch_nodes = nodes[i : i + BATCH_SIZE]
-        try:
-            # Create index from first batch, then append
-            if index is None:
-                index = VectorStoreIndex(
-                    batch_nodes,
-                    storage_context=storage_context,
-                )
-            else:
-                index.insert_nodes(batch_nodes)
-            
-            time.sleep(DELAY_SECONDS)
-        except Exception as e:
-            logger.error(f"Error indexing batch starting at {i}: {e}")
-            time.sleep(30) # Backoff
-    
+        # Retry the same batch instead of skipping it, so no chunks are silently lost
+        for attempt in range(1, MAX_BATCH_ATTEMPTS + 1):
+            try:
+                # Create index from first batch, then append
+                if index is None:
+                    index = VectorStoreIndex(
+                        batch_nodes,
+                        storage_context=storage_context,
+                    )
+                else:
+                    index.insert_nodes(batch_nodes)
+                break
+            except Exception as e:
+                logger.error(f"Error indexing batch starting at {i} (attempt {attempt}/{MAX_BATCH_ATTEMPTS}): {e}")
+                if attempt == MAX_BATCH_ATTEMPTS:
+                    raise
+                time.sleep(30 * attempt) # Backoff
+        time.sleep(DELAY_SECONDS)
+
     logger.info("SUCCESS: Documents inserted to Pinecone.")
 
 if __name__ == "__main__":

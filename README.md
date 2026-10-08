@@ -51,7 +51,7 @@
 ### Prerequisites
 - Python 3.10+
 - API Keys: 
-  - Google (Gemini) - for embeddings
+  - Pinecone - for vector store & embeddings (inference API)
   - Pinecone - for vector storage
   - Groq - for LLM inference
   - LlamaCloud - for PDF parsing
@@ -122,8 +122,8 @@ OrdalFIlkom/
 - **PDF Parser**: LlamaParse (tables → markdown, images → descriptions)
 - **Chunking**: Hybrid strategy (Hierarchical + Semantic + Guardrails)
 - **Vector Store**: Pinecone
-- **LLM**: Groq (Llama 3.3 70B Versatile)
-- **Embeddings**: Google Gemini text-embedding-004
+- **LLM**: Groq (GPT-OSS 120B, fallback Qwen3.8 27B / GPT-OSS 20B)
+- **Embeddings**: Pinecone inference llama-text-embed-v2 (768 dim)
 
 ### Backend
 - **Language**: Python 3.10+
