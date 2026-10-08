@@ -5,6 +5,8 @@
 ![Python](https://img.shields.io/badge/python-3.10+-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
+> Arah produk, prinsip, batasan (zero cost), dan roadmap: [docs/PRODUCT.md](docs/PRODUCT.md)
+
 ## 🌐 Live Demo
 
 **Try it now:** [https://ordalfilkom.streamlit.app/](https://ordalfilkom.streamlit.app/)
