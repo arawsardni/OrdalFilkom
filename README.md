@@ -101,7 +101,11 @@ OrdalFIlkom/
 │       ├── metadata.py         # Metadata extraction
 │       └── pdf_renderer.py     # PDF to image
 ├── scripts/                    # Standalone scripts
-│   └── ingest.py               # Document ingestion
+│   ├── ingest.py               # Document ingestion
+│   └── eval.py                 # RAG evaluation
+├── eval/                       # Evaluation
+│   ├── dataset.jsonl           # Questions + reference answers + source pages
+│   └── results/                # Saved eval runs (compare over time)
 ├── frontend/                   # Streamlit UI
 │   └── app.py                  # Main application
 ├── dataset/                    # Academic documents
@@ -140,6 +144,17 @@ OrdalFIlkom/
 1. Place PDF in appropriate `dataset/` category folder
 2. Follow naming convention: `YYYY_Kategori_Judul.pdf`
 3. Run ingestion: `uv run scripts/ingest.py`
+
+### Evaluation
+`eval/dataset.jsonl` berisi pertanyaan dengan jawaban referensi dan halaman sumber yang sudah dicek ke PDF asli. Setiap perubahan pada chunking, retrieval, atau prompt sebaiknya diukur dulu:
+
+```bash
+uv run scripts/eval.py --check-dataset          # cek kunci jawaban vs PDF asli (tanpa API)
+uv run scripts/eval.py --label <nama>           # retrieval: hit@k & MRR (cepat)
+uv run scripts/eval.py --answers --label <nama> # + jawaban dinilai LLM judge (~25 menit)
+```
+
+Hasil tiap run tersimpan di `eval/results/` untuk dibandingkan antar eksperimen.
 
 ### Modifying Prompts
 Edit `src/config/prompts.py` untuk experiment dengan prompt engineering.

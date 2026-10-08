@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 class RAGEngine:    
     def __init__(self):
         self.chat_engine = None
+        self.index = None
         self._validate_api_keys()
         self._initialize()
     
@@ -52,6 +53,7 @@ class RAGEngine:
         
         # Load index from vector store
         index = VectorStoreIndex.from_vector_store(vector_store=vector_store)
+        self.index = index
         
         # Create chat engine with custom prompt
         qa_prompt = PromptTemplate(QA_PROMPT_TEMPLATE)
@@ -65,6 +67,10 @@ class RAGEngine:
     
     def get_engine(self):
         return self.chat_engine
+    
+    def get_retriever(self, top_k=None):
+        """Retriever with the same config as the chat engine (used by eval)"""
+        return self.index.as_retriever(similarity_top_k=top_k or AppSettings.SIMILARITY_TOP_K)
     
     def reset_memory(self):
         """Reset chat engine memory to free up context window"""
