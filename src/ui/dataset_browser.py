@@ -1,8 +1,8 @@
 import os
 import fitz
 import streamlit as st
-from streamlit_pdf_viewer import pdf_viewer
 from typing import Dict, List
+from urllib.parse import quote
 from src.config.settings import Settings
 from src.utils.metadata import get_meta
 
@@ -50,7 +50,11 @@ def get_dataset_files() -> Dict[str, List[Dict]]:
                     'category': category,
                     'size_mb': size_mb
                 })
-    
+
+        # Skip folders without PDFs (e.g. leftover empty working folders)
+        if not files_by_category[category]:
+            del files_by_category[category]
+
     return files_by_category
 
 
@@ -120,84 +124,44 @@ def render_dataset_browser():
     st.sidebar.caption("https://filkom.ub.ac.id/apps/")
 
 
-@st.dialog("📄 PDF Viewer", width="medium")
+def pdf_static_url(pdf_path: str) -> str:
+    """URL path (without leading slash) of a dataset PDF served by Streamlit's static file serving"""
+    relative = os.path.relpath(pdf_path, Settings.STATIC_DIR).replace(os.sep, "/")
+    return f"app/static/{quote(relative)}"
+
+
+def pdfjs_viewer_url(pdf_path: str, page: int = 1) -> str:
+    """URL of the bundled PDF.js viewer (static/pdfjs) opened at a given page"""
+    relative = os.path.relpath(pdf_path, Settings.STATIC_DIR).replace(os.sep, "/")
+    # The file param is resolved relative to static/pdfjs/web/viewer.html
+    file_param = quote(f"../../{relative}", safe="")
+    return f"/app/static/pdfjs/web/viewer.html?file={file_param}#page={page}&zoom=page-width"
+
+
+@st.dialog("📄 PDF Viewer", width="large")
 def show_pdf_viewer():
     if 'selected_pdf' not in st.session_state or not st.session_state['selected_pdf']:
         st.warning("No PDF selected")
         return
-    
+
     file_info = st.session_state['selected_pdf']
     pdf_path = file_info['path']
-    filename = file_info['filename']
     file_name = file_info['filename'].replace('.pdf', '')
     file_name = file_name[4:].replace('_', ' ')
     display_name = file_name if len(file_name) <= 50 else file_name[:47] + "..."
     total_pages = file_info['page_count']
-    
-    # Initialize current page in session state
-    if 'current_pdf_page' not in st.session_state:
-        st.session_state['current_pdf_page'] = 1
-    
-    # Track current PDF path and reset page to 1 if PDF changed
-    if 'current_pdf_path' not in st.session_state:
-        st.session_state['current_pdf_path'] = pdf_path
-    
-    if st.session_state['current_pdf_path'] != pdf_path:
-        st.session_state['current_pdf_path'] = pdf_path
-        st.session_state['current_pdf_page'] = 1
-    
+    page = file_info.get('page', 1)
+
     # Header
     st.markdown(f"<strong>{display_name}</strong>", unsafe_allow_html=True)
     st.caption(f"📅 {file_info['year']} | 💾 {file_info['size_mb']:.2f} MB | 📁 {file_info['category'].replace('_', ' ').title()[2:]} | 📄 {total_pages} halaman")
-    st.markdown("---")
-    
-    # Page Navigation Controls / Page number input
-    col1, col2 = st.columns([2, 3])
-    
-    with col1:
-        page_input = st.number_input(
-            "Lompat ke halaman",
-            min_value=1,
-            max_value=max(1, total_pages),
-            value=st.session_state['current_pdf_page'],
-            step=1,
-            key="page_number_input"
-        )
-        if page_input != st.session_state['current_pdf_page']:
-            st.session_state['current_pdf_page'] = page_input
-            st.rerun()
-        
-    # Scrollable viewer. Long documents only render a window of pages around the
-    # selected page: the component renders every requested page before it can
-    # scroll, which takes over a minute (and lots of memory) for 200+ page PDFs.
-    current_page = st.session_state['current_pdf_page']
-    if total_pages <= Settings.PDF_FULL_RENDER_MAX_PAGES:
-        pages_to_render = []  # empty = render all pages
-    else:
-        start = max(1, current_page - Settings.PDF_PAGE_WINDOW)
-        end = min(total_pages, current_page + Settings.PDF_PAGE_WINDOW)
-        pages_to_render = list(range(start, end + 1))
-        st.caption(f"Menampilkan halaman {start}–{end} dari {total_pages}. Ganti nomor halaman di atas untuk membuka bagian lain.")
 
-    try:
-        pdf_viewer(
-            input=pdf_path,
-            height=Settings.PDF_VIEWER_HEIGHT,
-            pages_to_render=pages_to_render,
-            scroll_to_page=current_page,
-            scroll_behavior="instant",
-        )
-                
-    except Exception as e:
-        st.error(f"Error loading PDF: {e}")
-        # Fallback: provide download the pdf button
-        with open(pdf_path, "rb") as f:
-            st.download_button(
-                label="📥 Download PDF",
-                data=f,
-                file_name=filename,
-                mime="application/pdf"
-            )
+    # Streamlit Cloud runs the app in a sandboxed iframe where Chrome blocks its
+    # native PDF viewer, but a new tab escapes the sandbox (allow-popups-to-escape-sandbox)
+    st.link_button("↗️ Buka di tab baru", f"{pdf_static_url(pdf_path)}#page={page}")
+
+    # PDF.js (Firefox's viewer) is plain JavaScript, so it works inside the sandbox and on mobile
+    st.iframe(pdfjs_viewer_url(pdf_path, page), height=Settings.PDF_VIEWER_HEIGHT)
 
 
 def render_pdf_preview():

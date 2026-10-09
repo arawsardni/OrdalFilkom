@@ -2272,7 +2272,6 @@ dependencies = [
     { name = "pymupdf" },
     { name = "python-dotenv" },
     { name = "streamlit" },
-    { name = "streamlit-pdf-viewer" },
 ]
 
 [package.metadata]
@@ -2286,7 +2285,6 @@ requires-dist = [
     { name = "pymupdf" },
     { name = "python-dotenv" },
     { name = "streamlit" },
-    { name = "streamlit-pdf-viewer" },
 ]
 
 [[package]]
@@ -3796,18 +3794,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/8f/61/75c550a2d2acd79402aa1f32c8068c6cf47fa621d3995883a43caafeeadc/streamlit-1.65.0.tar.gz", hash = "sha256:42acd9ebdf3576a35584977c48a044ec0b5d3e4997fa9248809b9891598ac6a0", size = 9749831, upload-time = "2026-10-02T21:40:36.584Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/fa/e3/5c9d2e88563c9974e53ac744b1523ebb1fd8f0ebb1ecc28a5f6f6bb0baea/streamlit-1.65.0-py3-none-any.whl", hash = "sha256:517a7254e223f4986d2b2e0745d02acf8ca64656943e63e422d345ce34a7495b", size = 10313469, upload-time = "2026-10-02T21:40:33.164Z" },
-]
-
-[[package]]
-name = "streamlit-pdf-viewer"
-version = "0.0.30"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "streamlit" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/0c/d5/651308e5a8403ec40cfb818f462d86618443f8b9bb1d8872085637f2517d/streamlit_pdf_viewer-0.0.30.tar.gz", hash = "sha256:316ac73e123652e1afc8ae4a7fa78a9f08c7999cc9c46cb1e3890b34305f770e", size = 2162525, upload-time = "2026-07-20T10:27:10.379Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/a4/95/bd99dea7b49e4df054592d5f488b4d85decf841c4300f9d697c3409ae654/streamlit_pdf_viewer-0.0.30-py3-none-any.whl", hash = "sha256:6cd8ae37627d881c8ad4930ff720d1569f026eed45462ee5329272dedb497679", size = 2200957, upload-time = "2026-07-20T10:27:09.08Z" },
 ]
 
 [[package]]

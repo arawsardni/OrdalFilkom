@@ -84,7 +84,7 @@ def main():
     )
     
     # Get all PDF files
-    pdf_files = [str(p) for p in Path("./dataset").rglob("*.pdf")]
+    pdf_files = [str(p) for p in Path(AppSettings.DATASET_DIR).rglob("*.pdf")]
     logger.info(f"Found {len(pdf_files)} PDF files")
     
     # Parse with LlamaParse

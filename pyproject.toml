@@ -17,7 +17,6 @@ dependencies = [
     "pinecone",
     # UI
     "streamlit",
-    "streamlit-pdf-viewer",
     # Utils
     "python-dotenv",
 ]

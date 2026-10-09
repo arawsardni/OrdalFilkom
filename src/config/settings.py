@@ -73,7 +73,8 @@ class Settings:
         return models
     
     # Paths
-    DATASET_DIR = "dataset"
+    STATIC_DIR = "static"  # served at app/static/ (server.enableStaticServing)
+    DATASET_DIR = "static/dataset"
     
     # UI Configuration
     PAGE_TITLE = "Ordal Filkom - Asisten Akademik"
@@ -85,6 +86,4 @@ class Settings:
     RETRY_WAIT_BASE = 25
     TOP_SOURCES_TO_DISPLAY = 3
     PDF_RENDER_DPI = 120
-    PDF_VIEWER_HEIGHT = 650  # px; the document scrolls inside this container
-    PDF_FULL_RENDER_MAX_PAGES = 40  # longer PDFs render only a window of pages
-    PDF_PAGE_WINDOW = 10  # pages rendered before and after the selected page
+    PDF_VIEWER_HEIGHT = 700  # px

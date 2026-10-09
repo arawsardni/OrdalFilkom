@@ -1,0 +1,3 @@
+[server]
+# Serve ./static at app/static/ (dataset PDFs + the bundled PDF.js viewer)
+enableStaticServing = true

@@ -104,11 +104,14 @@ OrdalFIlkom/
 │   └── ingest.py               # Document ingestion
 ├── frontend/                   # Streamlit UI
 │   └── app.py                  # Main application
-├── dataset/                    # Academic documents
-│   ├── 01_Akademik_Umum/
-│   ├── 02_Kurikulum/
-│   ├── 03_Skripsi_dan_PKL/
-│   └── 04_Kemahasiswaan_dan_Lomba/
+├── static/                     # Served at app/static/ (server.enableStaticServing)
+│   ├── dataset/                # Academic documents (PDF)
+│   │   ├── 01_Akademik_Umum/
+│   │   ├── 02_Kurikulum/
+│   │   ├── 03_Skripsi_dan_PKL/
+│   │   └── 04_Kemahasiswaan_dan_Lomba/
+│   └── pdfjs/                  # Mozilla PDF.js viewer (v6.3.289, legacy build)
+├── .streamlit/config.toml      # Enables static file serving
 ├── .env.example                # Environment template
 ├── pyproject.toml              # Dependencies (uv)
 ├── uv.lock                     # Lockfile
@@ -133,11 +136,12 @@ OrdalFIlkom/
 ### Frontend
 - **Framework**: Streamlit 1.31+
 - **UI**: Interactive chat interface dengan source citations
+- **PDF Viewer**: [PDF.js](https://github.com/mozilla/pdf.js) (viewer Firefox) di-embed lewat iframe, plus tombol "Buka di tab baru" untuk viewer bawaan browser. Viewer bawaan Chrome tidak bisa di-embed langsung karena Streamlit Cloud menjalankan app di iframe ber-`sandbox`.
 
 ## 🔧 Development
 
 ### Adding New Documents
-1. Place PDF in appropriate `dataset/` category folder
+1. Place PDF in appropriate `static/dataset/` category folder
 2. Follow naming convention: `YYYY_Kategori_Judul.pdf`
 3. Run ingestion: `uv run scripts/ingest.py`
 
