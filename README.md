@@ -5,6 +5,8 @@
 ![Python](https://img.shields.io/badge/python-3.10+-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
+> Arah produk, prinsip, batasan (zero cost), dan roadmap: [docs/PRODUCT.md](docs/PRODUCT.md)
+
 ## 🌐 Live Demo
 
 **Try it now:** [https://ordalfilkom.streamlit.app/](https://ordalfilkom.streamlit.app/)
@@ -101,7 +103,11 @@ OrdalFIlkom/
 │       ├── metadata.py         # Metadata extraction
 │       └── pdf_renderer.py     # PDF to image
 ├── scripts/                    # Standalone scripts
-│   └── ingest.py               # Document ingestion
+│   ├── ingest.py               # Document ingestion
+│   └── eval.py                 # RAG evaluation
+├── eval/                       # Evaluation
+│   ├── dataset.jsonl           # Questions + reference answers + source pages
+│   └── results/                # Saved eval runs (compare over time)
 ├── frontend/                   # Streamlit UI
 │   └── app.py                  # Main application
 ├── static/                     # Served at app/static/ (server.enableStaticServing)
@@ -144,6 +150,17 @@ OrdalFIlkom/
 1. Place PDF in appropriate `static/dataset/` category folder
 2. Follow naming convention: `YYYY_Kategori_Judul.pdf`
 3. Run ingestion: `uv run scripts/ingest.py`
+
+### Evaluation
+`eval/dataset.jsonl` berisi pertanyaan dengan jawaban referensi dan halaman sumber yang sudah dicek ke PDF asli. Setiap perubahan pada chunking, retrieval, atau prompt sebaiknya diukur dulu:
+
+```bash
+uv run scripts/eval.py --check-dataset          # cek kunci jawaban vs PDF asli (tanpa API)
+uv run scripts/eval.py --label <nama>           # retrieval: hit@k & MRR (cepat)
+uv run scripts/eval.py --answers --label <nama> # + jawaban dinilai LLM judge (~25 menit)
+```
+
+Hasil tiap run tersimpan di `eval/results/` untuk dibandingkan antar eksperimen.
 
 ### Modifying Prompts
 Edit `src/config/prompts.py` untuk experiment dengan prompt engineering.
