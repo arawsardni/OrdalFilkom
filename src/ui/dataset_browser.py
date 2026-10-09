@@ -194,13 +194,9 @@ def show_pdf_viewer(file_info: Dict):
 
 
 def pdf_dialog_title(file_info: Dict) -> str:
-    """One-line dialog title: document name followed by its metadata"""
+    """Dialog title: the document name"""
     file_name = file_info['filename'].replace('.pdf', '')[4:].replace('_', ' ').strip()
-    category = file_info['category'].replace('_', ' ').title()[2:].strip()
-    return (
-        f"**{file_name}** — {file_info['year']} | {file_info['size_mb']:.2f} MB"
-        f" | {category} | {file_info['page_count']} halaman"
-    )
+    return f"**{file_name}**"
 
 
 def render_pdf_preview():
