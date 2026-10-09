@@ -50,3 +50,40 @@ Cara kerja yang disarankan:
 | 3 | Bersihkan halaman karangan LlamaParse (parse ulang tanpa instruksi LLM, atau pakai teks PyMuPDF untuk halaman teks biasa) | retrieval + item `trap` | trap > 0 |
 | 4 | Sisipkan nama prodi/dokumen ke teks chunk (contextual chunk header) | item `disambiguation` | kur-04/05/07 masuk top 5 |
 | 5 | Hybrid search (BM25 + vektor) dan/atau reranker | retrieval | akd-01 naik ke top 5 |
+
+---
+
+# Baseline Groundedness (Fase 2, langkah 1)
+
+Run: `eval/results/20261009-2310_baseline-groundedness.json` (9 Oktober 2026)
+Config sama dengan baseline di atas (prompt anti-halusinasi masih tidak aktif). Judge pindah ke `gemini-3.5-flash-lite` supaya eval tidak memakai kuota Groq app live.
+
+## Angka
+
+**Groundedness** (metrik utama)
+
+| Faithfulness | Fully grounded | Sumber yang ditampilkan memuat halaman kunci | Penolakan out-of-scope | Penolakan yang salah |
+|---|---|---|---|---|
+| 0.874 | 0.714 | **0.591** | 1.00 | 0.045 (1 dari 22) |
+
+- **Faithfulness:** rata-rata porsi klaim jawaban yang didukung konteks yang diterima LLM (judge Gemini, per klaim).
+- **Fully grounded:** porsi jawaban yang semua klaimnya didukung konteks.
+- **Sumber yang ditampilkan:** porsi pertanyaan yang bisa dijawab, di mana salah satu dari 3 sumber yang ditampilkan ke pengguna adalah halaman kunci jawaban. Ini yang paling dekat dengan pengalaman pengguna: **di 41% pertanyaan, sumber yang ditampilkan tidak memuat jawabannya.**
+- **Penolakan yang salah:** akd-01 (jawabannya ada di dokumen 3 halaman yang rank-nya 26).
+
+**Kebenaran** (judge Gemini): skor 0.70 (16 benar, 3 sebagian, 6 salah). Tidak bisa dibandingkan langsung dengan skor 0.625 di baseline pertama karena judge-nya berbeda (Qwen → Gemini) dan generasi tidak deterministik.
+
+## Temuan
+
+1. **Klaim yang tidak didukung hampir semuanya angka dari prodi lain.** kur-02 menyebut komposisi "118 wajib + 27 pilihan" untuk Sistem Informasi, padahal itu milik PTI; kur-04 menyebut skripsi TIF 6 SKS (angka Teknik Komputer); kur-07 menambahkan aturan konversi PKL dari prodi lain. Ini konflik jenis D di `docs/PRODUCT.md`, dan aturan runtime #1 ("jangan mencampur angka dari cakupan berbeda") harus masuk ke prompt.
+2. **Jawaban benar belum tentu grounded.** kur-02 dinilai benar (145 SKS) tetapi faithfulness-nya 0.33 karena klaim tambahan yang dikarang. Mengukur kebenaran saja menyembunyikan masalah ini.
+3. **Sumber yang ditampilkan adalah titik lemah terbesar** (0.591). Ini mengonfirmasi bahwa UI harus menampilkan halaman yang dikutip jawaban, bukan 3 chunk teratas hasil retrieval.
+
+## Target langkah 2 (tulis ulang generasi)
+
+| Metrik | Baseline | Target |
+|---|---|---|
+| Sumber yang ditampilkan memuat halaman kunci | 0.591 | ≥ 0.90 (target akurasi sitasi di PRODUCT.md) |
+| Fully grounded | 0.714 | naik, tanpa klaim lintas prodi |
+| Penolakan out-of-scope | 1.00 | tetap 1.00 |
+| Penolakan yang salah | 0.045 | tidak naik |

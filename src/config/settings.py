@@ -21,6 +21,11 @@ class Settings:
         except:
             return os.getenv("GROQ_API_KEY")
     
+    @staticmethod
+    def get_google_api_key():
+        """Only used by scripts/eval.py for the Gemini judge"""
+        return os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+    
     # Vector Store Configuration
     INDEX_NAME = "ordal-filkom-v2"
     
@@ -39,6 +44,9 @@ class Settings:
         ("qwen/qwen3.8-27b", 8000, "Qwen3.8 27B", "mid 🙂"),
         ("openai/gpt-oss-20b", 8000, "GPT-OSS 20B", "agak kocaks 😹"),
     ]
+    
+    # Eval judge: a different provider than the app, so evals don't spend the live app's Groq quota
+    JUDGE_MODEL = "gemini-3.5-flash-lite"
     
     @staticmethod
     def get_all_available_models():

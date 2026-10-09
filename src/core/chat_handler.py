@@ -17,6 +17,8 @@ class ChatHandler:
             chat_engine: LlamaIndex chat engine instance
         """
         self.chat_engine = chat_engine
+        # Last successful engine response, kept so eval can inspect the full retrieved context
+        self.last_response = None
     
     def reset_memory(self):
         """Reset chat engine memory to free up context window"""
@@ -134,6 +136,7 @@ class ChatHandler:
             
             # Get response from chat engine
             response = self.chat_engine.chat(query)
+            self.last_response = response
             
             # Extract sources
             sources_data = self._extract_sources(
@@ -176,6 +179,7 @@ class ChatHandler:
                 try:
                     # Retry the query after memory reset
                     response = self.chat_engine.chat(query)
+                    self.last_response = response
                     sources_data = self._extract_sources(
                         response.source_nodes[:Settings.TOP_SOURCES_TO_DISPLAY]
                     )
