@@ -171,8 +171,7 @@ def show_pdf_viewer():
     try:
         pdf_viewer(
             input=pdf_path,
-            pages_to_render=[st.session_state['current_pdf_page']],  # Show specific page
-            rendering="unwrap"
+            pages_to_render=[st.session_state['current_pdf_page']]  # Show specific page
         )
                 
     except Exception as e:
