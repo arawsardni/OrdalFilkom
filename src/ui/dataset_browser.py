@@ -156,7 +156,7 @@ def show_pdf_viewer():
     
     with col1:
         page_input = st.number_input(
-            "Halaman",
+            "Lompat ke halaman",
             min_value=1,
             max_value=max(1, total_pages),
             value=st.session_state['current_pdf_page'],
@@ -167,11 +167,25 @@ def show_pdf_viewer():
             st.session_state['current_pdf_page'] = page_input
             st.rerun()
         
-    # Display PDF using streamlit-pdf-viewer component
+    # Scrollable viewer. Long documents only render a window of pages around the
+    # selected page: the component renders every requested page before it can
+    # scroll, which takes over a minute (and lots of memory) for 200+ page PDFs.
+    current_page = st.session_state['current_pdf_page']
+    if total_pages <= Settings.PDF_FULL_RENDER_MAX_PAGES:
+        pages_to_render = []  # empty = render all pages
+    else:
+        start = max(1, current_page - Settings.PDF_PAGE_WINDOW)
+        end = min(total_pages, current_page + Settings.PDF_PAGE_WINDOW)
+        pages_to_render = list(range(start, end + 1))
+        st.caption(f"Menampilkan halaman {start}–{end} dari {total_pages}. Ganti nomor halaman di atas untuk membuka bagian lain.")
+
     try:
         pdf_viewer(
             input=pdf_path,
-            pages_to_render=[st.session_state['current_pdf_page']]  # Show specific page
+            height=Settings.PDF_VIEWER_HEIGHT,
+            pages_to_render=pages_to_render,
+            scroll_to_page=current_page,
+            scroll_behavior="instant",
         )
                 
     except Exception as e:
