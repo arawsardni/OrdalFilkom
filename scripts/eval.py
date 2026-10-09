@@ -9,7 +9,9 @@ Answer metrics:
 - correctness vs the reference answer (Gemini judge)
 - groundedness (the primary metric, see docs/PRODUCT.md):
   - faithfulness: share of the answer's claims supported by the context the LLM received (Gemini judge)
-  - displayed source hit: a source shown to the user is one of the reference pages (deterministic)
+  - displayed source hit: a source shown to the user (a page the answer cites) is one of the
+    reference pages (deterministic)
+  - citations: answers that cite sources, and answers citing numbers outside the given sources (deterministic)
   - refusals: out-of-scope questions refused, answerable ones not refused (deterministic)
 
 The judge runs on Gemini so evals don't spend the live app's Groq quota (needs GOOGLE_API_KEY).
@@ -156,7 +158,6 @@ def summarize_retrieval(results):
 
 def generate_answer(handler, question, max_attempts=3, wait=60):
     for attempt in range(1, max_attempts + 1):
-        handler.reset_memory()
         start = time.time()
         text, sources, error, _ = handler.process_query(question)
         if not error:
@@ -248,7 +249,7 @@ def displayed_source_hit(sources, item):
 def evaluate_answers(engine, items, judge_model, sleep_seconds):
     from src.core.chat_handler import ChatHandler
 
-    handler = ChatHandler(engine.get_engine())
+    handler = ChatHandler(engine)
     results = []
     for i, item in enumerate(items):
         answer, sources, latency, error = generate_answer(handler, item["question"])
@@ -257,7 +258,7 @@ def evaluate_answers(engine, items, judge_model, sleep_seconds):
             # Infrastructure failures are not answer-quality signals, so keep them out of the score
             result.update(verdict="error", reason=f"generation error: {error}", generated=False)
         else:
-            nodes = handler.last_response.source_nodes
+            nodes = handler.last_nodes
             verdict, reason = judge_correctness(judge_model, item, answer)
             refusal = refusal_phrase(answer)
             refused = refusal is not None
@@ -270,6 +271,8 @@ def evaluate_answers(engine, items, judge_model, sleep_seconds):
                 refusal_phrase=refusal,
                 displayed_sources=sources,
                 displayed_source_hit=displayed_source_hit(sources, item) if item["sources"] else None,
+                cited_pages=len(sources or []),
+                invalid_citations=handler.last_invalid_citations,
                 faithfulness=round(faithfulness, 3) if faithfulness is not None else None,
                 unsupported_claims=[c.get("claim") for c in claims if c.get("supported") is not True],
                 faithfulness_error=faith_error,
@@ -304,6 +307,8 @@ def summarize_answers(results):
             "faithfulness": _rate(faithfulness),
             "fully_grounded": _rate(f == 1.0 for f in faithfulness),
             "displayed_source_hit": _rate(r["displayed_source_hit"] for r in answerable),
+            "answers_with_citations": _rate(r["cited_pages"] > 0 for r in generated if not r["refused"]),
+            "answers_with_invalid_citations": _rate(r["invalid_citations"] > 0 for r in generated if not r["refused"]),
             "out_of_scope_refusal": _rate(r["refused"] for r in out_of_scope),
             "false_refusal": _rate(r["refused"] for r in answerable),
         },

@@ -2,7 +2,7 @@ import os
 import html
 import fitz
 import streamlit as st
-from typing import Dict, List
+from typing import Dict, List, Optional
 from urllib.parse import quote
 from src.config.settings import Settings
 from src.utils.metadata import get_meta
@@ -125,15 +125,19 @@ def render_dataset_browser():
     st.sidebar.caption("https://filkom.ub.ac.id/apps/")
 
 
-def pdfjs_viewer_url(pdf_path: str, page: int = 1) -> str:
-    """URL of the bundled PDF.js viewer (static/pdfjs) opened at a given page"""
+def pdfjs_viewer_url(pdf_path: str, page: int = 1, search: Optional[str] = None) -> str:
+    """URL of the bundled PDF.js viewer (static/pdfjs) opened at a given page,
+    optionally highlighting a phrase (used for cited sources)"""
     relative = os.path.relpath(pdf_path, Settings.STATIC_DIR).replace(os.sep, "/")
     # The file param is resolved relative to static/pdfjs/web/viewer.html
     file_param = quote(f"../../{relative}", safe="")
     # auto = fit the page width, capped at 125%, like the default zoom of Chrome's viewer.
     # No leading slash: Streamlit Cloud serves the app under /~/+/, so the URL must stay
     # relative to the app's own URL (see show_pdf_viewer).
-    return f"app/static/pdfjs/web/viewer.html?file={file_param}#page={page}&zoom=auto"
+    url = f"app/static/pdfjs/web/viewer.html?file={file_param}#page={page}&zoom=auto"
+    if search:
+        url += f"&search={quote(search)}&phrase=true"
+    return url
 
 
 # Tall dialog: equal 12px gaps above and below, the viewer fills whatever height the
@@ -205,7 +209,7 @@ def show_pdf_viewer(file_info: Dict):
     # Streamlit Cloud runs the app in a sandboxed iframe where Chrome blocks its native
     # PDF viewer. PDF.js (Firefox's viewer) is plain JavaScript, so it works inside the
     # sandbox and on mobile.
-    viewer_url = pdfjs_viewer_url(file_info['path'], file_info.get('page', 1))
+    viewer_url = pdfjs_viewer_url(file_info['path'], file_info.get('page', 1), file_info.get('search'))
     st.iframe(PDF_FRAME_HTML.replace("__SRC__", html.escape(viewer_url)), height=Settings.PDF_VIEWER_HEIGHT)
 
 
@@ -215,8 +219,19 @@ def pdf_dialog_title(file_info: Dict) -> str:
     return f"**{file_name}**"
 
 
+def open_pdf(file_info: Dict):
+    """Select a PDF to show in the viewer dialog on this run (usable as a widget callback).
+    file_info needs 'path' and 'filename'; 'page' and 'search' are optional."""
+    st.session_state['selected_pdf'] = file_info
+
+
+def _close_pdf():
+    # Without this the dialog would reopen on every later rerun (e.g. when sending a question)
+    st.session_state['selected_pdf'] = None
+
+
 def render_pdf_preview():
     if 'selected_pdf' in st.session_state and st.session_state['selected_pdf']:
         file_info = st.session_state['selected_pdf']
         # Build the dialog per document so its title can carry the document's name
-        st.dialog(pdf_dialog_title(file_info), width="small")(show_pdf_viewer)(file_info)
+        st.dialog(pdf_dialog_title(file_info), width="small", on_dismiss=_close_pdf)(show_pdf_viewer)(file_info)

@@ -94,14 +94,15 @@ OrdalFIlkom/
 │   │   ├── settings.py         # Centralized settings
 │   │   └── prompts.py          # Prompt templates
 │   ├── core/                   # Business logic
-│   │   ├── rag_engine.py       # RAG initialization
-│   │   └── chat_handler.py     # Query processing
+│   │   ├── rag_engine.py       # Retrieval (Pinecone) + Groq LLM clients
+│   │   ├── chat_handler.py     # Answer generation from numbered sources
+│   │   ├── citations.py        # [n] citations -> cited pages (+ highlight phrase)
+│   │   └── embeddings.py       # Pinecone inference embeddings
 │   ├── ui/                     # User interface
-│   │   ├── document_browser.py # Document browser UI
-│   │   └── source_display.py   # Source citation UI
+│   │   ├── dataset_browser.py  # Document browser + PDF.js viewer dialog
+│   │   └── source_display.py   # Cited pages under each answer
 │   └── utils/                  # Utilities
-│       ├── metadata.py         # Metadata extraction
-│       └── pdf_renderer.py     # PDF to image
+│       └── metadata.py         # Metadata extraction
 ├── scripts/                    # Standalone scripts
 │   ├── ingest.py               # Document ingestion
 │   └── eval.py                 # RAG evaluation

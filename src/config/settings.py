@@ -36,7 +36,10 @@ class Settings:
     # LLM Configuration with Fallback
     LLM_MODEL = "openai/gpt-oss-120b"  # Primary model
     LLM_TEMPERATURE = 0.2
-    SIMILARITY_TOP_K = 30
+    SIMILARITY_TOP_K = 10  # chunks sent to the LLM as numbered sources
+    HISTORY_TURNS = 3  # earlier question/answer pairs sent with each question
+    HISTORY_MAX_CHARS = 800  # per earlier message
+    FOLLOW_UP_MAX_WORDS = 6  # shorter questions are retrieved together with the previous question
     
     # Fallback models (ordered by priority when primary hits rate limit)
     # Format: (model_name, TPM_limit, description, note)
@@ -89,9 +92,5 @@ class Settings:
     PAGE_ICON = "🎓"
     LAYOUT = "centered"
     
-    # Chat Configuration
-    MAX_RETRIES = 3
-    RETRY_WAIT_BASE = 25
-    TOP_SOURCES_TO_DISPLAY = 3
-    PDF_RENDER_DPI = 120
+    # PDF viewer
     PDF_VIEWER_HEIGHT = 700  # px
