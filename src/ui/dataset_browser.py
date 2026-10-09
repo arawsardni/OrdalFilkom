@@ -129,44 +129,82 @@ def pdfjs_viewer_url(pdf_path: str, page: int = 1) -> str:
     relative = os.path.relpath(pdf_path, Settings.STATIC_DIR).replace(os.sep, "/")
     # The file param is resolved relative to static/pdfjs/web/viewer.html
     file_param = quote(f"../../{relative}", safe="")
-    # page-fit shows a whole page on wide screens and falls back to fitting the width on phones
-    return f"/app/static/pdfjs/web/viewer.html?file={file_param}#page={page}&zoom=page-fit"
+    # auto = fit the page width, capped at 125%, like the default zoom of Chrome's viewer
+    return f"/app/static/pdfjs/web/viewer.html?file={file_param}#page={page}&zoom=auto"
 
 
-@st.dialog("📄 PDF Viewer", width="large")
-def show_pdf_viewer():
-    if 'selected_pdf' not in st.session_state or not st.session_state['selected_pdf']:
-        st.warning("No PDF selected")
-        return
+# Tall dialog: equal 12px gaps above and below, the viewer fills whatever height the
+# (possibly wrapping) title leaves, and the width gives pages roughly the size Chrome's
+# PDF viewer opens them at. Phones are capped by the screen width instead.
+PDF_DIALOG_CSS = """
+<style>
+[data-testid="stDialog"] {
+    padding: 0 !important;
+    align-items: center !important;
+}
+[data-testid="stDialog"] > div {
+    margin: 12px !important;
+    width: 920px !important;
+    max-width: calc(100% - 24px) !important;
+}
+[role="dialog"] {
+    height: calc(100vh - 24px);
+    flex-direction: column;
+}
+[role="dialog"] h2 {
+    font-size: 1rem !important;
+    font-weight: 400 !important;
+    padding-bottom: 0.25rem !important;
+}
+[role="dialog"] > div:last-child,
+[role="dialog"] > div:last-child [data-testid="stVerticalBlock"],
+[role="dialog"] > div:last-child [data-testid="stLayoutWrapper"],
+[role="dialog"] [data-testid="stElementContainer"]:has(> iframe) {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100% !important;
+}
+[role="dialog"] iframe[data-testid="stIFrame"] {
+    height: 100% !important;
+}
+/* PDF.js needs at least 350px of width, so phones get an edge-to-edge dialog */
+@media (max-width: 640px) {
+    [data-testid="stDialog"] > div {
+        margin: 12px 0 !important;
+        max-width: 100% !important;
+    }
+    [role="dialog"] > div:last-child {
+        padding: 0 0 12px !important;
+    }
+    [role="dialog"] h2 {
+        padding-left: 12px !important;
+    }
+}
+</style>
+"""
 
-    file_info = st.session_state['selected_pdf']
-    pdf_path = file_info['path']
-    file_name = file_info['filename'].replace('.pdf', '')
-    file_name = file_name[4:].replace('_', ' ')
-    display_name = file_name if len(file_name) <= 50 else file_name[:47] + "..."
-    total_pages = file_info['page_count']
-    page = file_info.get('page', 1)
 
-    # Header
-    st.markdown(f"<strong>{display_name}</strong>", unsafe_allow_html=True)
-    st.caption(f"📅 {file_info['year']} | 💾 {file_info['size_mb']:.2f} MB | 📁 {file_info['category'].replace('_', ' ').title()[2:]} | 📄 {total_pages} halaman")
-
-    # Size the viewer to the screen height so a whole page (zoom=page-fit) fits in the dialog
-    st.markdown("""
-        <style>
-        [role="dialog"] iframe[data-testid="stIFrame"] {
-            height: calc(100vh - 250px) !important;
-            min-height: 400px;
-        }
-        </style>
-    """, unsafe_allow_html=True)
+def show_pdf_viewer(file_info: Dict):
+    st.html(PDF_DIALOG_CSS)
 
     # Streamlit Cloud runs the app in a sandboxed iframe where Chrome blocks its native
     # PDF viewer. PDF.js (Firefox's viewer) is plain JavaScript, so it works inside the
     # sandbox and on mobile.
-    st.iframe(pdfjs_viewer_url(pdf_path, page), height=Settings.PDF_VIEWER_HEIGHT)
+    st.iframe(pdfjs_viewer_url(file_info['path'], file_info.get('page', 1)), height=Settings.PDF_VIEWER_HEIGHT)
+
+
+def pdf_dialog_title(file_info: Dict) -> str:
+    """One-line dialog title: document name followed by its metadata"""
+    file_name = file_info['filename'].replace('.pdf', '')[4:].replace('_', ' ').strip()
+    category = file_info['category'].replace('_', ' ').title()[2:].strip()
+    return (
+        f"**{file_name}** — {file_info['year']} | {file_info['size_mb']:.2f} MB"
+        f" | {category} | {file_info['page_count']} halaman"
+    )
 
 
 def render_pdf_preview():
     if 'selected_pdf' in st.session_state and st.session_state['selected_pdf']:
-        show_pdf_viewer()
+        file_info = st.session_state['selected_pdf']
+        # Build the dialog per document so its title can carry the document's name
+        st.dialog(pdf_dialog_title(file_info), width="small")(show_pdf_viewer)(file_info)
