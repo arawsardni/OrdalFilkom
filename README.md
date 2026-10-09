@@ -136,7 +136,7 @@ OrdalFIlkom/
 ### Frontend
 - **Framework**: Streamlit 1.31+
 - **UI**: Interactive chat interface dengan source citations
-- **PDF Viewer**: [PDF.js](https://github.com/mozilla/pdf.js) (viewer Firefox) di-embed lewat iframe, plus tombol "Buka di tab baru" untuk viewer bawaan browser. Viewer bawaan Chrome tidak bisa di-embed langsung karena Streamlit Cloud menjalankan app di iframe ber-`sandbox`.
+- **PDF Viewer**: [PDF.js](https://github.com/mozilla/pdf.js) (viewer Firefox) di-embed lewat iframe. Viewer bawaan Chrome tidak bisa di-embed langsung karena Streamlit Cloud menjalankan app di iframe ber-`sandbox`.
 
 ## 🔧 Development
 

@@ -124,18 +124,13 @@ def render_dataset_browser():
     st.sidebar.caption("https://filkom.ub.ac.id/apps/")
 
 
-def pdf_static_url(pdf_path: str) -> str:
-    """URL path (without leading slash) of a dataset PDF served by Streamlit's static file serving"""
-    relative = os.path.relpath(pdf_path, Settings.STATIC_DIR).replace(os.sep, "/")
-    return f"app/static/{quote(relative)}"
-
-
 def pdfjs_viewer_url(pdf_path: str, page: int = 1) -> str:
     """URL of the bundled PDF.js viewer (static/pdfjs) opened at a given page"""
     relative = os.path.relpath(pdf_path, Settings.STATIC_DIR).replace(os.sep, "/")
     # The file param is resolved relative to static/pdfjs/web/viewer.html
     file_param = quote(f"../../{relative}", safe="")
-    return f"/app/static/pdfjs/web/viewer.html?file={file_param}#page={page}&zoom=page-width"
+    # page-fit shows a whole page on wide screens and falls back to fitting the width on phones
+    return f"/app/static/pdfjs/web/viewer.html?file={file_param}#page={page}&zoom=page-fit"
 
 
 @st.dialog("📄 PDF Viewer", width="large")
@@ -156,11 +151,19 @@ def show_pdf_viewer():
     st.markdown(f"<strong>{display_name}</strong>", unsafe_allow_html=True)
     st.caption(f"📅 {file_info['year']} | 💾 {file_info['size_mb']:.2f} MB | 📁 {file_info['category'].replace('_', ' ').title()[2:]} | 📄 {total_pages} halaman")
 
-    # Streamlit Cloud runs the app in a sandboxed iframe where Chrome blocks its
-    # native PDF viewer, but a new tab escapes the sandbox (allow-popups-to-escape-sandbox)
-    st.link_button("↗️ Buka di tab baru", f"{pdf_static_url(pdf_path)}#page={page}")
+    # Size the viewer to the screen height so a whole page (zoom=page-fit) fits in the dialog
+    st.markdown("""
+        <style>
+        [role="dialog"] iframe[data-testid="stIFrame"] {
+            height: calc(100vh - 250px) !important;
+            min-height: 400px;
+        }
+        </style>
+    """, unsafe_allow_html=True)
 
-    # PDF.js (Firefox's viewer) is plain JavaScript, so it works inside the sandbox and on mobile
+    # Streamlit Cloud runs the app in a sandboxed iframe where Chrome blocks its native
+    # PDF viewer. PDF.js (Firefox's viewer) is plain JavaScript, so it works inside the
+    # sandbox and on mobile.
     st.iframe(pdfjs_viewer_url(pdf_path, page), height=Settings.PDF_VIEWER_HEIGHT)
 
 
