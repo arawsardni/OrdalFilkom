@@ -1,4 +1,5 @@
 import os
+import html
 import fitz
 import streamlit as st
 from typing import Dict, List
@@ -129,8 +130,10 @@ def pdfjs_viewer_url(pdf_path: str, page: int = 1) -> str:
     relative = os.path.relpath(pdf_path, Settings.STATIC_DIR).replace(os.sep, "/")
     # The file param is resolved relative to static/pdfjs/web/viewer.html
     file_param = quote(f"../../{relative}", safe="")
-    # auto = fit the page width, capped at 125%, like the default zoom of Chrome's viewer
-    return f"/app/static/pdfjs/web/viewer.html?file={file_param}#page={page}&zoom=auto"
+    # auto = fit the page width, capped at 125%, like the default zoom of Chrome's viewer.
+    # No leading slash: Streamlit Cloud serves the app under /~/+/, so the URL must stay
+    # relative to the app's own URL (see show_pdf_viewer).
+    return f"app/static/pdfjs/web/viewer.html?file={file_param}#page={page}&zoom=auto"
 
 
 # Tall dialog: equal 12px gaps above and below, the viewer fills whatever height the
@@ -184,13 +187,26 @@ PDF_DIALOG_CSS = """
 """
 
 
+# st.iframe passes "/..." URLs through as-is, so they resolve against the domain root,
+# which on Streamlit Cloud is the Cloud shell rather than the app (served under /~/+/).
+# A srcdoc document inherits the app page's base URL, so a relative src inside it
+# resolves correctly both locally and on Cloud.
+PDF_FRAME_HTML = """<!doctype html>
+<html><head><style>
+html, body { margin: 0; height: 100%; overflow: hidden; }
+iframe { display: block; width: 100%; height: 100%; border: 0; }
+</style></head>
+<body><iframe src="__SRC__" allow="fullscreen"></iframe></body></html>"""
+
+
 def show_pdf_viewer(file_info: Dict):
     st.html(PDF_DIALOG_CSS)
 
     # Streamlit Cloud runs the app in a sandboxed iframe where Chrome blocks its native
     # PDF viewer. PDF.js (Firefox's viewer) is plain JavaScript, so it works inside the
     # sandbox and on mobile.
-    st.iframe(pdfjs_viewer_url(file_info['path'], file_info.get('page', 1)), height=Settings.PDF_VIEWER_HEIGHT)
+    viewer_url = pdfjs_viewer_url(file_info['path'], file_info.get('page', 1))
+    st.iframe(PDF_FRAME_HTML.replace("__SRC__", html.escape(viewer_url)), height=Settings.PDF_VIEWER_HEIGHT)
 
 
 def pdf_dialog_title(file_info: Dict) -> str:
