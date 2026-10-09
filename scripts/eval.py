@@ -237,13 +237,34 @@ def refusal_phrase(answer):
     return match.group(0) if match else None
 
 
+_PDF_PATHS = None
+
+
+def _raw_page_text(file_name, page):
+    """Text of a page in the original PDF (not the parsed chunks, which can contain invented text)"""
+    import pymupdf
+
+    global _PDF_PATHS
+    if _PDF_PATHS is None:
+        _PDF_PATHS = {p.name: p for p in Path(Settings.DATASET_DIR).rglob("*.pdf")}
+    if file_name not in _PDF_PATHS or not str(page).isdigit():
+        return ""
+    with pymupdf.open(_PDF_PATHS[file_name]) as pdf:
+        index = int(page) - 1
+        return pdf[index].get_text() if 0 <= index < pdf.page_count else ""
+
+
 def displayed_source_hit(sources, item):
-    """Whether any source shown to the user is one of the reference pages"""
-    return any(
-        s["file_name"] == ref["file"] and str(s["page"]) in map(str, ref["pages"])
-        for s in sources or []
-        for ref in item["sources"]
-    )
+    """Whether a source shown to the user actually backs the answer: it is one of the reference
+    pages, or its original PDF page contains the item's evidence text. The reference list can't
+    name every page that states a fact, so the evidence check avoids penalising valid citations."""
+    normalize = lambda text: re.sub(r"\s+", " ", text).lower()
+    for s in sources or []:
+        if any(s["file_name"] == ref["file"] and str(s["page"]) in map(str, ref["pages"]) for ref in item["sources"]):
+            return True
+        if item.get("evidence") and normalize(item["evidence"]) in normalize(_raw_page_text(s["file_name"], s["page"])):
+            return True
+    return False
 
 
 def evaluate_answers(engine, items, judge_model, sleep_seconds):

@@ -1280,7 +1280,7 @@
       "groundedness": {
         "faithfulness": 0.874,
         "fully_grounded": 0.714,
-        "displayed_source_hit": 0.591,
+        "displayed_source_hit": 0.682,
         "out_of_scope_refusal": 1.0,
         "false_refusal": 0.045
       },
@@ -1370,7 +1370,9 @@
           "2018_Panduan_Skripsi.pdf p123",
           "2023_Pedoman_Pendidikan_UB.pdf p204",
           "2023_Pedoman_Pendidikan_UB.pdf p220"
-        ]
+        ],
+        "cited_pages": null,
+        "invalid_citations": null
       },
       {
         "id": "akd-02",
@@ -1437,7 +1439,9 @@
           "2023_Pedoman_Pendidikan_UB.pdf p233",
           "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf p35",
           "2024_Kurikulum_Sistem_Informasi.pdf p21"
-        ]
+        ],
+        "cited_pages": null,
+        "invalid_citations": null
       },
       {
         "id": "akd-03",
@@ -1504,7 +1508,9 @@
           "2023_Pedoman_Pendidikan_UB.pdf p172",
           "2023_Pedoman_Pendidikan_UB.pdf p113",
           "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf p31"
-        ]
+        ],
+        "cited_pages": null,
+        "invalid_citations": null
       },
       {
         "id": "akd-04",
@@ -1573,7 +1579,9 @@
           "2023_Pedoman_Pendidikan_UB.pdf p159",
           "2023_Pedoman_Pendidikan_UB.pdf p145",
           "2023_Pedoman_Pendidikan_UB.pdf p194"
-        ]
+        ],
+        "cited_pages": null,
+        "invalid_citations": null
       },
       {
         "id": "akd-05",
@@ -1640,7 +1648,9 @@
           "2023_Pedoman_Pendidikan_UB.pdf p144",
           "2023_Pedoman_Pendidikan_UB.pdf p105",
           "2018_Panduan_Skripsi.pdf p115"
-        ]
+        ],
+        "cited_pages": null,
+        "invalid_citations": null
       },
       {
         "id": "akd-06",
@@ -1707,7 +1717,9 @@
           "2023_Pedoman_Pendidikan_UB.pdf p147",
           "2023_Pedoman_Pendidikan_UB.pdf p218",
           "2020_Pedoman_Akademik_FILKOM.pdf p42"
-        ]
+        ],
+        "cited_pages": null,
+        "invalid_citations": null
       },
       {
         "id": "akd-07",
@@ -1774,7 +1786,9 @@
           "2020_Standar_Pembelajaran_Daring.pdf p20",
           "2020_Standar_Pembelajaran_Daring.pdf p17",
           "2020_Standar_Pembelajaran_Daring.pdf p19"
-        ]
+        ],
+        "cited_pages": null,
+        "invalid_citations": null
       },
       {
         "id": "kur-01",
@@ -1843,7 +1857,9 @@
           "2024_Kurikulum_Teknik_Informatika.pdf p38",
           "2024_Kurikulum_Teknologi_Informasi.pdf p13",
           "2024_Kurikulum_Sistem_Informasi.pdf p21"
-        ]
+        ],
+        "cited_pages": null,
+        "invalid_citations": null
       },
       {
         "id": "kur-02",
@@ -1875,7 +1891,7 @@
             "score": "64%"
           }
         ],
-        "displayed_source_hit": false,
+        "displayed_source_hit": true,
         "faithfulness": 0.333,
         "unsupported_claims": [
           "Mata kuliah wajib untuk S1 Sistem Informasi adalah 118 SKS",
@@ -1913,7 +1929,9 @@
           "2024_Kurikulum_Teknologi_Informasi.pdf p18",
           "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf p32",
           "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf p52"
-        ]
+        ],
+        "cited_pages": null,
+        "invalid_citations": null
       },
       {
         "id": "kur-03",
@@ -1980,7 +1998,9 @@
           "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf p37",
           "2024_Kurikulum_Teknologi_Informasi.pdf p18",
           "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf p40"
-        ]
+        ],
+        "cited_pages": null,
+        "invalid_citations": null
       },
       {
         "id": "kur-04",
@@ -2050,7 +2070,9 @@
           "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf p40",
           "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf p52",
           "2024_Kurikulum_Teknik_Informatika.pdf p38"
-        ]
+        ],
+        "cited_pages": null,
+        "invalid_citations": null
       },
       {
         "id": "kur-05",
@@ -2117,7 +2139,9 @@
           "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf p54",
           "2024_Kurikulum_Sistem_Informasi.pdf p21",
           "2024_Kurikulum_Teknik_Informatika.pdf p38"
-        ]
+        ],
+        "cited_pages": null,
+        "invalid_citations": null
       },
       {
         "id": "kur-06",
@@ -2184,7 +2208,9 @@
           "2024_Kurikulum_Magister_Ilmu_Komputer.pdf p1",
           "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf p21",
           "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf p52"
-        ]
+        ],
+        "cited_pages": null,
+        "invalid_citations": null
       },
       {
         "id": "kur-07",
@@ -2256,7 +2282,9 @@
           "2018_Panduan_PKL.pdf p112",
           "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf p40",
           "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf p53"
-        ]
+        ],
+        "cited_pages": null,
+        "invalid_citations": null
       },
       {
         "id": "skr-01",
@@ -2288,7 +2316,7 @@
             "score": "56%"
           }
         ],
-        "displayed_source_hit": false,
+        "displayed_source_hit": true,
         "faithfulness": 0.933,
         "unsupported_claims": [
           "Tidak ada tunggakan administrasi sebagai syarat pengajuan proposal."
@@ -2325,7 +2353,9 @@
           "2018_Panduan_Skripsi.pdf p108",
           "2018_Panduan_Skripsi.pdf p110",
           "2018_Panduan_Skripsi.pdf p112"
-        ]
+        ],
+        "cited_pages": null,
+        "invalid_citations": null
       },
       {
         "id": "skr-02",
@@ -2392,7 +2422,9 @@
           "2018_Panduan_Skripsi.pdf p69",
           "2015_Panduan_Penulisan_Proposal_Skripsi.pdf p6",
           "2018_Panduan_Skripsi.pdf p92"
-        ]
+        ],
+        "cited_pages": null,
+        "invalid_citations": null
       },
       {
         "id": "skr-03",
@@ -2459,7 +2491,9 @@
           "2018_Panduan_PKL.pdf p133",
           "2018_Panduan_PKL.pdf p9",
           "2018_Panduan_PKL.pdf p4"
-        ]
+        ],
+        "cited_pages": null,
+        "invalid_citations": null
       },
       {
         "id": "mhs-01",
@@ -2526,7 +2560,9 @@
           "2020_Pedoman_Akademik_FILKOM.pdf p32",
           "2018_Panduan_PKL.pdf p26",
           "2023_Panduan_PKL_Jalur_Lomba.pdf p2"
-        ]
+        ],
+        "cited_pages": null,
+        "invalid_citations": null
       },
       {
         "id": "mhs-02",
@@ -2593,7 +2629,9 @@
           "2018_Panduan_PKL.pdf p11",
           "2023_Pedoman_Pendidikan_UB.pdf p101",
           "2018_Panduan_PKL.pdf p9"
-        ]
+        ],
+        "cited_pages": null,
+        "invalid_citations": null
       },
       {
         "id": "mhs-03",
@@ -2660,7 +2698,9 @@
           "2020_Pedoman_Akademik_FILKOM.pdf p43",
           "2024_Panduan_SKM.pdf p11",
           "2020_Pedoman_Akademik_FILKOM.pdf p21"
-        ]
+        ],
+        "cited_pages": null,
+        "invalid_citations": null
       },
       {
         "id": "mhs-04",
@@ -2727,7 +2767,9 @@
           "2024_Panduan_SKM.pdf p12",
           "2024_Panduan_SKM.pdf p15",
           "2024_Panduan_SKM.pdf p14"
-        ]
+        ],
+        "cited_pages": null,
+        "invalid_citations": null
       },
       {
         "id": "mhs-05",
@@ -2794,7 +2836,9 @@
           "2023_Panduan_Rekognisi_Pembelajaran_Lampau.pdf p15",
           "2023_Panduan_Rekognisi_Pembelajaran_Lampau.pdf p23",
           "2023_Panduan_Rekognisi_Pembelajaran_Lampau.pdf p12"
-        ]
+        ],
+        "cited_pages": null,
+        "invalid_citations": null
       },
       {
         "id": "oos-01",
@@ -2861,7 +2905,9 @@
           "2020_Pedoman_Akademik_FILKOM.pdf p21",
           "2020_Pedoman_Akademik_FILKOM.pdf p27",
           "2020_Pedoman_Akademik_FILKOM.pdf p20"
-        ]
+        ],
+        "cited_pages": null,
+        "invalid_citations": null
       },
       {
         "id": "oos-02",
@@ -2928,7 +2974,9 @@
           "2023_Pedoman_Pendidikan_UB.pdf p160",
           "2023_Pedoman_Pendidikan_UB.pdf p40",
           "2023_Pedoman_Pendidikan_UB.pdf p198"
-        ]
+        ],
+        "cited_pages": null,
+        "invalid_citations": null
       },
       {
         "id": "oos-03",
@@ -2995,8 +3043,11 @@
           "2020_Pedoman_Akademik_FILKOM.pdf p44",
           "2020_Pedoman_Akademik_FILKOM.pdf p15",
           "2020_Pedoman_Akademik_FILKOM.pdf p47"
-        ]
+        ],
+        "cited_pages": null,
+        "invalid_citations": null
       }
     ]
-  }
+  },
+  "metric_note": "displayed_source_hit = reference page OR original PDF page contains the evidence text (re-scored 2026-10-10)."
 }

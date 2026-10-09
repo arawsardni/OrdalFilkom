@@ -1,4 +1,5 @@
 """Numbered sources for the prompt and resolution of the [n] citations the LLM writes back."""
+import html
 import re
 from typing import Dict, List, Tuple
 
@@ -6,6 +7,8 @@ from src.config.prompts import SOURCE_TEMPLATE
 
 # A run of adjacent markers such as [1] or [2][3]; also tolerates [2, 3]
 CITATION_PATTERN = re.compile(r"(?:\[\d+(?:\s*,\s*\d+)*\])+")
+# gpt-oss often falls back to its native style: 【1】 or 【1†L3-L5】
+NATIVE_CITATION_PATTERN = re.compile(r"【(\d+)(?:†[^】]*)?】")
 WORD_PATTERN = re.compile(r"[0-9A-Za-zÀ-ÿ]+")
 HIGHLIGHT_WORDS = 5
 
@@ -29,7 +32,8 @@ def build_sources_block(nodes) -> str:
             title=title,
             year=year or "-",
             page=node.metadata.get("page_label", "?"),
-            text=node.get_content().strip(),
+            # LlamaParse stores some characters as HTML entities ("IP &#x3C; 1,50")
+            text=html.unescape(node.get_content()).strip(),
         ))
     return "\n\n".join(blocks)
 
@@ -43,6 +47,7 @@ def resolve_citations(answer: str, nodes) -> Tuple[str, List[Dict], int]:
 
     Returns (answer with renumbered markers, cited sources, number of invalid markers).
     """
+    answer = NATIVE_CITATION_PATTERN.sub(r"[\1]", answer)
     page_numbers: Dict[Tuple[str, str], int] = {}
     sources: List[Dict] = []
     invalid = 0
@@ -58,7 +63,7 @@ def resolve_citations(answer: str, nodes) -> Tuple[str, List[Dict], int]:
                 continue
             node = nodes[index]
             key = (node.metadata.get("file_name", ""), str(node.metadata.get("page_label", "")))
-            highlight = pick_highlight(sentence, node.get_content())
+            highlight = pick_highlight(sentence, html.unescape(node.get_content()))
             if key not in page_numbers:
                 page_numbers[key] = len(page_numbers) + 1
                 title, year = document_title(key[0])
