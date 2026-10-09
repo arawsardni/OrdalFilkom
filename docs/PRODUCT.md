@@ -2,7 +2,7 @@
 
 > Dokumen acuan utama pengembangan. Setiap fitur, eksperimen, atau perubahan teknis harus bisa dijelaskan kontribusinya terhadap tujuan dan metrik di dokumen ini. Kalau tidak bisa, tunda atau ubah dulu dokumen ini secara sadar.
 
-Terakhir diperbarui: 8 Oktober 2026
+Terakhir diperbarui: 9 Oktober 2026
 
 ---
 
@@ -64,9 +64,9 @@ Pengguna percaya pada produk kalau apa yang dikatakan asisten bisa dicek di sumb
 
 | Komponen | Definisi | Cara ukur |
 |---|---|---|
-| **Faithfulness** | Setiap klaim di jawaban didukung oleh konteks yang di-retrieve | LLM judge: jawaban vs konteks yang diberikan ke LLM |
-| **Akurasi sitasi** | Sumber yang ditampilkan ke pengguna memuat bukti untuk jawaban | Judge/pengecekan: jawaban vs teks halaman yang ditampilkan |
-| **Penolakan yang benar** | Pertanyaan di luar cakupan ditolak tanpa mengarang | Item `out_of_scope` di eval set |
+| **Faithfulness** | Setiap klaim di jawaban didukung oleh konteks yang di-retrieve | LLM judge (Gemini Flash-Lite, supaya tidak memakai kuota Groq app live): jawaban vs konteks yang diberikan ke LLM |
+| **Akurasi sitasi** | Sumber yang dikutip dan ditampilkan ke pengguna memang memuat bukti untuk jawaban | LLM menulis sitasi inline (dokumen + halaman); parser deterministik mengecek halaman yang dikutip ada di konteks yang diberikan. Tanpa judge, jadi murah dan tanpa noise. |
+| **Penolakan yang benar** | Pertanyaan di luar cakupan ditolak tanpa mengarang, dan pertanyaan yang bisa dijawab tidak ditolak | Deterministik: penanda penolakan di jawaban, untuk item `out_of_scope` maupun item biasa (false refusal) |
 
 **Target awal:** akurasi sitasi ≥ 90% dan penolakan out-of-scope 100%. Faithfulness ditargetkan setelah ada baseline-nya. Target ini ditinjau ulang setelah eval set diperluas dengan pertanyaan nyata.
 
@@ -88,13 +88,30 @@ Semua komponen harus berjalan di free tier. Free tier bisa berubah tanpa pemberi
 | LLM | Groq | ~200k token/hari per model, 8k token/menit | Dengan ~5–7k token/pertanyaan, model utama hanya muat **±30–40 pertanyaan/hari**. Eval memakai kuota yang sama dengan app live. |
 | Embedding + vector DB | Pinecone Starter (inference + index) | Kuota embedding bulanan, maksimal 5 index | Ingest ulang penuh (~1 juta token) harus jarang dilakukan |
 | PDF parsing | LlamaParse | Kredit gratis per bulan | Hasil parse di-cache (`data/parsed/`); jangan parse ulang tanpa alasan |
-| Hosting | Streamlit Community Cloud | App tidur kalau tidak dipakai, log tidak permanen | Log pertanyaan harus disimpan di tempat lain |
+| Hosting | Streamlit Community Cloud | RAM maks 2,7 GB; tidur setelah 12 jam tanpa trafik; log tidak permanen; app berjalan di iframe ber-`sandbox` di path `/~/+/` | Log pertanyaan harus disimpan di tempat lain; URL file statis harus relatif terhadap path app |
 | Penyimpanan log/feedback | Belum ada (kandidat: Google Sheets, Supabase free) | | Harus gratis dan tidak butuh perawatan |
 
 **Konsekuensi desain:**
 - **Token per pertanyaan adalah metrik biaya.** Mengurangi konteks (misalnya `top_k` lebih kecil) menambah kapasitas harian.
 - **Provider harus mudah diganti lewat konfigurasi** (`src/config/settings.py`), dengan model cadangan.
 - **Perlu health check berkala** untuk mendeteksi model atau layanan yang dihapus sebelum pengguna menemukannya.
+
+### Tech stack (ditinjau 9 Oktober 2026)
+
+| Lapisan | Pilihan | Catatan |
+|---|---|---|
+| Hosting | Streamlit Community Cloud | Tetap. Hugging Face Spaces (Gradio/Docker) sekarang butuh paket berbayar; Render free tidur setelah 15 menit idle. Bisa mengajukan resource lebih lewat program "Good for the world" Streamlit. |
+| Vector DB + embedding | Pinecone Starter (`llama-text-embed-v2`) | Tetap. Gratis: storage 2 GB, 1 juta read unit/bulan, embedding 5 juta token/bulan, index full-text tersedia untuk hybrid search. Reranker gratisnya hanya 500 request/bulan, jadi tidak dipakai. |
+| LLM | Groq (`gpt-oss-120b`, cadangan `qwen3.8-27b`, `gpt-oss-20b`) | Rencana: tambah Gemini Flash-Lite (free tier) sebagai cadangan lintas provider. Free tier Gemini memakai data untuk melatih model; perlu disebut di pemberitahuan app. |
+| Generasi | `ContextChatEngine` LlamaIndex | Rencana: ditulis sendiri (retrieve → prompt → LLM) supaya prompt dan sitasi bisa dikendalikan penuh. LlamaIndex tetap untuk ingest dan retrieval. |
+| PDF parsing | LlamaParse (LLM mode) | Rencana: parser lokal non-generatif (Docling atau PyMuPDF4LLM), karena LlamaParse terbukti mengarang isi halaman. |
+| PDF viewer | PDF.js v6.3.289 (legacy build) di `static/pdfjs`, di-embed lewat iframe `srcdoc` | Viewer bawaan Chrome tidak bisa di-embed karena app berjalan di iframe ber-`sandbox`. PDF.js mendukung `#page=` dan `#search=` untuk menyorot teks sumber. |
+| Log + feedback | Belum ada | Kandidat: Google Sheets (gspread) atau Cloudflare D1 (HTTP API). |
+| CI, health check, pemantau dokumen | Belum ada | GitHub Actions (gratis untuk repo publik). |
+
+Project serupa yang dijadikan acuan: [UAJY Academic RAG](https://github.com/BenyRonald77/uajy-academic-rag-chatbot) (cara mengukur sitasi dan groundedness), [Gunadarma RAG](https://github.com/YAMA2063/chatbot-rag-universitas-gunadarma) (hybrid search, metadata prodi).
+
+**Pemicu untuk mempertimbangkan pindah hosting** (misalnya ke Cloudflare Workers + Vectorize + D1): halaman "app sedang tidur" atau UX di HP terbukti membuat pengguna pergi (terlihat dari log), atau free tier Streamlit Cloud berubah. Pindah ke Cloudflare berarti menulis ulang backend ke TypeScript.
 
 ## 8. Korpus dokumen
 
@@ -142,7 +159,7 @@ Di korpus ini, "bertentangan" jarang berarti dua dokumen berlaku yang benar-bena
 | Dokumen | Di korpus | Status |
 |---|---|---|
 | Pedoman Akademik UB 2023-2024 | ✅ | OK |
-| Pedoman Akademik FILKOM 2020 | ✅ | OK (belum ada versi lebih baru di web) |
+| Pedoman Akademik FILKOM 2020 | ✅ | OK. Sampulnya bertuliskan masa berlaku 2020–2024, tapi belum ada versi lebih baru (dikonfirmasi 9 Oktober 2026), jadi tetap dipakai. |
 | Panduan PKL 2018 | ✅ | OK |
 | Kurikulum 2024: TIF, TEKKOM, SI, TI, PTI, MILKOM; Kurikulum S2 SI 2025 | ✅ | OK |
 | Standar Pembelajaran Daring | ✅ | OK |
@@ -165,19 +182,21 @@ LlamaParse terbukti **mengarang isi** pada sebagian halaman, terutama sampul dan
 
 Disusun berdasarkan prinsip di atas: groundedness dulu, baru fitur.
 
-**Sekarang: fondasi groundedness**
-1. Pasang prompt dengan benar (saat ini prompt anti-halusinasi tidak aktif).
-2. Tambahkan metrik groundedness (faithfulness + akurasi sitasi) ke eval.
-3. Pastikan sumber yang ditampilkan sama dengan sumber yang dipakai jawaban.
-4. Kurangi token per pertanyaan (chunking dan `top_k`) untuk kapasitas dan biaya.
+**Sekarang (Fase 2): fondasi groundedness**
+1. Tambahkan metrik groundedness ke eval (akurasi sitasi, penolakan, faithfulness), lalu ukur baseline pada app yang sekarang.
+2. Tulis ulang langkah generasi: prompt dipasang dengan benar (termasuk aturan konflik dokumen), LLM menulis sitasi inline, UI menampilkan halaman yang dikutip dan membukanya di PDF.js dengan teks sumber tersorot.
+3. Kurangi token per pertanyaan (`top_k` lebih kecil) untuk kapasitas dan biaya, lalu ukur ulang dan bandingkan dengan baseline.
 
-**Berikutnya: korpus dan feedback**
-5. Bersihkan halaman karangan LlamaParse; refresh dokumen usang (SKM 2026, Edaran Dekan 2022); buat katalog dokumen dengan metadata cakupan (Bagian 8) dan bawa metadata itu ke setiap chunk.
-6. Simpan log pertanyaan + feedback 👍/👎 (gratis, tanpa identitas pengguna, dengan pemberitahuan di UI). Pertanyaan nyata masuk ke eval set.
-7. Health check berkala untuk model/layanan free tier.
+**Berikutnya: korpus, feedback, operasional**
+4. Bersihkan korpus: parser non-generatif menggantikan LlamaParse; refresh dokumen usang (SKM 2026, Edaran Dekan 2022); buat katalog dokumen dengan metadata cakupan (Bagian 8) dan bawa metadata itu ke setiap chunk; ingest ulang secara inkremental (hanya file yang berubah, berdasarkan hash).
+5. Simpan log pertanyaan + feedback 👍/👎 (gratis, tanpa identitas pengguna, dengan pemberitahuan di UI). Pertanyaan nyata masuk ke eval set.
+6. Health check berkala untuk model/layanan free tier.
+7. **Pemantau dokumen resmi:** skrip terjadwal (GitHub Actions, misalnya seminggu sekali) yang memeriksa https://filkom.ub.ac.id/profil/dokumen-resmi/, mendeteksi file baru atau berubah (daftar link + header `ETag`/`Last-Modified`, tanpa mengunduh ulang file yang sama), lalu mengunduh file tersebut ke sebuah PR untuk direview. **Tidak langsung di-ingest**: tetap dikurasi manual sesuai kriteria di Bagian 8 (formulir dan sertifikat diabaikan, versi lama ditandai digantikan). FILKOM Apps tidak dipantau.
+   - Sudah dicek 9 Oktober 2026: `robots.txt` situs kosong, halaman berupa HTML statis (45 link PDF bisa diambil tanpa JavaScript), dan bot dengan User-Agent jujur (`OrdalFilkomDocChecker/0.1 (+repo URL)`) diterima. User-Agent bawaan library Python ditolak (403), jadi skrip harus mengirim User-Agent sendiri.
+   - Perlu dicek saat implementasi: apakah IP runner GitHub Actions ikut diblokir Cloudflare situs tersebut.
 
 **Nanti**
-8. Perbaikan retrieval lanjutan (hybrid search, reranker) kalau eval menunjukkan perlu.
+8. Perbaikan retrieval lanjutan (hybrid search) kalau eval menunjukkan perlu.
 9. Fitur generatif: rencana studi, peta mata kuliah, checklist syarat.
 10. Cakupan S2/S3 yang lebih baik kalau dokumennya tersedia.
 
@@ -204,3 +223,7 @@ Belum ada pertanyaan terbuka. Yang sudah terjawab:
 | 2026-10-08 | Korpus dibatasi ke kanal resmi fakultas (web resmi + FILKOM Apps) | Menjaga keresmian sumber; dokumen internal prodi tidak dimasukkan walaupun relevan |
 | 2026-10-08 | Konflik dokumen diselesaikan di data (kurasi + metadata), sisanya lewat aturan runtime | Jenis A/B/E tidak boleh sampai ke pengguna; C/D ditangani prompt dan nantinya filter metadata |
 | 2026-10-08 | Metrik utama: groundedness, dengan target akurasi sitasi ≥ 90% dan penolakan out-of-scope 100% | Pengguna diharapkan memverifikasi lewat sumber, jadi sumber yang benar lebih penting daripada jawaban yang fasih |
+| 2026-10-09 | Tetap di Streamlit Community Cloud | Masalah utama produk (groundedness, data) tidak terkait hosting; alternatif gratis lain lebih buruk atau butuh rewrite |
+| 2026-10-09 | Viewer PDF memakai PDF.js yang di-bundle; dataset dipindah ke `static/dataset` dan disajikan lewat static file serving | Viewer Chrome diblokir sandbox Streamlit Cloud; PDF.js jalan di sandbox dan di HP, dan mendukung lompat halaman + sorot teks untuk sitasi |
+| 2026-10-09 | Sitasi diukur dengan parser deterministik (gaya UAJY); judge hanya untuk faithfulness | Lebih murah dan tanpa noise daripada semuanya dinilai LLM |
+| 2026-10-09 | Pemantau dokumen resmi dijadwalkan setelah fase groundedness; hasilnya masuk PR, tidak langsung di-ingest | Mencegah unduh ulang manual tanpa melewati kurasi |
