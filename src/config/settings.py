@@ -27,7 +27,7 @@ class Settings:
         return os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
     
     # Vector Store Configuration
-    INDEX_NAME = "ordal-filkom-v2"
+    INDEX_NAME = "ordal-filkom-v3"  # pymupdf4llm parsing + page-scoped chunks (scripts/ingest.py)
     
     # Model Configuration
     EMBEDDING_MODEL = "llama-text-embed-v2"  # hosted by Pinecone inference
@@ -36,7 +36,7 @@ class Settings:
     # LLM Configuration with Fallback
     LLM_MODEL = "openai/gpt-oss-120b"  # Primary model
     LLM_TEMPERATURE = 0.2
-    SIMILARITY_TOP_K = 10  # chunks sent to the LLM as numbered sources
+    SIMILARITY_TOP_K = 6  # chunks sent to the LLM as numbered sources (hit@5 = hit@10 on v3)
     HISTORY_TURNS = 3  # earlier question/answer pairs sent with each question
     HISTORY_MAX_CHARS = 800  # per earlier message
     FOLLOW_UP_MAX_WORDS = 6  # shorter questions are retrieved together with the previous question

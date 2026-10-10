@@ -2,7 +2,7 @@
 
 > Dokumen acuan utama pengembangan. Setiap fitur, eksperimen, atau perubahan teknis harus bisa dijelaskan kontribusinya terhadap tujuan dan metrik di dokumen ini. Kalau tidak bisa, tunda atau ubah dulu dokumen ini secara sadar.
 
-Terakhir diperbarui: 9 Oktober 2026
+Terakhir diperbarui: 10 Oktober 2026
 
 ---
 
@@ -87,7 +87,7 @@ Semua komponen harus berjalan di free tier. Free tier bisa berubah tanpa pemberi
 |---|---|---|---|
 | LLM | Groq | ~200k token/hari per model, 8k token/menit | Dengan ~5–7k token/pertanyaan, model utama hanya muat **±30–40 pertanyaan/hari**. Eval memakai kuota yang sama dengan app live. |
 | Embedding + vector DB | Pinecone Starter (inference + index) | Kuota embedding bulanan, maksimal 5 index | Ingest ulang penuh (~1 juta token) harus jarang dilakukan |
-| PDF parsing | LlamaParse | Kredit gratis per bulan | Hasil parse di-cache (`data/parsed/`); jangan parse ulang tanpa alasan |
+| PDF parsing | pymupdf4llm (lokal) | Gratis, tanpa kuota | Hasil parse di-cache per file (`data/parsed_pymupdf/`); ingest inkremental hanya meng-embed file yang berubah |
 | Hosting | Streamlit Community Cloud | RAM maks 2,7 GB; tidur setelah 12 jam tanpa trafik; log tidak permanen; app berjalan di iframe ber-`sandbox` di path `/~/+/` | Log pertanyaan harus disimpan di tempat lain; URL file statis harus relatif terhadap path app |
 | Penyimpanan log/feedback | Belum ada (kandidat: Google Sheets, Supabase free) | | Harus gratis dan tidak butuh perawatan |
 
@@ -104,7 +104,7 @@ Semua komponen harus berjalan di free tier. Free tier bisa berubah tanpa pemberi
 | Vector DB + embedding | Pinecone Starter (`llama-text-embed-v2`) | Tetap. Gratis: storage 2 GB, 1 juta read unit/bulan, embedding 5 juta token/bulan, index full-text tersedia untuk hybrid search. Reranker gratisnya hanya 500 request/bulan, jadi tidak dipakai. |
 | LLM | Groq (`gpt-oss-120b`, cadangan `qwen3.8-27b`, `gpt-oss-20b`) | Rencana: tambah Gemini Flash-Lite (free tier) sebagai cadangan lintas provider. Free tier Gemini memakai data untuk melatih model; perlu disebut di pemberitahuan app. |
 | Generasi | `ContextChatEngine` LlamaIndex | Rencana: ditulis sendiri (retrieve → prompt → LLM) supaya prompt dan sitasi bisa dikendalikan penuh. LlamaIndex tetap untuk ingest dan retrieval. |
-| PDF parsing | LlamaParse (LLM mode) | Rencana: parser lokal non-generatif (Docling atau PyMuPDF4LLM), karena LlamaParse terbukti mengarang isi halaman. |
+| PDF parsing | pymupdf4llm 1.28.2 (dependency group `ingest`) | Non-generatif, menggantikan LlamaParse yang terbukti mengarang isi halaman. Halaman tanpa lapisan teks dilewati (belum ada OCR). |
 | PDF viewer | PDF.js v6.3.289 (legacy build) di `static/pdfjs`, di-embed lewat iframe `srcdoc` | Viewer bawaan Chrome tidak bisa di-embed karena app berjalan di iframe ber-`sandbox`. PDF.js mendukung `#page=` dan `#search=` untuk menyorot teks sumber. |
 | Log + feedback | Belum ada | Kandidat: Google Sheets (gspread) atau Cloudflare D1 (HTTP API). |
 | CI, health check, pemantau dokumen | Belum ada | GitHub Actions (gratis untuk repo publik). |
@@ -166,9 +166,9 @@ Di korpus ini, "bertentangan" jarang berarti dua dokumen berlaku yang benar-bena
 | Tata Tertib UTS/UAS 2016 | ✅ | OK |
 | Panduan RPL 2023 | ✅ | OK |
 | PKL Jalur Kompetisi 2023 | ✅ | OK |
-| **Panduan SKM** | ⚠️ versi 2020 (nama file 2024) | **Usang.** Web sudah punya versi 2026 (rev 22-05-2026). Item eval mhs-03/mhs-04 perlu dicek ulang setelah diganti. |
-| **Edaran Dekan: Perubahan Mekanisme Pemberkasan Seminar Hasil Skripsi & PKL (2022)** | ❌ | **Belum masuk.** Mengubah prosedur di Panduan Skripsi/PKL 2018. |
-| Peta Proses Bisnis FILKOM 2025 | ❌ | Kandidat (diunggah Juni 2026); perlu dicek isinya |
+| Panduan SKM 2026 (rev 22-05-2026) | ✅ | Menggantikan versi 2020 (10 Oktober 2026). Item eval mhs-03/mhs-04 sudah dicek ulang. |
+| Edaran Dekan: Perubahan Mekanisme Pemberkasan Seminar Hasil Skripsi & PKL (2022) | ✅ | Masuk 10 Oktober 2026, dengan `amends` ke Panduan Skripsi/PKL 2018 di katalog. Hasil scan dengan OCR bawaan yang kotor. |
+| Peta Proses Bisnis FILKOM 2025 | ❌ | Dicek 10 Oktober 2026: hanya daftar nama SOP berupa gambar (tanpa lapisan teks dan tanpa isi prosedur), jadi tidak dimasukkan. |
 | Panduan skripsi (Penulisan 2015, Proposal 2015, Penilaian 2017, Panduan Skripsi 2018) | ✅ | Dari FILKOM Apps; masih versi terbaru di sana (dikonfirmasi) |
 | Pedoman Penilaian IP PTIIK 2015, Pedoman UB 2016/2017 | ❌ | Sengaja tidak dimasukkan (usang) |
 | Pedoman khusus S3 | ❌ | Tidak tersedia di web resmi |
@@ -176,7 +176,11 @@ Di korpus ini, "bertentangan" jarang berarti dua dokumen berlaku yang benar-bena
 **Cakupan silabus** (halaman yang memuat silabus, deskripsi mata kuliah, atau CPMK, per dokumen kurikulum): TIF 62, TEKKOM 51, TI 51, S2 SI 38, MILKOM 27, **PTI 5, SI 3**. Silabus SI dan PTI tidak tersedia di kanal resmi; dokumen PTI di web memang berjudul "Ringkasan Kurikulum". Ini **keterbatasan yang diketahui**: pertanyaan silabus SI/PTI diperlakukan sebagai di luar cakupan dan ditolak dengan sopan.
 
 ### Kualitas data
-LlamaParse terbukti **mengarang isi** pada sebagian halaman, terutama sampul dan daftar isi; lihat `eval/BASELINE.md`. Halaman karangan ini mencemari index dan langsung melanggar prinsip #1. Kebersihan korpus harus diperlakukan sama pentingnya dengan kualitas retrieval.
+LlamaParse terbukti **mengarang isi** pada sebagian halaman, terutama sampul dan daftar isi; lihat `eval/BASELINE.md`. Sejak 10 Oktober 2026 korpus di-parse ulang dengan pymupdf4llm (non-generatif) ke index `ordal-filkom-v3`, dan halaman daftar isi dibuang saat chunking.
+
+**Keterbatasan yang diketahui:** 31 halaman tanpa lapisan teks (hasil scan) dilewati karena belum ada OCR. Hampir semuanya sampul, sampul belakang, atau halaman kosong; yang mungkin berisi konten antara lain Kurikulum PTI hal. 48. Tabel yang sangat kompleks (mis. Kurikulum TIF hal. 22, tabel semester 7–8 yang bergabung) masih bisa ter-parse berantakan.
+
+Katalog dokumen ada di `static/dataset/catalog.json`; dokumen baru wajib ditambahkan ke katalog sebelum di-ingest.
 
 ## 9. Roadmap
 
@@ -188,7 +192,7 @@ Disusun berdasarkan prinsip di atas: groundedness dulu, baru fitur.
 3. Kurangi token per pertanyaan (`top_k` lebih kecil) untuk kapasitas dan biaya, lalu ukur ulang dan bandingkan dengan baseline.
 
 **Berikutnya: korpus, feedback, operasional**
-4. Bersihkan korpus: parser non-generatif menggantikan LlamaParse; refresh dokumen usang (SKM 2026, Edaran Dekan 2022); buat katalog dokumen dengan metadata cakupan (Bagian 8) dan bawa metadata itu ke setiap chunk; ingest ulang secara inkremental (hanya file yang berubah, berdasarkan hash).
+4. ~~Bersihkan korpus: parser non-generatif, refresh dokumen usang, katalog dokumen, ingest inkremental.~~ **Selesai 10 Oktober 2026** (Fase 3, lihat `eval/BASELINE.md`). Lanjutan: filter metadata prodi saat pertanyaan menyebut prodi, dan hybrid search.
 5. Simpan log pertanyaan + feedback 👍/👎 (gratis, tanpa identitas pengguna, dengan pemberitahuan di UI). Pertanyaan nyata masuk ke eval set.
 6. Health check berkala untuk model/layanan free tier.
 7. **Pemantau dokumen resmi:** skrip terjadwal (GitHub Actions, misalnya seminggu sekali) yang memeriksa https://filkom.ub.ac.id/profil/dokumen-resmi/, mendeteksi file baru atau berubah (daftar link + header `ETag`/`Last-Modified`, tanpa mengunduh ulang file yang sama), lalu mengunduh file tersebut ke sebuah PR untuk direview. **Tidak langsung di-ingest**: tetap dikurasi manual sesuai kriteria di Bagian 8 (formulir dan sertifikat diabaikan, versi lama ditandai digantikan). FILKOM Apps tidak dipantau.
@@ -227,3 +231,6 @@ Belum ada pertanyaan terbuka. Yang sudah terjawab:
 | 2026-10-09 | Viewer PDF memakai PDF.js yang di-bundle; dataset dipindah ke `static/dataset` dan disajikan lewat static file serving | Viewer Chrome diblokir sandbox Streamlit Cloud; PDF.js jalan di sandbox dan di HP, dan mendukung lompat halaman + sorot teks untuk sitasi |
 | 2026-10-09 | Sitasi diukur dengan parser deterministik (gaya UAJY); judge hanya untuk faithfulness | Lebih murah dan tanpa noise daripada semuanya dinilai LLM |
 | 2026-10-09 | Pemantau dokumen resmi dijadwalkan setelah fase groundedness; hasilnya masuk PR, tidak langsung di-ingest | Mencegah unduh ulang manual tanpa melewati kurasi |
+| 2026-10-09 | Generasi ditulis sendiri (retrieve → prompt → LLM) dengan sitasi `[n]`; UI menampilkan halaman yang dikutip | `ContextChatEngine` diam-diam mengabaikan prompt; sumber yang ditampilkan harus sumber yang dipakai jawaban |
+| 2026-10-10 | Parser pymupdf4llm, chunk per halaman yang tidak memotong tabel, index `ordal-filkom-v3`, `top_k` 6 | Retrieval hit@5 0,59 → 0,91 dan sumber yang ditampilkan memuat bukti 0,64 → 0,82 pada eval set |
+| 2026-10-10 | Halaman tanpa lapisan teks dilewati, bukan di-OCR | Hampir semuanya sampul/kosong; "OCR" LlamaParse di halaman itu kebanyakan karangan; OCR lokal menambah dependensi berat |

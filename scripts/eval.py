@@ -129,7 +129,8 @@ def check_dataset(items):
 
 
 def evaluate_retrieval(engine, items, top_k):
-    retriever = engine.get_retriever(top_k)
+    # Retrieve enough to report every hit@k, whatever top_k the answers use
+    retriever = engine.get_retriever(max(top_k, max(HIT_AT)))
     results = []
     for item in items:
         if not item["sources"]:
@@ -354,7 +355,9 @@ def main():
     parser.add_argument("--check-dataset", action="store_true", help="only verify the dataset against the raw PDFs")
     parser.add_argument("--answers", action="store_true", help="also generate and judge answers")
     parser.add_argument("--only", help="comma-separated item ids to run")
-    parser.add_argument("--top-k", type=int, default=Settings.SIMILARITY_TOP_K)
+    parser.add_argument("--top-k", type=int, default=Settings.SIMILARITY_TOP_K,
+                        help="chunks retrieved, for both retrieval metrics and answer generation")
+    parser.add_argument("--index", default=Settings.INDEX_NAME, help="Pinecone index to evaluate")
     parser.add_argument("--judge-model", default=Settings.JUDGE_MODEL)
     parser.add_argument("--sleep", type=int, default=30, help="seconds between answer generations")
     parser.add_argument("--label", default="run", help="short name for this run, used in the results filename")
@@ -367,6 +370,10 @@ def main():
 
     if args.check_dataset:
         sys.exit(0 if check_dataset(items) else 1)
+
+    # Evaluate a candidate index/top_k without touching the app's configuration
+    Settings.INDEX_NAME = args.index
+    Settings.SIMILARITY_TOP_K = args.top_k
 
     from src.core.rag_engine import RAGEngine
     engine = RAGEngine()

@@ -25,5 +25,6 @@ SYSTEM_PROMPT = (
     "SUMBER:\n{sources}"
 )
 
-# One numbered source block: "[1] Pedoman Akademik FILKOM (2020), hal. 15" followed by the chunk text
-SOURCE_TEMPLATE = "[{number}] {title} ({year}), hal. {page}\n{text}"
+# One numbered source block: "[1] Pedoman Akademik FILKOM (2020), hal. 15" (plus the section
+# heading when the index has one) followed by the chunk text
+SOURCE_TEMPLATE = "[{number}] {title} ({year}), hal. {page}{section}\n{text}"

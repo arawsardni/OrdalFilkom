@@ -1,0 +1,189 @@
+{
+  "_about": "Document catalog (docs/PRODUCT.md section 8). One entry per PDF in static/dataset, keyed by file name. issuer: universitas | fakultas | prodi. status: berlaku | digantikan. amends: files this document partly changes.",
+  "documents": {
+    "2016_Tata_Tertib_Ujian.pdf": {
+      "title": "Tata Tertib Ujian (UTS & UAS) FILKOM",
+      "issuer": "fakultas",
+      "program": "semua prodi",
+      "level": "S1",
+      "year": 2016,
+      "status": "berlaku",
+      "source": "https://filkom.ub.ac.id/profil/dokumen-resmi/"
+    },
+    "2020_Pedoman_Akademik_FILKOM.pdf": {
+      "title": "Pedoman Akademik FILKOM",
+      "issuer": "fakultas",
+      "program": "semua prodi",
+      "level": "S1, S2, S3",
+      "year": 2020,
+      "status": "berlaku",
+      "notes": "Sampul bertuliskan 2020-2024; belum ada versi lebih baru (dikonfirmasi 2026-10-09).",
+      "source": "https://filkom.ub.ac.id/profil/dokumen-resmi/"
+    },
+    "2020_Standar_Pembelajaran_Daring.pdf": {
+      "title": "Standar Pembelajaran Daring FILKOM",
+      "issuer": "fakultas",
+      "program": "semua prodi",
+      "level": "S1, S2, S3",
+      "year": 2020,
+      "status": "berlaku",
+      "source": "https://filkom.ub.ac.id/profil/dokumen-resmi/"
+    },
+    "2023_Pedoman_Pendidikan_UB.pdf": {
+      "title": "Pedoman Pendidikan Universitas Brawijaya 2023/2024",
+      "issuer": "universitas",
+      "program": "semua prodi",
+      "level": "Diploma, S1, Profesi, S2, S3",
+      "year": 2023,
+      "status": "berlaku",
+      "source": "https://filkom.ub.ac.id/profil/dokumen-resmi/"
+    },
+    "2024_Kurikulum_Magister_Ilmu_Komputer.pdf": {
+      "title": "Kurikulum S2 Magister Ilmu Komputer",
+      "issuer": "prodi",
+      "program": "Magister Ilmu Komputer",
+      "level": "S2",
+      "year": 2024,
+      "status": "berlaku",
+      "source": "https://filkom.ub.ac.id/profil/dokumen-resmi/"
+    },
+    "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf": {
+      "title": "Kurikulum S1 Pendidikan Teknologi Informasi",
+      "issuer": "prodi",
+      "program": "Pendidikan Teknologi Informasi",
+      "level": "S1",
+      "year": 2024,
+      "status": "berlaku",
+      "source": "https://filkom.ub.ac.id/profil/dokumen-resmi/"
+    },
+    "2024_Kurikulum_Sistem_Informasi.pdf": {
+      "title": "Kurikulum S1 Sistem Informasi",
+      "issuer": "prodi",
+      "program": "Sistem Informasi",
+      "level": "S1",
+      "year": 2024,
+      "status": "berlaku",
+      "source": "https://filkom.ub.ac.id/profil/dokumen-resmi/"
+    },
+    "2024_Kurikulum_Teknik_Informatika.pdf": {
+      "title": "Kurikulum S1 Teknik Informatika",
+      "issuer": "prodi",
+      "program": "Teknik Informatika",
+      "level": "S1",
+      "year": 2024,
+      "status": "berlaku",
+      "source": "https://filkom.ub.ac.id/profil/dokumen-resmi/"
+    },
+    "2024_Kurikulum_Teknik_Komputer.pdf": {
+      "title": "Kurikulum S1 Teknik Komputer",
+      "issuer": "prodi",
+      "program": "Teknik Komputer",
+      "level": "S1",
+      "year": 2024,
+      "status": "berlaku",
+      "source": "https://filkom.ub.ac.id/profil/dokumen-resmi/"
+    },
+    "2024_Kurikulum_Teknologi_Informasi.pdf": {
+      "title": "Kurikulum S1 Teknologi Informasi",
+      "issuer": "prodi",
+      "program": "Teknologi Informasi",
+      "level": "S1",
+      "year": 2024,
+      "status": "berlaku",
+      "source": "https://filkom.ub.ac.id/profil/dokumen-resmi/"
+    },
+    "2025_Kurikulum_Magister_Sistem_Informasi.pdf": {
+      "title": "Kurikulum S2 Magister Sistem Informasi",
+      "issuer": "prodi",
+      "program": "Magister Sistem Informasi",
+      "level": "S2",
+      "year": 2025,
+      "status": "berlaku",
+      "source": "https://filkom.ub.ac.id/profil/dokumen-resmi/"
+    },
+    "2015_Panduan_Penulisan_Proposal_Skripsi.pdf": {
+      "title": "Panduan Penulisan Proposal Skripsi",
+      "issuer": "fakultas",
+      "program": "semua prodi",
+      "level": "S1",
+      "year": 2015,
+      "status": "berlaku",
+      "source": "FILKOM Apps"
+    },
+    "2015_Panduan_Penulisan_Skripsi.pdf": {
+      "title": "Panduan Penulisan Skripsi",
+      "issuer": "fakultas",
+      "program": "semua prodi",
+      "level": "S1",
+      "year": 2015,
+      "status": "berlaku",
+      "source": "FILKOM Apps"
+    },
+    "2017_Panduan_Penilaian_Skripsi.pdf": {
+      "title": "Panduan Penilaian Skripsi",
+      "issuer": "fakultas",
+      "program": "semua prodi",
+      "level": "S1",
+      "year": 2017,
+      "status": "berlaku",
+      "source": "FILKOM Apps"
+    },
+    "2018_Panduan_PKL.pdf": {
+      "title": "Panduan Praktik Kerja Lapangan (PKL)",
+      "issuer": "fakultas",
+      "program": "semua prodi",
+      "level": "S1",
+      "year": 2018,
+      "status": "berlaku",
+      "source": "https://filkom.ub.ac.id/profil/dokumen-resmi/"
+    },
+    "2018_Panduan_Skripsi.pdf": {
+      "title": "Panduan Skripsi",
+      "issuer": "fakultas",
+      "program": "semua prodi",
+      "level": "S1",
+      "year": 2018,
+      "status": "berlaku",
+      "source": "FILKOM Apps"
+    },
+    "2022_Edaran_Dekan_Pemberkasan_Seminar_Hasil.pdf": {
+      "title": "Edaran Dekan: Perubahan Mekanisme Pemberkasan Seminar Hasil Skripsi dan PKL",
+      "issuer": "fakultas",
+      "program": "semua prodi",
+      "level": "S1",
+      "year": 2022,
+      "status": "berlaku",
+      "amends": ["2018_Panduan_Skripsi.pdf", "2018_Panduan_PKL.pdf"],
+      "notes": "Hasil scan; lapisan teksnya mengandung salah ketik OCR.",
+      "source": "https://filkom.ub.ac.id/profil/dokumen-resmi/"
+    },
+    "2023_Panduan_PKL_Jalur_Lomba.pdf": {
+      "title": "Peraturan dan Prosedur PKL Jalur Kompetisi Mahasiswa",
+      "issuer": "fakultas",
+      "program": "semua prodi",
+      "level": "S1",
+      "year": 2023,
+      "status": "berlaku",
+      "source": "https://filkom.ub.ac.id/profil/dokumen-resmi/"
+    },
+    "2023_Panduan_Rekognisi_Pembelajaran_Lampau.pdf": {
+      "title": "Panduan Rekognisi Pembelajaran Lampau (RPL)",
+      "issuer": "fakultas",
+      "program": "semua prodi",
+      "level": "S1",
+      "year": 2023,
+      "status": "berlaku",
+      "source": "https://filkom.ub.ac.id/profil/dokumen-resmi/"
+    },
+    "2026_Panduan_SKM.pdf": {
+      "title": "Panduan Satuan Kegiatan Kemahasiswaan (SKM)",
+      "issuer": "fakultas",
+      "program": "semua prodi",
+      "level": "S1",
+      "year": 2026,
+      "status": "berlaku",
+      "notes": "Revisi 22-05-2026; menggantikan Panduan SKM 2020.",
+      "source": "https://filkom.ub.ac.id/profil/dokumen-resmi/"
+    }
+  }
+}
