@@ -37,6 +37,7 @@ class Settings:
     LLM_MODEL = "openai/gpt-oss-120b"  # Primary model
     LLM_TEMPERATURE = 0.2
     SIMILARITY_TOP_K = 6  # chunks sent to the LLM as numbered sources (hit@5 = hit@10 on v3)
+    FACULTY_RULES_TOP_K = 2  # extra faculty/program chunks added when university rules are retrieved
     HISTORY_TURNS = 3  # earlier question/answer pairs sent with each question
     HISTORY_MAX_CHARS = 800  # per earlier message
     FOLLOW_UP_MAX_WORDS = 6  # shorter questions are retrieved together with the previous question

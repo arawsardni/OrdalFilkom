@@ -1,11 +1,13 @@
 import logging
-from llama_index.core import VectorStoreIndex, Settings
+from llama_index.core import QueryBundle, VectorStoreIndex, Settings
+from llama_index.core.vector_stores import FilterOperator, MetadataFilter, MetadataFilters
 from llama_index.vector_stores.pinecone import PineconeVectorStore
 from llama_index.llms.groq import Groq
 from pinecone import Pinecone
 
 from src.config.settings import Settings as AppSettings
 from src.core.embeddings import PineconeEmbedding
+from src.utils.catalog import load_catalog
 
 logger = logging.getLogger(__name__)
 
@@ -55,7 +57,27 @@ class RAGEngine:
         return self.index.as_retriever(similarity_top_k=top_k or AppSettings.SIMILARITY_TOP_K)
 
     def retrieve(self, query: str):
-        return self.retriever.retrieve(query)
+        """Top-k chunks, plus faculty/program rules on the same topic when university rules show up.
+
+        Faculty and program rules take precedence over the university's general guide
+        (docs/PRODUCT.md), but the university guide is long and often outranks them, so when it
+        appears a second search excluding it adds the best faculty/program chunks. University
+        sources are then moved last so the LLM leads with the stronger rule; the rest keep their
+        retrieval order (a program's curriculum only outranks the faculty for that program).
+        """
+        query = QueryBundle(query, embedding=Settings.embed_model.get_query_embedding(query))
+        nodes = self.retriever.retrieve(query)
+        university_files = [name for name, info in load_catalog().items() if info.get("issuer") == "universitas"]
+        if university_files and any(n.metadata.get("file_name") in university_files for n in nodes):
+            filters = MetadataFilters(filters=[
+                MetadataFilter(key="file_name", value=university_files, operator=FilterOperator.NIN)
+            ])
+            seen = {n.node.node_id for n in nodes}
+            extra = self.index.as_retriever(
+                similarity_top_k=AppSettings.FACULTY_RULES_TOP_K, filters=filters
+            ).retrieve(query)
+            nodes += [n for n in extra if n.node.node_id not in seen]
+        return sorted(nodes, key=lambda n: n.metadata.get("file_name") in university_files)
 
     def get_llm(self, model_name=None):
         """Groq client for the given model (default: Settings.LLM_MODEL), created once per model"""

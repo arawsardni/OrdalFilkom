@@ -24,11 +24,15 @@ def build_sources_block(nodes) -> str:
     """Numbered source blocks for the system prompt, in retrieval order"""
     blocks = []
     for number, node in enumerate(nodes, 1):
-        title, year = document_title(node.metadata.get("file_name", ""))
+        file_name = node.metadata.get("file_name", "")
+        title, year = document_title(file_name)
+        issuer = document_info(file_name).get("issuer")
         blocks.append(SOURCE_TEMPLATE.format(
             number=number,
             title=title,
             year=year or "-",
+            # Lets the LLM apply the prodi > fakultas > universitas hierarchy from the prompt
+            issuer=f", aturan {issuer}" if issuer else "",
             page=node.metadata.get("page_label", "?"),
             section=f", bagian: {node.metadata['section']}" if node.metadata.get("section") else "",
             # LlamaParse stores some characters as HTML entities ("IP &#x3C; 1,50")

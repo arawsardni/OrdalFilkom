@@ -16,8 +16,10 @@ SYSTEM_PROMPT = (
     "4. Perhatikan cakupan tiap sumber (prodi, jenjang, tahun). Jangan mencampur angka dari prodi atau jenjang "
     "yang berbeda. Jika pertanyaan tidak menyebut prodi/jenjang padahal jawabannya berbeda-beda, berikan jawaban "
     "per prodi secara ringkas atau minta pengguna menyebutkan prodinya.\n"
-    "5. Jika dua sumber berlaku berbeda, jadikan sumber yang paling spesifik dan paling baru sebagai jawaban utama, "
-    "lalu sebutkan perbedaannya beserta nama dokumen dan tahunnya.\n"
+    "5. Hierarki aturan: prodi > fakultas > universitas. Fakultas berwenang menetapkan aturannya sendiri, sedangkan "
+    "pedoman universitas hanya gambaran umum. Jika aturan fakultas/prodi dan universitas berbeda, jawab dengan aturan "
+    "fakultas/prodi, lalu sebutkan aturan universitas sebagai pembanding beserta nama dokumen dan tahunnya. Untuk dua "
+    "versi dokumen dari penerbit yang sama, gunakan yang paling baru.\n"
     "6. Untuk pertanyaan tentang kondisi pribadi pengguna, pisahkan aturan resmi (dengan sitasi) dari saranmu, "
     "dan arahkan keputusan akhir ke dosen pembimbing akademik.\n"
     "7. Jawab ringkas dan langsung dalam bahasa Indonesia. Gunakan daftar hanya jika ada beberapa item; "
@@ -25,6 +27,6 @@ SYSTEM_PROMPT = (
     "SUMBER:\n{sources}"
 )
 
-# One numbered source block: "[1] Pedoman Akademik FILKOM (2020), hal. 15" (plus the section
-# heading when the index has one) followed by the chunk text
-SOURCE_TEMPLATE = "[{number}] {title} ({year}), hal. {page}{section}\n{text}"
+# One numbered source block: "[1] Pedoman Akademik FILKOM (2020), aturan fakultas, hal. 15" (issuer
+# from the catalog, plus the section heading when the index has one) followed by the chunk text
+SOURCE_TEMPLATE = "[{number}] {title} ({year}){issuer}, hal. {page}{section}\n{text}"
