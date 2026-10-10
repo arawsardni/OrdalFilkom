@@ -1,0 +1,2257 @@
+{
+  "label": "v3-topk6",
+  "timestamp": "2026-10-10T11:44:43",
+  "config": {
+    "index": "ordal-filkom-v3",
+    "embedding_model": "llama-text-embed-v2",
+    "llm": "openai/gpt-oss-120b",
+    "judge_model": "gemini-3.5-flash-lite",
+    "top_k": 6,
+    "dataset_size": 25
+  },
+  "retrieval": {
+    "summary": {
+      "hit@1": 0.409,
+      "hit@3": 0.864,
+      "hit@5": 0.909,
+      "hit@10": 0.909,
+      "hit@30": 0.909,
+      "mrr": 0.608
+    },
+    "items": [
+      {
+        "id": "akd-01",
+        "type": "factual",
+        "rank": 2,
+        "top": [
+          {
+            "file": "2016_Tata_Tertib_Ujian.pdf",
+            "page": "2",
+            "score": 0.5327
+          },
+          {
+            "file": "2016_Tata_Tertib_Ujian.pdf",
+            "page": "1",
+            "score": 0.4738
+          },
+          {
+            "file": "2020_Pedoman_Akademik_FILKOM.pdf",
+            "page": "30",
+            "score": 0.4241
+          },
+          {
+            "file": "2020_Pedoman_Akademik_FILKOM.pdf",
+            "page": "25",
+            "score": 0.419
+          },
+          {
+            "file": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "149",
+            "score": 0.4186
+          },
+          {
+            "file": "2016_Tata_Tertib_Ujian.pdf",
+            "page": "3",
+            "score": 0.4096
+          },
+          {
+            "file": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "147",
+            "score": 0.4078
+          },
+          {
+            "file": "2020_Pedoman_Akademik_FILKOM.pdf",
+            "page": "43",
+            "score": 0.4065
+          },
+          {
+            "file": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "156",
+            "score": 0.4032
+          },
+          {
+            "file": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "72",
+            "score": 0.3988
+          }
+        ]
+      },
+      {
+        "id": "akd-02",
+        "type": "table",
+        "rank": null,
+        "top": [
+          {
+            "file": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "66",
+            "score": 0.4835
+          },
+          {
+            "file": "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf",
+            "page": "32",
+            "score": 0.4627
+          },
+          {
+            "file": "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf",
+            "page": "45",
+            "score": 0.4591
+          },
+          {
+            "file": "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf",
+            "page": "39",
+            "score": 0.4577
+          },
+          {
+            "file": "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf",
+            "page": "33",
+            "score": 0.456
+          },
+          {
+            "file": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "219",
+            "score": 0.4547
+          },
+          {
+            "file": "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf",
+            "page": "36",
+            "score": 0.4526
+          },
+          {
+            "file": "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf",
+            "page": "37",
+            "score": 0.4522
+          },
+          {
+            "file": "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf",
+            "page": "42",
+            "score": 0.4512
+          },
+          {
+            "file": "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf",
+            "page": "44",
+            "score": 0.4488
+          }
+        ]
+      },
+      {
+        "id": "akd-03",
+        "type": "table",
+        "rank": 2,
+        "top": [
+          {
+            "file": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "66",
+            "score": 0.5581
+          },
+          {
+            "file": "2020_Pedoman_Akademik_FILKOM.pdf",
+            "page": "15",
+            "score": 0.5357
+          },
+          {
+            "file": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "65",
+            "score": 0.5324
+          },
+          {
+            "file": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "153",
+            "score": 0.4987
+          },
+          {
+            "file": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "153",
+            "score": 0.4449
+          },
+          {
+            "file": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "144",
+            "score": 0.4394
+          },
+          {
+            "file": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "222",
+            "score": 0.4236
+          },
+          {
+            "file": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "219",
+            "score": 0.4103
+          },
+          {
+            "file": "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf",
+            "page": "45",
+            "score": 0.4058
+          },
+          {
+            "file": "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf",
+            "page": "32",
+            "score": 0.4025
+          }
+        ]
+      },
+      {
+        "id": "akd-04",
+        "type": "factual",
+        "rank": 2,
+        "top": [
+          {
+            "file": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "149",
+            "score": 0.5378
+          },
+          {
+            "file": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "160",
+            "score": 0.5113
+          },
+          {
+            "file": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "179",
+            "score": 0.496
+          },
+          {
+            "file": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "170",
+            "score": 0.4573
+          },
+          {
+            "file": "2020_Pedoman_Akademik_FILKOM.pdf",
+            "page": "44",
+            "score": 0.4312
+          },
+          {
+            "file": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "194",
+            "score": 0.4265
+          },
+          {
+            "file": "2020_Pedoman_Akademik_FILKOM.pdf",
+            "page": "44",
+            "score": 0.4255
+          },
+          {
+            "file": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "180",
+            "score": 0.4062
+          },
+          {
+            "file": "2020_Pedoman_Akademik_FILKOM.pdf",
+            "page": "30",
+            "score": 0.39
+          },
+          {
+            "file": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "220",
+            "score": 0.3895
+          }
+        ]
+      },
+      {
+        "id": "akd-05",
+        "type": "factual",
+        "rank": 3,
+        "top": [
+          {
+            "file": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "151",
+            "score": 0.5059
+          },
+          {
+            "file": "2024_Kurikulum_Sistem_Informasi.pdf",
+            "page": "11",
+            "score": 0.4969
+          },
+          {
+            "file": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "159",
+            "score": 0.493
+          },
+          {
+            "file": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "179",
+            "score": 0.4783
+          },
+          {
+            "file": "2020_Pedoman_Akademik_FILKOM.pdf",
+            "page": "44",
+            "score": 0.467
+          },
+          {
+            "file": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "153",
+            "score": 0.4604
+          },
+          {
+            "file": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "155",
+            "score": 0.4598
+          },
+          {
+            "file": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "219",
+            "score": 0.4518
+          },
+          {
+            "file": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "160",
+            "score": 0.4276
+          },
+          {
+            "file": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "144",
+            "score": 0.4272
+          }
+        ]
+      },
+      {
+        "id": "akd-06",
+        "type": "factual",
+        "rank": 1,
+        "top": [
+          {
+            "file": "2020_Pedoman_Akademik_FILKOM.pdf",
+            "page": "26",
+            "score": 0.5505
+          },
+          {
+            "file": "2020_Pedoman_Akademik_FILKOM.pdf",
+            "page": "26",
+            "score": 0.4301
+          },
+          {
+            "file": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "213",
+            "score": 0.4208
+          },
+          {
+            "file": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "217",
+            "score": 0.4053
+          },
+          {
+            "file": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "213",
+            "score": 0.3997
+          },
+          {
+            "file": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "214",
+            "score": 0.3966
+          },
+          {
+            "file": "2020_Pedoman_Akademik_FILKOM.pdf",
+            "page": "42",
+            "score": 0.3616
+          },
+          {
+            "file": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "210",
+            "score": 0.3445
+          },
+          {
+            "file": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "216",
+            "score": 0.3425
+          },
+          {
+            "file": "2020_Pedoman_Akademik_FILKOM.pdf",
+            "page": "27",
+            "score": 0.3356
+          }
+        ]
+      },
+      {
+        "id": "akd-07",
+        "type": "factual",
+        "rank": 1,
+        "top": [
+          {
+            "file": "2020_Standar_Pembelajaran_Daring.pdf",
+            "page": "20",
+            "score": 0.5097
+          },
+          {
+            "file": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "131",
+            "score": 0.491
+          },
+          {
+            "file": "2020_Standar_Pembelajaran_Daring.pdf",
+            "page": "43",
+            "score": 0.4756
+          },
+          {
+            "file": "2020_Standar_Pembelajaran_Daring.pdf",
+            "page": "17",
+            "score": 0.4548
+          },
+          {
+            "file": "2020_Standar_Pembelajaran_Daring.pdf",
+            "page": "10",
+            "score": 0.4254
+          },
+          {
+            "file": "2020_Standar_Pembelajaran_Daring.pdf",
+            "page": "10",
+            "score": 0.4061
+          },
+          {
+            "file": "2020_Standar_Pembelajaran_Daring.pdf",
+            "page": "37",
+            "score": 0.3986
+          },
+          {
+            "file": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "132",
+            "score": 0.3964
+          },
+          {
+            "file": "2020_Standar_Pembelajaran_Daring.pdf",
+            "page": "17",
+            "score": 0.3925
+          },
+          {
+            "file": "2020_Standar_Pembelajaran_Daring.pdf",
+            "page": "19",
+            "score": 0.3875
+          }
+        ]
+      },
+      {
+        "id": "kur-01",
+        "type": "disambiguation",
+        "rank": 3,
+        "top": [
+          {
+            "file": "2024_Kurikulum_Sistem_Informasi.pdf",
+            "page": "22",
+            "score": 0.6407
+          },
+          {
+            "file": "2024_Kurikulum_Teknik_Informatika.pdf",
+            "page": "44",
+            "score": 0.6292
+          },
+          {
+            "file": "2024_Kurikulum_Teknik_Informatika.pdf",
+            "page": "45",
+            "score": 0.6254
+          },
+          {
+            "file": "2024_Kurikulum_Teknik_Informatika.pdf",
+            "page": "22",
+            "score": 0.6234
+          },
+          {
+            "file": "2024_Kurikulum_Teknik_Informatika.pdf",
+            "page": "19",
+            "score": 0.613
+          },
+          {
+            "file": "2024_Kurikulum_Teknik_Komputer.pdf",
+            "page": "26",
+            "score": 0.6018
+          },
+          {
+            "file": "2024_Kurikulum_Teknologi_Informasi.pdf",
+            "page": "10",
+            "score": 0.5955
+          },
+          {
+            "file": "2024_Kurikulum_Teknik_Komputer.pdf",
+            "page": "24",
+            "score": 0.5953
+          },
+          {
+            "file": "2024_Kurikulum_Sistem_Informasi.pdf",
+            "page": "24",
+            "score": 0.5898
+          },
+          {
+            "file": "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf",
+            "page": "52",
+            "score": 0.5867
+          }
+        ]
+      },
+      {
+        "id": "kur-02",
+        "type": "disambiguation",
+        "rank": 2,
+        "top": [
+          {
+            "file": "2024_Kurikulum_Sistem_Informasi.pdf",
+            "page": "22",
+            "score": 0.6989
+          },
+          {
+            "file": "2024_Kurikulum_Sistem_Informasi.pdf",
+            "page": "10",
+            "score": 0.6443
+          },
+          {
+            "file": "2024_Kurikulum_Sistem_Informasi.pdf",
+            "page": "24",
+            "score": 0.6267
+          },
+          {
+            "file": "2024_Kurikulum_Sistem_Informasi.pdf",
+            "page": "23",
+            "score": 0.6099
+          },
+          {
+            "file": "2024_Kurikulum_Sistem_Informasi.pdf",
+            "page": "12",
+            "score": 0.6039
+          },
+          {
+            "file": "2024_Kurikulum_Sistem_Informasi.pdf",
+            "page": "5",
+            "score": 0.5995
+          },
+          {
+            "file": "2024_Kurikulum_Sistem_Informasi.pdf",
+            "page": "26",
+            "score": 0.5989
+          },
+          {
+            "file": "2024_Kurikulum_Sistem_Informasi.pdf",
+            "page": "11",
+            "score": 0.5904
+          },
+          {
+            "file": "2024_Kurikulum_Sistem_Informasi.pdf",
+            "page": "24",
+            "score": 0.5833
+          },
+          {
+            "file": "2024_Kurikulum_Teknik_Informatika.pdf",
+            "page": "22",
+            "score": 0.5816
+          }
+        ]
+      },
+      {
+        "id": "kur-03",
+        "type": "disambiguation",
+        "rank": 1,
+        "top": [
+          {
+            "file": "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf",
+            "page": "21",
+            "score": 0.6494
+          },
+          {
+            "file": "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf",
+            "page": "52",
+            "score": 0.6104
+          },
+          {
+            "file": "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf",
+            "page": "37",
+            "score": 0.6021
+          },
+          {
+            "file": "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf",
+            "page": "54",
+            "score": 0.6021
+          },
+          {
+            "file": "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf",
+            "page": "54",
+            "score": 0.5975
+          },
+          {
+            "file": "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf",
+            "page": "40",
+            "score": 0.5844
+          },
+          {
+            "file": "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf",
+            "page": "43",
+            "score": 0.5843
+          },
+          {
+            "file": "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf",
+            "page": "30",
+            "score": 0.5737
+          },
+          {
+            "file": "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf",
+            "page": "38",
+            "score": 0.573
+          },
+          {
+            "file": "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf",
+            "page": "41",
+            "score": 0.5715
+          }
+        ]
+      },
+      {
+        "id": "kur-04",
+        "type": "disambiguation",
+        "rank": 3,
+        "top": [
+          {
+            "file": "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf",
+            "page": "40",
+            "score": 0.5823
+          },
+          {
+            "file": "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf",
+            "page": "54",
+            "score": 0.5751
+          },
+          {
+            "file": "2024_Kurikulum_Teknik_Informatika.pdf",
+            "page": "22",
+            "score": 0.5717
+          },
+          {
+            "file": "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf",
+            "page": "21",
+            "score": 0.5713
+          },
+          {
+            "file": "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf",
+            "page": "43",
+            "score": 0.5643
+          },
+          {
+            "file": "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf",
+            "page": "37",
+            "score": 0.5603
+          },
+          {
+            "file": "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf",
+            "page": "30",
+            "score": 0.5596
+          },
+          {
+            "file": "2024_Kurikulum_Teknologi_Informasi.pdf",
+            "page": "10",
+            "score": 0.5565
+          },
+          {
+            "file": "2024_Kurikulum_Teknologi_Informasi.pdf",
+            "page": "13",
+            "score": 0.5564
+          },
+          {
+            "file": "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf",
+            "page": "33",
+            "score": 0.5495
+          }
+        ]
+      },
+      {
+        "id": "kur-05",
+        "type": "disambiguation",
+        "rank": 3,
+        "top": [
+          {
+            "file": "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf",
+            "page": "40",
+            "score": 0.5011
+          },
+          {
+            "file": "2024_Kurikulum_Teknik_Komputer.pdf",
+            "page": "67",
+            "score": 0.4989
+          },
+          {
+            "file": "2024_Kurikulum_Teknik_Komputer.pdf",
+            "page": "17",
+            "score": 0.4958
+          },
+          {
+            "file": "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf",
+            "page": "30",
+            "score": 0.4942
+          },
+          {
+            "file": "2024_Kurikulum_Teknik_Komputer.pdf",
+            "page": "16",
+            "score": 0.4938
+          },
+          {
+            "file": "2024_Kurikulum_Teknik_Komputer.pdf",
+            "page": "13",
+            "score": 0.4884
+          },
+          {
+            "file": "2024_Kurikulum_Teknik_Komputer.pdf",
+            "page": "26",
+            "score": 0.4866
+          },
+          {
+            "file": "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf",
+            "page": "37",
+            "score": 0.4853
+          },
+          {
+            "file": "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf",
+            "page": "21",
+            "score": 0.4849
+          },
+          {
+            "file": "2024_Kurikulum_Teknik_Komputer.pdf",
+            "page": "14",
+            "score": 0.4843
+          }
+        ]
+      },
+      {
+        "id": "kur-06",
+        "type": "factual",
+        "rank": 1,
+        "top": [
+          {
+            "file": "2024_Kurikulum_Magister_Ilmu_Komputer.pdf",
+            "page": "48",
+            "score": 0.5905
+          },
+          {
+            "file": "2024_Kurikulum_Magister_Ilmu_Komputer.pdf",
+            "page": "18",
+            "score": 0.5797
+          },
+          {
+            "file": "2020_Pedoman_Akademik_FILKOM.pdf",
+            "page": "22",
+            "score": 0.5397
+          },
+          {
+            "file": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "172",
+            "score": 0.5195
+          },
+          {
+            "file": "2024_Kurikulum_Magister_Ilmu_Komputer.pdf",
+            "page": "16",
+            "score": 0.519
+          },
+          {
+            "file": "2024_Kurikulum_Magister_Ilmu_Komputer.pdf",
+            "page": "19",
+            "score": 0.5062
+          },
+          {
+            "file": "2024_Kurikulum_Magister_Ilmu_Komputer.pdf",
+            "page": "17",
+            "score": 0.5056
+          },
+          {
+            "file": "2024_Kurikulum_Magister_Ilmu_Komputer.pdf",
+            "page": "20",
+            "score": 0.4966
+          },
+          {
+            "file": "2024_Kurikulum_Magister_Ilmu_Komputer.pdf",
+            "page": "40",
+            "score": 0.4954
+          },
+          {
+            "file": "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf",
+            "page": "30",
+            "score": 0.4953
+          }
+        ]
+      },
+      {
+        "id": "kur-07",
+        "type": "disambiguation",
+        "rank": null,
+        "top": [
+          {
+            "file": "2018_Panduan_PKL.pdf",
+            "page": "106",
+            "score": 0.5213
+          },
+          {
+            "file": "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf",
+            "page": "30",
+            "score": 0.5132
+          },
+          {
+            "file": "2018_Panduan_PKL.pdf",
+            "page": "126",
+            "score": 0.512
+          },
+          {
+            "file": "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf",
+            "page": "62",
+            "score": 0.5118
+          },
+          {
+            "file": "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf",
+            "page": "40",
+            "score": 0.5112
+          },
+          {
+            "file": "2018_Panduan_PKL.pdf",
+            "page": "108",
+            "score": 0.5056
+          },
+          {
+            "file": "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf",
+            "page": "37",
+            "score": 0.5044
+          },
+          {
+            "file": "2018_Panduan_PKL.pdf",
+            "page": "102",
+            "score": 0.5014
+          },
+          {
+            "file": "2018_Panduan_PKL.pdf",
+            "page": "108",
+            "score": 0.4998
+          },
+          {
+            "file": "2018_Panduan_PKL.pdf",
+            "page": "107",
+            "score": 0.4969
+          }
+        ]
+      },
+      {
+        "id": "skr-01",
+        "type": "factual",
+        "rank": 5,
+        "top": [
+          {
+            "file": "2018_Panduan_Skripsi.pdf",
+            "page": "110",
+            "score": 0.6434
+          },
+          {
+            "file": "2018_Panduan_Skripsi.pdf",
+            "page": "93",
+            "score": 0.6256
+          },
+          {
+            "file": "2018_Panduan_Skripsi.pdf",
+            "page": "106",
+            "score": 0.6202
+          },
+          {
+            "file": "2018_Panduan_Skripsi.pdf",
+            "page": "92",
+            "score": 0.6117
+          },
+          {
+            "file": "2018_Panduan_Skripsi.pdf",
+            "page": "111",
+            "score": 0.6036
+          },
+          {
+            "file": "2018_Panduan_Skripsi.pdf",
+            "page": "105",
+            "score": 0.6029
+          },
+          {
+            "file": "2018_Panduan_Skripsi.pdf",
+            "page": "31",
+            "score": 0.5893
+          },
+          {
+            "file": "2018_Panduan_Skripsi.pdf",
+            "page": "31",
+            "score": 0.5891
+          },
+          {
+            "file": "2018_Panduan_Skripsi.pdf",
+            "page": "32",
+            "score": 0.587
+          },
+          {
+            "file": "2018_Panduan_Skripsi.pdf",
+            "page": "107",
+            "score": 0.5778
+          }
+        ]
+      },
+      {
+        "id": "skr-02",
+        "type": "trap",
+        "rank": 1,
+        "top": [
+          {
+            "file": "2015_Panduan_Penulisan_Skripsi.pdf",
+            "page": "40",
+            "score": 0.6718
+          },
+          {
+            "file": "2018_Panduan_Skripsi.pdf",
+            "page": "69",
+            "score": 0.6641
+          },
+          {
+            "file": "2015_Panduan_Penulisan_Proposal_Skripsi.pdf",
+            "page": "27",
+            "score": 0.6546
+          },
+          {
+            "file": "2018_Panduan_Skripsi.pdf",
+            "page": "52",
+            "score": 0.525
+          },
+          {
+            "file": "2018_Panduan_Skripsi.pdf",
+            "page": "69",
+            "score": 0.5013
+          },
+          {
+            "file": "2018_Panduan_Skripsi.pdf",
+            "page": "49",
+            "score": 0.4838
+          },
+          {
+            "file": "2015_Panduan_Penulisan_Skripsi.pdf",
+            "page": "23",
+            "score": 0.4795
+          },
+          {
+            "file": "2018_Panduan_PKL.pdf",
+            "page": "36",
+            "score": 0.4725
+          },
+          {
+            "file": "2015_Panduan_Penulisan_Skripsi.pdf",
+            "page": "42",
+            "score": 0.4703
+          },
+          {
+            "file": "2015_Panduan_Penulisan_Skripsi.pdf",
+            "page": "41",
+            "score": 0.4681
+          }
+        ]
+      },
+      {
+        "id": "skr-03",
+        "type": "factual",
+        "rank": 2,
+        "top": [
+          {
+            "file": "2020_Pedoman_Akademik_FILKOM.pdf",
+            "page": "32",
+            "score": 0.555
+          },
+          {
+            "file": "2018_Panduan_PKL.pdf",
+            "page": "70",
+            "score": 0.5274
+          },
+          {
+            "file": "2018_Panduan_PKL.pdf",
+            "page": "13",
+            "score": 0.5242
+          },
+          {
+            "file": "2018_Panduan_PKL.pdf",
+            "page": "123",
+            "score": 0.5219
+          },
+          {
+            "file": "2018_Panduan_PKL.pdf",
+            "page": "14",
+            "score": 0.5213
+          },
+          {
+            "file": "2018_Panduan_PKL.pdf",
+            "page": "11",
+            "score": 0.5206
+          },
+          {
+            "file": "2023_Panduan_Rekognisi_Pembelajaran_Lampau.pdf",
+            "page": "13",
+            "score": 0.5183
+          },
+          {
+            "file": "2018_Panduan_PKL.pdf",
+            "page": "133",
+            "score": 0.5135
+          },
+          {
+            "file": "2018_Panduan_PKL.pdf",
+            "page": "4",
+            "score": 0.5124
+          },
+          {
+            "file": "2018_Panduan_PKL.pdf",
+            "page": "9",
+            "score": 0.5117
+          }
+        ]
+      },
+      {
+        "id": "mhs-01",
+        "type": "factual",
+        "rank": 1,
+        "top": [
+          {
+            "file": "2023_Panduan_PKL_Jalur_Lomba.pdf",
+            "page": "1",
+            "score": 0.5328
+          },
+          {
+            "file": "2018_Panduan_PKL.pdf",
+            "page": "24",
+            "score": 0.5079
+          },
+          {
+            "file": "2018_Panduan_PKL.pdf",
+            "page": "11",
+            "score": 0.4915
+          },
+          {
+            "file": "2023_Panduan_PKL_Jalur_Lomba.pdf",
+            "page": "1",
+            "score": 0.4892
+          },
+          {
+            "file": "2018_Panduan_PKL.pdf",
+            "page": "11",
+            "score": 0.486
+          },
+          {
+            "file": "2023_Panduan_PKL_Jalur_Lomba.pdf",
+            "page": "2",
+            "score": 0.4586
+          },
+          {
+            "file": "2018_Panduan_PKL.pdf",
+            "page": "97",
+            "score": 0.4522
+          },
+          {
+            "file": "2018_Panduan_PKL.pdf",
+            "page": "21",
+            "score": 0.4419
+          },
+          {
+            "file": "2018_Panduan_PKL.pdf",
+            "page": "13",
+            "score": 0.4308
+          },
+          {
+            "file": "2018_Panduan_PKL.pdf",
+            "page": "24",
+            "score": 0.423
+          }
+        ]
+      },
+      {
+        "id": "mhs-02",
+        "type": "factual",
+        "rank": 1,
+        "top": [
+          {
+            "file": "2018_Panduan_PKL.pdf",
+            "page": "11",
+            "score": 0.4943
+          },
+          {
+            "file": "2018_Panduan_PKL.pdf",
+            "page": "70",
+            "score": 0.4721
+          },
+          {
+            "file": "2023_Panduan_Rekognisi_Pembelajaran_Lampau.pdf",
+            "page": "13",
+            "score": 0.4605
+          },
+          {
+            "file": "2023_Panduan_Rekognisi_Pembelajaran_Lampau.pdf",
+            "page": "10",
+            "score": 0.4602
+          },
+          {
+            "file": "2023_Panduan_Rekognisi_Pembelajaran_Lampau.pdf",
+            "page": "13",
+            "score": 0.4463
+          },
+          {
+            "file": "2023_Panduan_Rekognisi_Pembelajaran_Lampau.pdf",
+            "page": "13",
+            "score": 0.4368
+          },
+          {
+            "file": "2018_Panduan_PKL.pdf",
+            "page": "133",
+            "score": 0.4228
+          },
+          {
+            "file": "2018_Panduan_PKL.pdf",
+            "page": "123",
+            "score": 0.4224
+          },
+          {
+            "file": "2018_Panduan_PKL.pdf",
+            "page": "9",
+            "score": 0.422
+          },
+          {
+            "file": "2018_Panduan_PKL.pdf",
+            "page": "21",
+            "score": 0.4204
+          }
+        ]
+      },
+      {
+        "id": "mhs-03",
+        "type": "factual",
+        "rank": 1,
+        "top": [
+          {
+            "file": "2026_Panduan_SKM.pdf",
+            "page": "6",
+            "score": 0.6746
+          },
+          {
+            "file": "2026_Panduan_SKM.pdf",
+            "page": "7",
+            "score": 0.552
+          },
+          {
+            "file": "2020_Pedoman_Akademik_FILKOM.pdf",
+            "page": "44",
+            "score": 0.5056
+          },
+          {
+            "file": "2026_Panduan_SKM.pdf",
+            "page": "9",
+            "score": 0.4883
+          },
+          {
+            "file": "2026_Panduan_SKM.pdf",
+            "page": "15",
+            "score": 0.487
+          },
+          {
+            "file": "2026_Panduan_SKM.pdf",
+            "page": "13",
+            "score": 0.4858
+          },
+          {
+            "file": "2026_Panduan_SKM.pdf",
+            "page": "14",
+            "score": 0.4838
+          },
+          {
+            "file": "2026_Panduan_SKM.pdf",
+            "page": "12",
+            "score": 0.482
+          },
+          {
+            "file": "2026_Panduan_SKM.pdf",
+            "page": "11",
+            "score": 0.4795
+          },
+          {
+            "file": "2026_Panduan_SKM.pdf",
+            "page": "15",
+            "score": 0.4762
+          }
+        ]
+      },
+      {
+        "id": "mhs-04",
+        "type": "table",
+        "rank": 1,
+        "top": [
+          {
+            "file": "2026_Panduan_SKM.pdf",
+            "page": "9",
+            "score": 0.5853
+          },
+          {
+            "file": "2026_Panduan_SKM.pdf",
+            "page": "6",
+            "score": 0.578
+          },
+          {
+            "file": "2026_Panduan_SKM.pdf",
+            "page": "11",
+            "score": 0.5666
+          },
+          {
+            "file": "2026_Panduan_SKM.pdf",
+            "page": "10",
+            "score": 0.5609
+          },
+          {
+            "file": "2026_Panduan_SKM.pdf",
+            "page": "10",
+            "score": 0.5599
+          },
+          {
+            "file": "2026_Panduan_SKM.pdf",
+            "page": "12",
+            "score": 0.5572
+          },
+          {
+            "file": "2026_Panduan_SKM.pdf",
+            "page": "13",
+            "score": 0.5437
+          },
+          {
+            "file": "2026_Panduan_SKM.pdf",
+            "page": "12",
+            "score": 0.5364
+          },
+          {
+            "file": "2026_Panduan_SKM.pdf",
+            "page": "7",
+            "score": 0.522
+          },
+          {
+            "file": "2026_Panduan_SKM.pdf",
+            "page": "14",
+            "score": 0.5012
+          }
+        ]
+      },
+      {
+        "id": "mhs-05",
+        "type": "factual",
+        "rank": 3,
+        "top": [
+          {
+            "file": "2023_Panduan_Rekognisi_Pembelajaran_Lampau.pdf",
+            "page": "13",
+            "score": 0.6316
+          },
+          {
+            "file": "2023_Panduan_Rekognisi_Pembelajaran_Lampau.pdf",
+            "page": "13",
+            "score": 0.629
+          },
+          {
+            "file": "2023_Panduan_Rekognisi_Pembelajaran_Lampau.pdf",
+            "page": "9",
+            "score": 0.6226
+          },
+          {
+            "file": "2023_Panduan_Rekognisi_Pembelajaran_Lampau.pdf",
+            "page": "11",
+            "score": 0.6219
+          },
+          {
+            "file": "2023_Panduan_Rekognisi_Pembelajaran_Lampau.pdf",
+            "page": "10",
+            "score": 0.6035
+          },
+          {
+            "file": "2023_Panduan_Rekognisi_Pembelajaran_Lampau.pdf",
+            "page": "10",
+            "score": 0.5972
+          },
+          {
+            "file": "2023_Panduan_Rekognisi_Pembelajaran_Lampau.pdf",
+            "page": "12",
+            "score": 0.5895
+          },
+          {
+            "file": "2023_Panduan_Rekognisi_Pembelajaran_Lampau.pdf",
+            "page": "30",
+            "score": 0.5593
+          },
+          {
+            "file": "2023_Panduan_Rekognisi_Pembelajaran_Lampau.pdf",
+            "page": "12",
+            "score": 0.5583
+          },
+          {
+            "file": "2023_Panduan_Rekognisi_Pembelajaran_Lampau.pdf",
+            "page": "30",
+            "score": 0.5577
+          }
+        ]
+      }
+    ]
+  },
+  "answers": {
+    "summary": {
+      "groundedness": {
+        "faithfulness": 0.942,
+        "fully_grounded": 0.9,
+        "displayed_source_hit": 0.818,
+        "answers_with_citations": 1.0,
+        "answers_with_invalid_citations": 0.0,
+        "out_of_scope_refusal": 1.0,
+        "false_refusal": 0.045
+      },
+      "correctness": {
+        "score": 0.82,
+        "correct": 19,
+        "partial": 3,
+        "incorrect": 3,
+        "score_by_type": {
+          "disambiguation": 0.667,
+          "factual": 0.875,
+          "out_of_scope": 1.0,
+          "table": 0.667,
+          "trap": 1.0
+        }
+      },
+      "errors": {
+        "generation": 0,
+        "correctness_judge": 0,
+        "faithfulness_judge": 1
+      },
+      "median_latency_s": 3.9
+    },
+    "items": [
+      {
+        "id": "akd-01",
+        "type": "factual",
+        "latency_s": 4.5,
+        "answer": "Batas maksimal keterlambatan mahasiswa saat mengikuti UTS atau UAS adalah 15 menit[1].",
+        "verdict": "partial",
+        "reason": "Jawaban chatbot menyebutkan batas waktu 15 menit, tetapi menghilangkan informasi penting mengenai alasan tertentu dan kewajiban membawa KTM.",
+        "generated": true,
+        "refused": false,
+        "refusal_phrase": null,
+        "displayed_sources": [
+          {
+            "number": 1,
+            "file_name": "2016_Tata_Tertib_Ujian.pdf",
+            "page": "1",
+            "category": "01_Akademik_Umum",
+            "title": "Tata Tertib Ujian (UTS & UAS) FILKOM",
+            "year": "2016",
+            "search": "maksimal 15 (lima belas) menit"
+          }
+        ],
+        "displayed_source_hit": true,
+        "cited_pages": 1,
+        "invalid_citations": 0,
+        "faithfulness": 1.0,
+        "unsupported_claims": [],
+        "faithfulness_error": null,
+        "context_pages": [
+          "2016_Tata_Tertib_Ujian.pdf p2",
+          "2016_Tata_Tertib_Ujian.pdf p1",
+          "2020_Pedoman_Akademik_FILKOM.pdf p30",
+          "2020_Pedoman_Akademik_FILKOM.pdf p25",
+          "2023_Pedoman_Pendidikan_UB.pdf p149",
+          "2016_Tata_Tertib_Ujian.pdf p3"
+        ]
+      },
+      {
+        "id": "akd-02",
+        "type": "table",
+        "latency_s": 4.0,
+        "answer": "Dengan IP 2,75, beban studi Anda berada pada rentang 19 – 21 SKS, sehingga Anda dapat mengambil maksimal 21 SKS pada semester berikutnya [1].",
+        "verdict": "correct",
+        "reason": "Jawaban chatbot menyatakan maksimal 21 SKS, sesuai dengan referensi.",
+        "generated": true,
+        "refused": false,
+        "refusal_phrase": null,
+        "displayed_sources": [
+          {
+            "number": 1,
+            "file_name": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "66",
+            "category": "01_Akademik_Umum",
+            "title": "Pedoman Pendidikan Universitas Brawijaya 2023/2024",
+            "year": "2023",
+            "search": "Besarnya beban studi pada semester"
+          }
+        ],
+        "displayed_source_hit": false,
+        "cited_pages": 1,
+        "invalid_citations": 0,
+        "faithfulness": 1.0,
+        "unsupported_claims": [],
+        "faithfulness_error": null,
+        "context_pages": [
+          "2023_Pedoman_Pendidikan_UB.pdf p66",
+          "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf p32",
+          "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf p45",
+          "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf p39",
+          "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf p33",
+          "2023_Pedoman_Pendidikan_UB.pdf p219"
+        ]
+      },
+      {
+        "id": "akd-03",
+        "type": "table",
+        "latency_s": 3.7,
+        "answer": "Beban studi maksimum yang dapat diambil mahasiswa bila IP semester sebelumnya di bawah 1,50 adalah 12 SKS [1].",
+        "verdict": "incorrect",
+        "reason": "Referensi menyatakan beban studi kurang dari 12 SKS, sedangkan chatbot menyatakan 12 SKS.",
+        "generated": true,
+        "refused": false,
+        "refusal_phrase": null,
+        "displayed_sources": [
+          {
+            "number": 1,
+            "file_name": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "66",
+            "category": "01_Akademik_Umum",
+            "title": "Pedoman Pendidikan Universitas Brawijaya 2023/2024",
+            "year": "2023",
+            "search": "1 . Penetapan beban studi mahasiswa"
+          }
+        ],
+        "displayed_source_hit": false,
+        "cited_pages": 1,
+        "invalid_citations": 0,
+        "faithfulness": 1.0,
+        "unsupported_claims": [],
+        "faithfulness_error": null,
+        "context_pages": [
+          "2023_Pedoman_Pendidikan_UB.pdf p66",
+          "2020_Pedoman_Akademik_FILKOM.pdf p15",
+          "2023_Pedoman_Pendidikan_UB.pdf p65",
+          "2023_Pedoman_Pendidikan_UB.pdf p153",
+          "2023_Pedoman_Pendidikan_UB.pdf p153",
+          "2023_Pedoman_Pendidikan_UB.pdf p144"
+        ]
+      },
+      {
+        "id": "akd-04",
+        "type": "factual",
+        "latency_s": 4.0,
+        "answer": "Syarat lulus dengan predikat **Pujian (Cumlaude)** untuk program sarjana di Universitas Brawijaya adalah:\n\n- **IPK lebih besar dari 3,50** [1]  \n- **Masa studi tidak melebihi 4 (empat) tahun** [1]  \n- **Tidak pernah terkena sanksi indisipliner atau sanksi akademik** [1]  \n- **Nilai setiap mata kuliah minimal B** [1]  \n- **Memenuhi persyaratan lain yang ditetapkan oleh fakultas masing‑masing** [1]  ",
+        "verdict": "correct",
+        "reason": "Semua fakta inti dari jawaban referensi (IPK > 3,50, masa studi maksimal 4 tahun, tanpa sanksi, nilai minimum B, dan syarat fakultas) tercakup secara akurat dalam jawaban chatbot tanpa adanya informasi yang bertentangan.",
+        "generated": true,
+        "refused": false,
+        "refusal_phrase": null,
+        "displayed_sources": [
+          {
+            "number": 1,
+            "file_name": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "160",
+            "category": "01_Akademik_Umum",
+            "title": "Pedoman Pendidikan Universitas Brawijaya 2023/2024",
+            "year": "2023",
+            "search": "IPK > 3,50 = Pujian IPK"
+          }
+        ],
+        "displayed_source_hit": true,
+        "cited_pages": 1,
+        "invalid_citations": 0,
+        "faithfulness": null,
+        "unsupported_claims": [],
+        "faithfulness_error": "judge error: 'list' object has no attribute 'get'",
+        "context_pages": [
+          "2023_Pedoman_Pendidikan_UB.pdf p149",
+          "2023_Pedoman_Pendidikan_UB.pdf p160",
+          "2023_Pedoman_Pendidikan_UB.pdf p179",
+          "2023_Pedoman_Pendidikan_UB.pdf p170",
+          "2020_Pedoman_Akademik_FILKOM.pdf p44",
+          "2023_Pedoman_Pendidikan_UB.pdf p194"
+        ]
+      },
+      {
+        "id": "akd-05",
+        "type": "factual",
+        "latency_s": 3.7,
+        "answer": "Masa studi maksimum untuk program sarjana adalah 14 semester, setara dengan 7 tahun [1][2] .",
+        "verdict": "correct",
+        "reason": "Jawaban chatbot menyebutkan durasi maksimum 14 semester yang sama persis dengan referensi, serta tambahan informasi 7 tahun yang tidak bertentangan.",
+        "generated": true,
+        "refused": false,
+        "refusal_phrase": null,
+        "displayed_sources": [
+          {
+            "number": 1,
+            "file_name": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "151",
+            "category": "01_Akademik_Umum",
+            "title": "Pedoman Pendidikan Universitas Brawijaya 2023/2024",
+            "year": "2023",
+            "search": "studi maksimal adalah 7 tahun"
+          },
+          {
+            "number": 2,
+            "file_name": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "159",
+            "category": "01_Akademik_Umum",
+            "title": "Pedoman Pendidikan Universitas Brawijaya 2023/2024",
+            "year": "2023",
+            "search": "melampaui maksimum masa studi 14"
+          }
+        ],
+        "displayed_source_hit": true,
+        "cited_pages": 2,
+        "invalid_citations": 0,
+        "faithfulness": 1.0,
+        "unsupported_claims": [],
+        "faithfulness_error": null,
+        "context_pages": [
+          "2023_Pedoman_Pendidikan_UB.pdf p151",
+          "2024_Kurikulum_Sistem_Informasi.pdf p11",
+          "2023_Pedoman_Pendidikan_UB.pdf p159",
+          "2023_Pedoman_Pendidikan_UB.pdf p179",
+          "2020_Pedoman_Akademik_FILKOM.pdf p44",
+          "2023_Pedoman_Pendidikan_UB.pdf p153"
+        ]
+      },
+      {
+        "id": "akd-06",
+        "type": "factual",
+        "latency_s": 3.5,
+        "answer": "Batas waktu pengajuan cuti akademik adalah paling lambat 1 bulan setelah berakhirnya masa daftar ulang, dan pada semester yang diajukan tidak dikenakan biaya pendidikan[1][2].",
+        "verdict": "correct",
+        "reason": "Jawaban chatbot menyampaikan semua fakta inti dari referensi dengan tepat mengenai batas waktu pengajuan cuti dan pembebasan biaya pendidikan tanpa ada informasi yang bertentangan.",
+        "generated": true,
+        "refused": false,
+        "refusal_phrase": null,
+        "displayed_sources": [
+          {
+            "number": 1,
+            "file_name": "2020_Pedoman_Akademik_FILKOM.pdf",
+            "page": "26",
+            "category": "01_Akademik_Umum",
+            "title": "Pedoman Akademik FILKOM",
+            "year": "2020",
+            "search": "Cuti akademik diajukan paling lambat"
+          },
+          {
+            "number": 2,
+            "file_name": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "213",
+            "category": "01_Akademik_Umum",
+            "title": "Pedoman Pendidikan Universitas Brawijaya 2023/2024",
+            "year": "2023",
+            "search": "Cuti akademik diajukan paling lambat"
+          }
+        ],
+        "displayed_source_hit": true,
+        "cited_pages": 2,
+        "invalid_citations": 0,
+        "faithfulness": 1.0,
+        "unsupported_claims": [],
+        "faithfulness_error": null,
+        "context_pages": [
+          "2020_Pedoman_Akademik_FILKOM.pdf p26",
+          "2020_Pedoman_Akademik_FILKOM.pdf p26",
+          "2023_Pedoman_Pendidikan_UB.pdf p213",
+          "2023_Pedoman_Pendidikan_UB.pdf p217",
+          "2023_Pedoman_Pendidikan_UB.pdf p213",
+          "2023_Pedoman_Pendidikan_UB.pdf p214"
+        ]
+      },
+      {
+        "id": "akd-07",
+        "type": "factual",
+        "latency_s": 3.6,
+        "answer": "Mahasiswa dianggap hadir bila mengikuti minimal 60 % dari waktu perkuliahan secara live pada kuliah daring sinkron dengan video conference[1].",
+        "verdict": "correct",
+        "reason": "Jawaban chatbot memuat semua fakta inti yang ada pada referensi secara tepat tanpa ada tambahan klaim yang salah.",
+        "generated": true,
+        "refused": false,
+        "refusal_phrase": null,
+        "displayed_sources": [
+          {
+            "number": 1,
+            "file_name": "2020_Standar_Pembelajaran_Daring.pdf",
+            "page": "20",
+            "category": "01_Akademik_Umum",
+            "title": "Standar Pembelajaran Daring FILKOM",
+            "year": "2020",
+            "search": "mengikuti minimal 60% dari waktu"
+          }
+        ],
+        "displayed_source_hit": true,
+        "cited_pages": 1,
+        "invalid_citations": 0,
+        "faithfulness": 1.0,
+        "unsupported_claims": [],
+        "faithfulness_error": null,
+        "context_pages": [
+          "2020_Standar_Pembelajaran_Daring.pdf p20",
+          "2023_Pedoman_Pendidikan_UB.pdf p131",
+          "2020_Standar_Pembelajaran_Daring.pdf p43",
+          "2020_Standar_Pembelajaran_Daring.pdf p17",
+          "2020_Standar_Pembelajaran_Daring.pdf p10",
+          "2020_Standar_Pembelajaran_Daring.pdf p10"
+        ]
+      },
+      {
+        "id": "kur-01",
+        "type": "disambiguation",
+        "latency_s": 3.8,
+        "answer": "Mahasiswa S1 Teknik Informatika kurikulum 2024 harus menyelesaikan minimal **144 SKS** untuk dapat dinyatakan lulus [1][2].",
+        "verdict": "correct",
+        "reason": "Jawaban chatbot telah mencakup fakta inti yang sama dengan referensi yaitu minimal 144 SKS untuk lulus.",
+        "generated": true,
+        "refused": false,
+        "refusal_phrase": null,
+        "displayed_sources": [
+          {
+            "number": 1,
+            "file_name": "2024_Kurikulum_Teknik_Informatika.pdf",
+            "page": "22",
+            "category": "02_Kurikulum",
+            "title": "Kurikulum S1 Teknik Informatika",
+            "year": "2024",
+            "search": "untuk menyelesaikan total 144 SKS"
+          },
+          {
+            "number": 2,
+            "file_name": "2024_Kurikulum_Teknik_Informatika.pdf",
+            "page": "19",
+            "category": "02_Kurikulum",
+            "title": "Kurikulum S1 Teknik Informatika",
+            "year": "2024",
+            "search": null
+          }
+        ],
+        "displayed_source_hit": true,
+        "cited_pages": 2,
+        "invalid_citations": 0,
+        "faithfulness": 1.0,
+        "unsupported_claims": [],
+        "faithfulness_error": null,
+        "context_pages": [
+          "2024_Kurikulum_Sistem_Informasi.pdf p22",
+          "2024_Kurikulum_Teknik_Informatika.pdf p44",
+          "2024_Kurikulum_Teknik_Informatika.pdf p45",
+          "2024_Kurikulum_Teknik_Informatika.pdf p22",
+          "2024_Kurikulum_Teknik_Informatika.pdf p19",
+          "2024_Kurikulum_Teknik_Komputer.pdf p26"
+        ]
+      },
+      {
+        "id": "kur-02",
+        "type": "disambiguation",
+        "latency_s": 3.5,
+        "answer": "Jumlah SKS minimal yang harus ditempuh untuk menyelesaikan studi S1 Sistem Informasi pada kurikulum 2024 adalah 145 SKS[1][2].",
+        "verdict": "correct",
+        "reason": "Jawaban chatbot menyebutkan jumlah SKS minimal yang sama persis dengan referensi yaitu 145 SKS tanpa ada informasi yang bertentangan.",
+        "generated": true,
+        "refused": false,
+        "refusal_phrase": null,
+        "displayed_sources": [
+          {
+            "number": 1,
+            "file_name": "2024_Kurikulum_Sistem_Informasi.pdf",
+            "page": "22",
+            "category": "02_Kurikulum",
+            "title": "Kurikulum S1 Sistem Informasi",
+            "year": "2024",
+            "search": "SKS lulus adalah 145 sks"
+          },
+          {
+            "number": 2,
+            "file_name": "2024_Kurikulum_Sistem_Informasi.pdf",
+            "page": "10",
+            "category": "02_Kurikulum",
+            "title": "Kurikulum S1 Sistem Informasi",
+            "year": "2024",
+            "search": "Jumlah SKS minimal yang harus"
+          }
+        ],
+        "displayed_source_hit": true,
+        "cited_pages": 2,
+        "invalid_citations": 0,
+        "faithfulness": 1.0,
+        "unsupported_claims": [],
+        "faithfulness_error": null,
+        "context_pages": [
+          "2024_Kurikulum_Sistem_Informasi.pdf p22",
+          "2024_Kurikulum_Sistem_Informasi.pdf p10",
+          "2024_Kurikulum_Sistem_Informasi.pdf p24",
+          "2024_Kurikulum_Sistem_Informasi.pdf p23",
+          "2024_Kurikulum_Sistem_Informasi.pdf p12",
+          "2024_Kurikulum_Sistem_Informasi.pdf p5"
+        ]
+      },
+      {
+        "id": "kur-03",
+        "type": "disambiguation",
+        "latency_s": 3.5,
+        "answer": "Jumlah SKS minimal yang harus ditempuh mahasiswa S1 Pendidikan Teknologi Informasi (PTI) untuk dapat dinyatakan lulus adalah **145 SKS**. Komposisinya terdiri dari:\n\n- **Mata Kuliah Wajib:** minimal 118 SKS  \n- **Mata Kuliah Pilihan:** minimal 27 SKS  \n\n[1]",
+        "verdict": "correct",
+        "reason": "Jawaban chatbot menyebutkan jumlah SKS minimal dan komposisinya (145 SKS, 118 SKS wajib, 27 SKS pilihan) secara akurat sesuai dengan jawaban referensi.",
+        "generated": true,
+        "refused": false,
+        "refusal_phrase": null,
+        "displayed_sources": [
+          {
+            "number": 1,
+            "file_name": "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf",
+            "page": "21",
+            "category": "02_Kurikulum",
+            "title": "Kurikulum S1 Pendidikan Teknologi Informasi",
+            "year": "2024",
+            "search": null
+          }
+        ],
+        "displayed_source_hit": true,
+        "cited_pages": 1,
+        "invalid_citations": 0,
+        "faithfulness": 1.0,
+        "unsupported_claims": [],
+        "faithfulness_error": null,
+        "context_pages": [
+          "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf p21",
+          "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf p52",
+          "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf p37",
+          "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf p54",
+          "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf p54",
+          "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf p40"
+        ]
+      },
+      {
+        "id": "kur-04",
+        "type": "disambiguation",
+        "latency_s": 4.0,
+        "answer": "Maaf, informasi tentang SKS mata kuliah Tugas Akhir/Skripsi di Teknik Informatika dan prasyaratnya tidak tersedia dalam dokumen yang saya miliki. Anda dapat menanyakan hal ini kepada bagian akademik atau dosen pembimbing program studi Teknik Informatika.",
+        "verdict": "incorrect",
+        "reason": "Referensi menyatakan informasi tersedia, tetapi chatbot menyatakan informasi tidak tersedia.",
+        "generated": true,
+        "refused": true,
+        "refusal_phrase": "tidak tersedia",
+        "displayed_sources": [],
+        "displayed_source_hit": false,
+        "cited_pages": 0,
+        "invalid_citations": 0,
+        "faithfulness": null,
+        "unsupported_claims": [],
+        "faithfulness_error": null,
+        "context_pages": [
+          "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf p40",
+          "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf p54",
+          "2024_Kurikulum_Teknik_Informatika.pdf p22",
+          "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf p21",
+          "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf p43",
+          "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf p37"
+        ]
+      },
+      {
+        "id": "kur-05",
+        "type": "disambiguation",
+        "latency_s": 3.9,
+        "answer": "Tugas Akhir / Skripsi pada program studi Teknik Komputer memiliki beban 6 SKS [1] dan memerlukan pencapaian total >120 SKS sebagai prasyarat sebelum dapat diambil [1].",
+        "verdict": "correct",
+        "reason": "Jawaban chatbot mencakup seluruh fakta inti dari referensi, yaitu bobot 6 SKS dan prasyarat lebih dari 120 SKS, tanpa ada informasi yang bertentangan.",
+        "generated": true,
+        "refused": false,
+        "refusal_phrase": null,
+        "displayed_sources": [
+          {
+            "number": 1,
+            "file_name": "2024_Kurikulum_Teknik_Komputer.pdf",
+            "page": "17",
+            "category": "02_Kurikulum",
+            "title": "Kurikulum S1 Teknik Komputer",
+            "year": "2024",
+            "search": "UBU60001 Tugas Akhir / Skripsi 6"
+          }
+        ],
+        "displayed_source_hit": true,
+        "cited_pages": 1,
+        "invalid_citations": 0,
+        "faithfulness": 1.0,
+        "unsupported_claims": [],
+        "faithfulness_error": null,
+        "context_pages": [
+          "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf p40",
+          "2024_Kurikulum_Teknik_Komputer.pdf p67",
+          "2024_Kurikulum_Teknik_Komputer.pdf p17",
+          "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf p30",
+          "2024_Kurikulum_Teknik_Komputer.pdf p16",
+          "2024_Kurikulum_Teknik_Komputer.pdf p13"
+        ]
+      },
+      {
+        "id": "kur-06",
+        "type": "factual",
+        "latency_s": 4.2,
+        "answer": "Jumlah SKS minimal untuk lulus Magister Ilmu Komputer adalah:\n\n- **40 SKS** bagi mahasiswa yang menyelesaikan studinya **sebelum 16 Juli 2025**[1].  \n- **54 SKS** bagi mahasiswa yang lulus **setelah 16 Juli 2025**[1].\n\nCatatan: Pedoman Pendidikan Universitas Brawijaya 2023/2024 menetapkan beban belajar minimal **36 SKS** untuk program magister secara umum[2], namun kurikulum khusus Magister Ilmu Komputer (2024) menetapkan persyaratan yang lebih tinggi (40 SKS atau 54 SKS) sesuai dengan ketentuan SK KEMENDIKBUDRISTEK No. 53 Tahun 2023[1].",
+        "verdict": "correct",
+        "reason": "Semua fakta inti dari referensi (40 SKS sebelum 16 Juli 2025 dan 54 SKS setelah tanggal tersebut) termuat dengan akurat dan tidak ada fakta yang bertentangan.",
+        "generated": true,
+        "refused": false,
+        "refusal_phrase": null,
+        "displayed_sources": [
+          {
+            "number": 1,
+            "file_name": "2024_Kurikulum_Magister_Ilmu_Komputer.pdf",
+            "page": "48",
+            "category": "02_Kurikulum",
+            "title": "Kurikulum S2 Magister Ilmu Komputer",
+            "year": "2024",
+            "search": "Mahasiswa yang menyelesaikan studinya sebelum"
+          },
+          {
+            "number": 2,
+            "file_name": "2023_Pedoman_Pendidikan_UB.pdf",
+            "page": "172",
+            "category": "01_Akademik_Umum",
+            "title": "Pedoman Pendidikan Universitas Brawijaya 2023/2024",
+            "year": "2023",
+            "search": "BEBAN BELAJAR Beban belajar program"
+          }
+        ],
+        "displayed_source_hit": true,
+        "cited_pages": 2,
+        "invalid_citations": 0,
+        "faithfulness": 1.0,
+        "unsupported_claims": [],
+        "faithfulness_error": null,
+        "context_pages": [
+          "2024_Kurikulum_Magister_Ilmu_Komputer.pdf p48",
+          "2024_Kurikulum_Magister_Ilmu_Komputer.pdf p18",
+          "2020_Pedoman_Akademik_FILKOM.pdf p22",
+          "2023_Pedoman_Pendidikan_UB.pdf p172",
+          "2024_Kurikulum_Magister_Ilmu_Komputer.pdf p16",
+          "2024_Kurikulum_Magister_Ilmu_Komputer.pdf p19"
+        ]
+      },
+      {
+        "id": "kur-07",
+        "type": "disambiguation",
+        "latency_s": 4.8,
+        "answer": "PKL pada program Studi Teknik Komputer memiliki beban 3 SKS [1].\n\nMaaf, informasi tentang prasyarat PKL di Teknik Komputer tidak tersedia dalam dokumen yang saya miliki. Anda dapat menanyakan hal tersebut ke bagian akademik atau dosen pembimbing Anda.",
+        "verdict": "incorrect",
+        "reason": "Referensi menyatakan PKL bernilai 4 SKS dengan prasyarat >96 SKS, sedangkan chatbot menyebutkan 3 SKS dan menyatakan prasyarat tidak tersedia.",
+        "generated": true,
+        "refused": false,
+        "refusal_phrase": null,
+        "displayed_sources": [
+          {
+            "number": 1,
+            "file_name": "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf",
+            "page": "62",
+            "category": "02_Kurikulum",
+            "title": "Kurikulum S1 Pendidikan Teknologi Informasi",
+            "year": "2024",
+            "search": "PKL) Praktik Kerja Lapang (PKL"
+          }
+        ],
+        "displayed_source_hit": false,
+        "cited_pages": 1,
+        "invalid_citations": 0,
+        "faithfulness": 0.0,
+        "unsupported_claims": [
+          "PKL pada program Studi Teknik Komputer memiliki beban 3 SKS"
+        ],
+        "faithfulness_error": null,
+        "context_pages": [
+          "2018_Panduan_PKL.pdf p106",
+          "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf p30",
+          "2018_Panduan_PKL.pdf p126",
+          "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf p62",
+          "2024_Kurikulum_Pendidikan_Teknologi_Informasi.pdf p40",
+          "2018_Panduan_PKL.pdf p108"
+        ]
+      },
+      {
+        "id": "skr-01",
+        "type": "factual",
+        "latency_s": 4.3,
+        "answer": "Syarat mengajukan proposal skripsi antara lain:\n\n1. Mahasiswa telah lulus minimal 120 SKS dan telah mengambil semua mata kuliah wajib yang diperlukan [1][2].  \n2. Mahasiswa sudah memprogram/mengambil skripsi pada KRS semester skripsi [1][2].  \n3. Mahasiswa telah memperoleh kesediaan Calon Pembimbing 1 (SA2‑04) sehingga dapat memulai bimbingan proposal [2].  \n\nSelain itu, mahasiswa harus memastikan bahwa persyaratan tersebut telah terpenuhi sesuai Buku Pedoman Akademik FILKOM sebelum mengajukan proposal [3].",
+        "verdict": "partial",
+        "reason": "Chatbot menyertakan syarat inti dari referensi, namun menambahkan klaim baru (kesediaan Pembimbing 1) yang tidak terdapat pada jawaban referensi.",
+        "generated": true,
+        "refused": false,
+        "refusal_phrase": null,
+        "displayed_sources": [
+          {
+            "number": 1,
+            "file_name": "2018_Panduan_Skripsi.pdf",
+            "page": "111",
+            "category": "03_Skripsi_dan_PKL",
+            "title": "Panduan Skripsi",
+            "year": "2018",
+            "search": "Mahasiswa telah lulus 120 sks"
+          },
+          {
+            "number": 2,
+            "file_name": "2018_Panduan_Skripsi.pdf",
+            "page": "110",
+            "category": "03_Skripsi_dan_PKL",
+            "title": "Panduan Skripsi",
+            "year": "2018",
+            "search": "Mahasiswa 1. Mahasiswa yang telah"
+          },
+          {
+            "number": 3,
+            "file_name": "2018_Panduan_Skripsi.pdf",
+            "page": "106",
+            "category": "03_Skripsi_dan_PKL",
+            "title": "Panduan Skripsi",
+            "year": "2018",
+            "search": "sesuai Buku Pedoman Akademik FILKOM"
+          }
+        ],
+        "displayed_source_hit": true,
+        "cited_pages": 3,
+        "invalid_citations": 0,
+        "faithfulness": 1.0,
+        "unsupported_claims": [],
+        "faithfulness_error": null,
+        "context_pages": [
+          "2018_Panduan_Skripsi.pdf p110",
+          "2018_Panduan_Skripsi.pdf p93",
+          "2018_Panduan_Skripsi.pdf p106",
+          "2018_Panduan_Skripsi.pdf p92",
+          "2018_Panduan_Skripsi.pdf p111",
+          "2018_Panduan_Skripsi.pdf p105"
+        ]
+      },
+      {
+        "id": "skr-02",
+        "type": "trap",
+        "latency_s": 3.8,
+        "answer": "Jenis huruf yang dipakai dalam penulisan skripsi adalah **Calibri** dengan ketentuan ukuran sebagai berikut:\n\n- Judul bab (level 1): 16 pt  \n- Judul subbab (level 2): 14 pt  \n- Judul subbab (level 3): 14 pt  \n- Judul subbab (level 4): 12 pt  \n- Badan teks: 12 pt[1].",
+        "verdict": "correct",
+        "reason": "Semua fakta inti mengenai jenis huruf Calibri dan ukuran font untuk setiap level subbab serta badan teks sesuai persis dengan jawaban referensi.",
+        "generated": true,
+        "refused": false,
+        "refusal_phrase": null,
+        "displayed_sources": [
+          {
+            "number": 1,
+            "file_name": "2015_Panduan_Penulisan_Skripsi.pdf",
+            "page": "40",
+            "category": "03_Skripsi_dan_PKL",
+            "title": "Panduan Penulisan Skripsi",
+            "year": "2015",
+            "search": "berukuran 12 pt - Badan teks"
+          }
+        ],
+        "displayed_source_hit": true,
+        "cited_pages": 1,
+        "invalid_citations": 0,
+        "faithfulness": 1.0,
+        "unsupported_claims": [],
+        "faithfulness_error": null,
+        "context_pages": [
+          "2015_Panduan_Penulisan_Skripsi.pdf p40",
+          "2018_Panduan_Skripsi.pdf p69",
+          "2015_Panduan_Penulisan_Proposal_Skripsi.pdf p27",
+          "2018_Panduan_Skripsi.pdf p52",
+          "2018_Panduan_Skripsi.pdf p69",
+          "2018_Panduan_Skripsi.pdf p49"
+        ]
+      },
+      {
+        "id": "skr-03",
+        "type": "factual",
+        "latency_s": 3.9,
+        "answer": "Sebelum mengajukan PKL, mahasiswa harus telah menyelesaikan minimal:\n\n- **96 SKS** bila PKL akan dilaksanakan selama 1 semester ke depan[1]  \n- **76 SKS** bila PKL akan dilaksanakan selama 2 semester (1 tahun) ke depan[1][2]",
+        "verdict": "correct",
+        "reason": "Jawaban chatbot memuat semua fakta inti dari referensi dengan akurat mengenai jumlah SKS untuk 1 dan 2 semester ke depan.",
+        "generated": true,
+        "refused": false,
+        "refusal_phrase": null,
+        "displayed_sources": [
+          {
+            "number": 1,
+            "file_name": "2020_Pedoman_Akademik_FILKOM.pdf",
+            "page": "32",
+            "category": "01_Akademik_Umum",
+            "title": "Pedoman Akademik FILKOM",
+            "year": "2020",
+            "search": "KERJA LAPANG (PKL) 1. PKL"
+          },
+          {
+            "number": 2,
+            "file_name": "2018_Panduan_PKL.pdf",
+            "page": "70",
+            "category": "03_Skripsi_dan_PKL",
+            "title": "Panduan Praktik Kerja Lapangan (PKL)",
+            "year": "2018",
+            "search": "Penyetaraan PKL<br>pengganti PKL"
+          }
+        ],
+        "displayed_source_hit": true,
+        "cited_pages": 2,
+        "invalid_citations": 0,
+        "faithfulness": 1.0,
+        "unsupported_claims": [],
+        "faithfulness_error": null,
+        "context_pages": [
+          "2020_Pedoman_Akademik_FILKOM.pdf p32",
+          "2018_Panduan_PKL.pdf p70",
+          "2018_Panduan_PKL.pdf p13",
+          "2018_Panduan_PKL.pdf p123",
+          "2018_Panduan_PKL.pdf p14",
+          "2018_Panduan_PKL.pdf p11"
+        ]
+      },
+      {
+        "id": "mhs-01",
+        "type": "factual",
+        "latency_s": 5.3,
+        "answer": "Berikut adalah syarat lomba yang dapat diakui sebagai PKL jalur kompetisi Mahasiswa:\n\n1. **Tingkat lomba** harus diakui secara nasional atau internasional.  \n   - Nasional: diikuti minimal 3 universitas/institusi/lembaga.  \n   - Internasional: diikuti minimal 3 negara. [1]\n\n2. **Tema lomba** harus terkait dengan profil Program Studi Mahasiswa (bidang Ilmu Komputer). [2][1]\n\n3. **Aktivitas lomba** harus melibatkan masyarakat atau industri, yang dapat diwujudkan melalui salah satu dari:  \n   - Ide/gagasan berasal dari permasalahan realita masyarakat/industri.  \n   - Produk yang dirancang sesuai kebutuhan masyarakat/industri.  \n   - Produk diujicobakan kepada masyarakat/industri. [2][1]\n\n4. **Prestasi**: Mahasiswa harus menjadi juara 1, 2, atau 3 pada kategori tertentu dan dapat membuktikannya dengan sertifikat juara. [2][1]\n\n5. **Laporan PKL** tetap harus disusun sesuai pedoman PKL FILKOM dan mendokumentasikan produk lomba yang telah dibuat. [2]",
+        "verdict": "correct",
+        "reason": "Semua poin fakta inti dari referensi (pengajuan individu, tingkat nasional/internasional, tema sesuai prodi, melibatkan masyarakat/industri, juara 1/2/3 dengan sertifikat, serta tetap menulis laporan PKL) tercakup dengan lengkap dan benar dalam jawaban chatbot.",
+        "generated": true,
+        "refused": false,
+        "refusal_phrase": null,
+        "displayed_sources": [
+          {
+            "number": 1,
+            "file_name": "2018_Panduan_PKL.pdf",
+            "page": "11",
+            "category": "03_Skripsi_dan_PKL",
+            "title": "Panduan Praktik Kerja Lapangan (PKL)",
+            "year": "2018",
+            "search": null
+          },
+          {
+            "number": 2,
+            "file_name": "2023_Panduan_PKL_Jalur_Lomba.pdf",
+            "page": "1",
+            "category": "04_Kemahasiswaan_dan_Lomba",
+            "title": "Peraturan dan Prosedur PKL Jalur Kompetisi Mahasiswa",
+            "year": "2023",
+            "search": null
+          }
+        ],
+        "displayed_source_hit": true,
+        "cited_pages": 2,
+        "invalid_citations": 0,
+        "faithfulness": 0.833,
+        "unsupported_claims": [
+          "Tingkat lomba harus diakui secara nasional atau internasional, di mana nasional diikuti minimal 3 universitas/institusi/lembaga dan internasional diikuti minimal 3 negara"
+        ],
+        "faithfulness_error": null,
+        "context_pages": [
+          "2023_Panduan_PKL_Jalur_Lomba.pdf p1",
+          "2018_Panduan_PKL.pdf p24",
+          "2018_Panduan_PKL.pdf p11",
+          "2023_Panduan_PKL_Jalur_Lomba.pdf p1",
+          "2018_Panduan_PKL.pdf p11",
+          "2023_Panduan_PKL_Jalur_Lomba.pdf p2"
+        ]
+      },
+      {
+        "id": "mhs-02",
+        "type": "factual",
+        "latency_s": 3.9,
+        "answer": "Lomba yang disetarakan dengan PKL dapat menggantikan **3 SKS** aktivitas PKL [1].",
+        "verdict": "correct",
+        "reason": "Jawaban chatbot menyampaikan fakta inti yang sama persis dengan referensi yaitu 3 SKS.",
+        "generated": true,
+        "refused": false,
+        "refusal_phrase": null,
+        "displayed_sources": [
+          {
+            "number": 1,
+            "file_name": "2018_Panduan_PKL.pdf",
+            "page": "11",
+            "category": "03_Skripsi_dan_PKL",
+            "title": "Panduan Praktik Kerja Lapangan (PKL)",
+            "year": "2018",
+            "search": "tiga sks aktivitas PKL dengan"
+          }
+        ],
+        "displayed_source_hit": true,
+        "cited_pages": 1,
+        "invalid_citations": 0,
+        "faithfulness": 1.0,
+        "unsupported_claims": [],
+        "faithfulness_error": null,
+        "context_pages": [
+          "2018_Panduan_PKL.pdf p11",
+          "2018_Panduan_PKL.pdf p70",
+          "2023_Panduan_Rekognisi_Pembelajaran_Lampau.pdf p13",
+          "2023_Panduan_Rekognisi_Pembelajaran_Lampau.pdf p10",
+          "2023_Panduan_Rekognisi_Pembelajaran_Lampau.pdf p13",
+          "2023_Panduan_Rekognisi_Pembelajaran_Lampau.pdf p13"
+        ]
+      },
+      {
+        "id": "mhs-03",
+        "type": "factual",
+        "latency_s": 3.8,
+        "answer": "Mahasiswa wajib mengumpulkan **1000 poin** sebagai syarat kelulusan, dengan ketentuan poin minimum yang berbeda‑beda tergantung tahun kelulusan:\n\n- Mahasiswa SAP (Seleksi Alih Program) : minimal 200 poin  \n- Lulusan tahun 2020 : minimal 400 poin  \n- Lulusan tahun 2021 : minimal 500 poin  \n- Lulusan tahun 2022 : minimal 600 poin  \n- Lulusan tahun 2023 : minimal 700 poin  \n- Lulusan tahun 2024 : minimal 800 poin  \n- Lulusan tahun 2025 dan seterusnya : minimal 1000 poin  \n\n[1]",
+        "verdict": "partial",
+        "reason": "Jawaban chatbot menyebutkan angka 1000 poin sesuai referensi, namun menambahkan detail rincian tahun kelulusan yang tidak ada dalam referensi.",
+        "generated": true,
+        "refused": false,
+        "refusal_phrase": null,
+        "displayed_sources": [
+          {
+            "number": 1,
+            "file_name": "2026_Panduan_SKM.pdf",
+            "page": "6",
+            "category": "04_Kemahasiswaan_dan_Lomba",
+            "title": "Panduan Satuan Kegiatan Kemahasiswaan (SKM)",
+            "year": "2026",
+            "search": null
+          }
+        ],
+        "displayed_source_hit": true,
+        "cited_pages": 1,
+        "invalid_citations": 0,
+        "faithfulness": 1.0,
+        "unsupported_claims": [],
+        "faithfulness_error": null,
+        "context_pages": [
+          "2026_Panduan_SKM.pdf p6",
+          "2026_Panduan_SKM.pdf p7",
+          "2020_Pedoman_Akademik_FILKOM.pdf p44",
+          "2026_Panduan_SKM.pdf p9",
+          "2026_Panduan_SKM.pdf p15",
+          "2026_Panduan_SKM.pdf p13"
+        ]
+      },
+      {
+        "id": "mhs-04",
+        "type": "table",
+        "latency_s": 3.7,
+        "answer": "Ketua lembaga eksekutif mahasiswa tingkat universitas memperoleh **1500 poin per periode**[1].",
+        "verdict": "correct",
+        "reason": "Jawaban chatbot memuat fakta inti yang sesuai dengan referensi, yaitu 1500 poin per periode tanpa ada informasi yang bertentangan.",
+        "generated": true,
+        "refused": false,
+        "refusal_phrase": null,
+        "displayed_sources": [
+          {
+            "number": 1,
+            "file_name": "2026_Panduan_SKM.pdf",
+            "page": "9",
+            "category": "04_Kemahasiswaan_dan_Lomba",
+            "title": "Panduan Satuan Kegiatan Kemahasiswaan (SKM)",
+            "year": "2026",
+            "search": "Universitas No Jabatan Poin/Periode"
+          }
+        ],
+        "displayed_source_hit": true,
+        "cited_pages": 1,
+        "invalid_citations": 0,
+        "faithfulness": 1.0,
+        "unsupported_claims": [],
+        "faithfulness_error": null,
+        "context_pages": [
+          "2026_Panduan_SKM.pdf p9",
+          "2026_Panduan_SKM.pdf p6",
+          "2026_Panduan_SKM.pdf p11",
+          "2026_Panduan_SKM.pdf p10",
+          "2026_Panduan_SKM.pdf p10",
+          "2026_Panduan_SKM.pdf p12"
+        ]
+      },
+      {
+        "id": "mhs-05",
+        "type": "factual",
+        "latency_s": 3.6,
+        "answer": "Maksimal 14 SKS dapat diakui dalam satu kali Rekognisi Pembelajaran Lampau (RPL) [1].",
+        "verdict": "correct",
+        "reason": "Jawaban chatbot menyampaikan fakta inti yang sama secara akurat sesuai dengan jawaban referensi tanpa ada informasi yang bertentangan.",
+        "generated": true,
+        "refused": false,
+        "refusal_phrase": null,
+        "displayed_sources": [
+          {
+            "number": 1,
+            "file_name": "2023_Panduan_Rekognisi_Pembelajaran_Lampau.pdf",
+            "page": "11",
+            "category": "04_Kemahasiswaan_dan_Lomba",
+            "title": "Panduan Rekognisi Pembelajaran Lampau (RPL)",
+            "year": "2023",
+            "search": "diakui adalah maksimal 14 SKS"
+          }
+        ],
+        "displayed_source_hit": true,
+        "cited_pages": 1,
+        "invalid_citations": 0,
+        "faithfulness": 1.0,
+        "unsupported_claims": [],
+        "faithfulness_error": null,
+        "context_pages": [
+          "2023_Panduan_Rekognisi_Pembelajaran_Lampau.pdf p13",
+          "2023_Panduan_Rekognisi_Pembelajaran_Lampau.pdf p13",
+          "2023_Panduan_Rekognisi_Pembelajaran_Lampau.pdf p9",
+          "2023_Panduan_Rekognisi_Pembelajaran_Lampau.pdf p11",
+          "2023_Panduan_Rekognisi_Pembelajaran_Lampau.pdf p10",
+          "2023_Panduan_Rekognisi_Pembelajaran_Lampau.pdf p10"
+        ]
+      },
+      {
+        "id": "oos-01",
+        "type": "out_of_scope",
+        "latency_s": 4.8,
+        "answer": "Maaf, informasi tentang besaran UKT mahasiswa baru FILKOM tahun 2025 tidak tersedia dalam dokumen yang saya miliki.  \nAnda dapat menanyakan hal ini ke bagian akademik atau kantor keuangan Fakultas Ilmu Komputer.",
+        "verdict": "correct",
+        "reason": "Chatbot menyatakan bahwa informasi tidak tersedia dan tidak mengarang angka sesuai dengan referensi.",
+        "generated": true,
+        "refused": true,
+        "refusal_phrase": "tidak tersedia",
+        "displayed_sources": [],
+        "displayed_source_hit": null,
+        "cited_pages": 0,
+        "invalid_citations": 0,
+        "faithfulness": null,
+        "unsupported_claims": [],
+        "faithfulness_error": null,
+        "context_pages": [
+          "2020_Pedoman_Akademik_FILKOM.pdf p44",
+          "2020_Pedoman_Akademik_FILKOM.pdf p17",
+          "2020_Pedoman_Akademik_FILKOM.pdf p21",
+          "2020_Pedoman_Akademik_FILKOM.pdf p24",
+          "2020_Pedoman_Akademik_FILKOM.pdf p21",
+          "2020_Pedoman_Akademik_FILKOM.pdf p17"
+        ]
+      },
+      {
+        "id": "oos-02",
+        "type": "out_of_scope",
+        "latency_s": 4.2,
+        "answer": "Maaf, informasi tentang biaya wisuda tidak tersedia dalam dokumen yang saya miliki.  \nAnda dapat menanyakan hal tersebut ke bagian akademik atau sekretariat fakultas yang bersangkutan.",
+        "verdict": "correct",
+        "reason": "Chatbot menyatakan bahwa informasi tidak tersedia dan tidak mengarang angka sesuai dengan referensi.",
+        "generated": true,
+        "refused": true,
+        "refusal_phrase": "tidak tersedia",
+        "displayed_sources": [],
+        "displayed_source_hit": null,
+        "cited_pages": 0,
+        "invalid_citations": 0,
+        "faithfulness": null,
+        "unsupported_claims": [],
+        "faithfulness_error": null,
+        "context_pages": [
+          "2023_Pedoman_Pendidikan_UB.pdf p224",
+          "2023_Pedoman_Pendidikan_UB.pdf p26",
+          "2023_Pedoman_Pendidikan_UB.pdf p27",
+          "2023_Pedoman_Pendidikan_UB.pdf p27",
+          "2023_Pedoman_Pendidikan_UB.pdf p34",
+          "2023_Pedoman_Pendidikan_UB.pdf p28"
+        ]
+      },
+      {
+        "id": "oos-03",
+        "type": "out_of_scope",
+        "latency_s": 3.6,
+        "answer": "Maaf, informasi tentang tarif parkir motor di area kampus FILKOM tidak tersedia dalam dokumen yang saya miliki.  \nAnda dapat menanyakan hal ini kepada bagian administrasi atau layanan fasilitas kampus FILKOM.",
+        "verdict": "correct",
+        "reason": "Chatbot menyatakan bahwa informasi tidak tersedia di dokumen dan tidak mengarang angka sesuai dengan referensi.",
+        "generated": true,
+        "refused": true,
+        "refusal_phrase": "tidak tersedia",
+        "displayed_sources": [],
+        "displayed_source_hit": null,
+        "cited_pages": 0,
+        "invalid_citations": 0,
+        "faithfulness": null,
+        "unsupported_claims": [],
+        "faithfulness_error": null,
+        "context_pages": [
+          "2020_Pedoman_Akademik_FILKOM.pdf p17",
+          "2020_Pedoman_Akademik_FILKOM.pdf p44",
+          "2020_Pedoman_Akademik_FILKOM.pdf p29",
+          "2020_Pedoman_Akademik_FILKOM.pdf p15",
+          "2020_Pedoman_Akademik_FILKOM.pdf p30",
+          "2020_Pedoman_Akademik_FILKOM.pdf p32"
+        ]
+      }
+    ]
+  }
+}

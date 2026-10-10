@@ -5,6 +5,7 @@ import streamlit as st
 from typing import Dict, List, Optional
 from urllib.parse import quote
 from src.config.settings import Settings
+from src.utils.catalog import document_info
 from src.utils.metadata import get_meta
 
 def get_dataset_files() -> Dict[str, List[Dict]]:
@@ -214,9 +215,8 @@ def show_pdf_viewer(file_info: Dict):
 
 
 def pdf_dialog_title(file_info: Dict) -> str:
-    """Dialog title: the document name"""
-    file_name = file_info['filename'].replace('.pdf', '')[4:].replace('_', ' ').strip()
-    return f"**{file_name}**"
+    """Dialog title: the document's catalog title"""
+    return f"**{document_info(file_info['filename'])['title']}**"
 
 
 def open_pdf(file_info: Dict):

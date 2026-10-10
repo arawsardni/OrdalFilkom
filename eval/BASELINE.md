@@ -125,3 +125,52 @@ Angka "sumber" baseline sedikit terbantu karena UI lama selalu menampilkan 3 chu
 ## Prioritas berikutnya (Fase 3)
 
 Parser non-generatif (menghapus halaman karangan), chunk yang tidak memotong tabel/baris dan membawa konteks dokumen/prodi, lalu hybrid search untuk kata kunci eksak. Ukur dengan retrieval hit@10 (sekarang 0.727) dan penolakan yang salah.
+
+---
+
+# Fase 3: korpus dan chunking baru (`ordal-filkom-v3`)
+
+Run: `eval/results/20261010-1159_v3-topk6.json` (10 Oktober 2026), retrieval pembanding `*_retrieval-ordal-filkom-v2.json` dan `*_retrieval-ordal-filkom-v3.json`.
+
+Perubahan:
+- Parser LlamaParse (LLM) → **pymupdf4llm** (non-generatif). Halaman tanpa lapisan teks (31 halaman, hampir semuanya sampul/kosong) dilewati, karena "OCR" LlamaParse di halaman itu kebanyakan karangan (contoh: "It seems that the content you provided is not sufficient...").
+- Chunk **per halaman**, ±1.500 karakter, tidak memotong blok; tabel dipecah antar-baris dengan header diulang; judul bagian dibawa sebagai konteks; halaman daftar isi dibuang.
+- Judul dokumen, cakupan (prodi/jenjang), dan bagian dari `static/dataset/catalog.json` ikut di-embed; judul katalog dan bagian juga tampil di prompt.
+- Korpus: SKM 2020 → **SKM 2026**; **Edaran Dekan 2022** ditambahkan.
+- 15.398 chunk → **2.598 chunk** (~0,73 juta token embedding); `top_k` 10 → **6**.
+
+## Retrieval (22 pertanyaan bersumber)
+
+| | hit@1 | hit@3 | hit@5 | hit@10 | hit@30 | MRR |
+|---|---|---|---|---|---|---|
+| v2 | 0.409 | 0.500 | 0.591 | 0.636 | 0.773 | 0.483 |
+| **v3** | 0.409 | **0.864** | **0.909** | **0.909** | **0.909** | **0.608** |
+
+(v2 dihitung dengan eval set terbaru; mhs-03/04 pasti meleset di v2 karena masih berisi SKM 2020.)
+
+Yang dulu gagal dan sekarang ketemu: akd-01 (rank 26 → 2), kur-01 (15 → 3), kur-02 (14 → 2), kur-04 (– → 3), kur-05 (– → 3).
+
+## Jawaban
+
+| Metrik | v2 (Fase 2) | **v3** |
+|---|---|---|
+| Faithfulness | 0.921 | **0.942** |
+| Fully grounded | 0.895 | **0.900** |
+| Sumber yang ditampilkan memuat bukti jawaban | 0.636 | **0.818** |
+| Jawaban dengan sitasi / sitasi tidak valid | 1.00 / 0.00 | 1.00 / 0.00 |
+| Penolakan out-of-scope | 1.00 | 1.00 |
+| Penolakan yang salah | 0.136 | **0.045** (kur-04) |
+| Kebenaran (judge) | 0.66 | **0.82** (19 benar, 3 sebagian, 3 salah) |
+| Latensi median | 4.4 s | **3.9 s** |
+
+## Yang masih gagal
+
+1. **akd-02/akd-03, konflik jenis C (universitas vs fakultas).** Pedoman UB hal. 66 memberi rentang (IP 2,50–2,99 → 19–21 SKS; IP < 1,50 → ≤ 12 SKS), Pedoman FILKOM hal. 15 memberi batas fakultas (21 SKS; < 12 SKS). Untuk akd-03 halaman FILKOM ikut terambil tetapi model tetap memakai aturan UB, jadi aturan "pakai yang paling spesifik" belum selalu dipatuhi.
+2. **kur-04: tabel kompleks ter-parse kacau.** Halaman TIF hal. 22 terambil (rank 3), tetapi tabel semester 7–8 bergabung dan barisnya berantakan, sehingga model menolak.
+3. **kur-07: prodi tercampur.** Halaman Teknik Komputer tidak terambil, dan model memakai angka PKL dari kurikulum **PTI** untuk pertanyaan Teknik Komputer (faithfulness 0). Ini konflik jenis D yang paling berbahaya.
+
+## Kandidat langkah berikutnya
+
+- **Filter metadata prodi** saat pertanyaan menyebut prodi/jenjang tertentu (kur-07): retrieval dibatasi ke dokumen prodi itu + dokumen fakultas/universitas.
+- **Hybrid search (BM25 + vektor)** untuk istilah eksak dan tabel yang miskin kata (akd-02, kur-07).
+- Perbaikan parsing tabel kompleks (kur-04) bila muncul di pertanyaan nyata.

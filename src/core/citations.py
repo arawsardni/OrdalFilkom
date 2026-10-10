@@ -4,6 +4,7 @@ import re
 from typing import Dict, List, Tuple
 
 from src.config.prompts import SOURCE_TEMPLATE
+from src.utils.catalog import document_info
 
 # A run of adjacent markers such as [1] or [2][3]; also tolerates [2, 3]
 CITATION_PATTERN = re.compile(r"(?:\[\d+(?:\s*,\s*\d+)*\])+")
@@ -14,12 +15,9 @@ HIGHLIGHT_WORDS = 5
 
 
 def document_title(file_name: str) -> Tuple[str, str]:
-    """'2020_Pedoman_Akademik_FILKOM.pdf' -> ('Pedoman Akademik FILKOM', '2020')"""
-    stem = file_name.rsplit(".", 1)[0]
-    year, _, rest = stem.partition("_")
-    if not (year.isdigit() and rest):
-        return stem.replace("_", " "), ""
-    return rest.replace("_", " "), year
+    """Title and year from the document catalog, e.g. ('Kurikulum S1 Teknik Informatika', '2024')"""
+    info = document_info(file_name)
+    return info["title"], str(info["year"]) if info.get("year") else ""
 
 
 def build_sources_block(nodes) -> str:
@@ -32,6 +30,7 @@ def build_sources_block(nodes) -> str:
             title=title,
             year=year or "-",
             page=node.metadata.get("page_label", "?"),
+            section=f", bagian: {node.metadata['section']}" if node.metadata.get("section") else "",
             # LlamaParse stores some characters as HTML entities ("IP &#x3C; 1,50")
             text=html.unescape(node.get_content()).strip(),
         ))

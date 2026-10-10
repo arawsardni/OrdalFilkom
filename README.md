@@ -29,11 +29,11 @@
 ## ✨ Key Features
 
 ### 🤖 RAG Capabilities
-- **Hybrid Chunking Strategy** - LlamaParse + Hierarchical + Semantic
-- **Table & Diagram Aware** - Tables extracted as markdown, diagrams described
-- **Zero-Hallucination Protocol** - Balanced prompt engineering
-- **High Retrieval Coverage** - top_k=30
-- **Visual Source Citations** - PDF page preview untuk verifikasi sumber
+- **Grounded answers with inline citations** - setiap fakta diberi sitasi `[n]`; jawaban di luar dokumen ditolak dengan kalimat baku
+- **Verifiable sources** - klik sitasi untuk membuka PDF di halaman yang dikutip, dengan teks sumber disorot (PDF.js)
+- **Non-generative parsing** - pymupdf4llm, tanpa LLM, jadi tidak ada teks halaman yang dikarang
+- **Page-scoped chunks** - tabel dan judul bagian tidak terpotong; judul dokumen, cakupan prodi/jenjang, dan bagian ikut di-embed
+- **Document catalog** - `static/dataset/catalog.json` (judul, penerbit, prodi, jenjang, status)
 - **Top-3 Source Ranking** - Menampilkan sumber paling relevan dengan confidence score
 - **Conversation Memory** - Source citations persist di chat history
 
@@ -74,8 +74,10 @@ uv sync
 cp .env.example .env
 # Edit .env dengan API keys Anda
 
-# 4. Ingest documents ke Pinecone
-uv run scripts/ingest.py
+# 4. Ingest documents ke Pinecone (parser dependencies are only needed here)
+uv sync --group ingest
+uv run --group ingest scripts/ingest.py --dry-run   # parse + chunk + token estimate
+uv run --group ingest scripts/ingest.py             # incremental: only new/changed PDFs
 
 # 5. Run application
 uv run streamlit run frontend/app.py
@@ -101,7 +103,11 @@ OrdalFIlkom/
 │   ├── ui/                     # User interface
 │   │   ├── dataset_browser.py  # Document browser + PDF.js viewer dialog
 │   │   └── source_display.py   # Cited pages under each answer
+│   ├── ingest/                 # Ingestion pipeline (used by scripts/ingest.py)
+│   │   ├── parsing.py          # PDF -> per-page markdown (pymupdf4llm, cached)
+│   │   └── chunking.py         # Page-scoped, table-aware chunks
 │   └── utils/                  # Utilities
+│       ├── catalog.py          # Document catalog lookup
 │       └── metadata.py         # Metadata extraction
 ├── scripts/                    # Standalone scripts
 │   ├── ingest.py               # Document ingestion
@@ -112,7 +118,7 @@ OrdalFIlkom/
 ├── frontend/                   # Streamlit UI
 │   └── app.py                  # Main application
 ├── static/                     # Served at app/static/ (server.enableStaticServing)
-│   ├── dataset/                # Academic documents (PDF)
+│   ├── dataset/                # Academic documents (PDF) + catalog.json
 │   │   ├── 01_Akademik_Umum/
 │   │   ├── 02_Kurikulum/
 │   │   ├── 03_Skripsi_dan_PKL/
@@ -129,15 +135,15 @@ OrdalFIlkom/
 
 ### AI/ML
 - **RAG Framework**: LlamaIndex 0.10+
-- **PDF Parser**: LlamaParse (tables → markdown, images → descriptions)
-- **Chunking**: Hybrid strategy (Hierarchical + Semantic + Guardrails)
+- **PDF Parser**: pymupdf4llm (layout-aware, non-generative; pages without a text layer are skipped)
+- **Chunking**: page-scoped, block-aware (tables kept whole or split between rows), section headings carried as context
 - **Vector Store**: Pinecone
 - **LLM**: Groq (GPT-OSS 120B, fallback Qwen3.8 27B / GPT-OSS 20B)
 - **Embeddings**: Pinecone inference llama-text-embed-v2 (768 dim)
 
 ### Backend
 - **Language**: Python 3.10+
-- **PDF Processing**: PyMuPDF (fitz) + LlamaParse
+- **PDF Processing**: PyMuPDF + pymupdf4llm
 - **Image Processing**: Pillow
 
 ### Frontend
@@ -150,7 +156,8 @@ OrdalFIlkom/
 ### Adding New Documents
 1. Place PDF in appropriate `static/dataset/` category folder
 2. Follow naming convention: `YYYY_Kategori_Judul.pdf`
-3. Run ingestion: `uv run scripts/ingest.py`
+3. Add an entry to `static/dataset/catalog.json` (title, issuer, program, level, year, status)
+4. Run ingestion: `uv run --group ingest scripts/ingest.py` (only the new PDF is embedded)
 
 ### Evaluation
 `eval/dataset.jsonl` berisi pertanyaan dengan jawaban referensi dan halaman sumber yang sudah dicek ke PDF asli. Setiap perubahan pada chunking, retrieval, atau prompt sebaiknya diukur dulu:
@@ -179,8 +186,9 @@ Edit `src/config/prompts.py` untuk experiment dengan prompt engineering.
 - [x] Core RAG implementation
 - [x] Visual PDF citations
 - [x] Modular architecture
-- [x] **LlamaParse integration** (table/diagram extraction)
-- [x] **Hybrid chunking strategy** (Hierarchical + Semantic + Guardrails)
+- [x] Evaluation set + groundedness metrics (`scripts/eval.py`)
+- [x] Inline citations with PDF.js page jump + highlight
+- [x] Non-generative parsing, page-scoped chunks, document catalog
 
 ### 🚧 In Progress / Future
 - [ ] Hybrid retrieval (Vector + BM25)
