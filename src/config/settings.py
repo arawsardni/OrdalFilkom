@@ -21,6 +21,11 @@ class Settings:
         except:
             return os.getenv("GROQ_API_KEY")
     
+    @staticmethod
+    def get_google_api_key():
+        """Only used by scripts/eval.py for the Gemini judge"""
+        return os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+    
     # Vector Store Configuration
     INDEX_NAME = "ordal-filkom-v2"
     
@@ -31,7 +36,10 @@ class Settings:
     # LLM Configuration with Fallback
     LLM_MODEL = "openai/gpt-oss-120b"  # Primary model
     LLM_TEMPERATURE = 0.2
-    SIMILARITY_TOP_K = 30
+    SIMILARITY_TOP_K = 10  # chunks sent to the LLM as numbered sources
+    HISTORY_TURNS = 3  # earlier question/answer pairs sent with each question
+    HISTORY_MAX_CHARS = 800  # per earlier message
+    FOLLOW_UP_MAX_WORDS = 6  # shorter questions are retrieved together with the previous question
     
     # Fallback models (ordered by priority when primary hits rate limit)
     # Format: (model_name, TPM_limit, description, note)
@@ -39,6 +47,9 @@ class Settings:
         ("qwen/qwen3.8-27b", 8000, "Qwen3.8 27B", "mid 🙂"),
         ("openai/gpt-oss-20b", 8000, "GPT-OSS 20B", "agak kocaks 😹"),
     ]
+    
+    # Eval judge: a different provider than the app, so evals don't spend the live app's Groq quota
+    JUDGE_MODEL = "gemini-3.5-flash-lite"
     
     @staticmethod
     def get_all_available_models():
@@ -81,9 +92,5 @@ class Settings:
     PAGE_ICON = "🎓"
     LAYOUT = "centered"
     
-    # Chat Configuration
-    MAX_RETRIES = 3
-    RETRY_WAIT_BASE = 25
-    TOP_SOURCES_TO_DISPLAY = 3
-    PDF_RENDER_DPI = 120
+    # PDF viewer
     PDF_VIEWER_HEIGHT = 700  # px

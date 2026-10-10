@@ -76,7 +76,7 @@ Pengguna percaya pada produk kalau apa yang dikatakan asisten bisa dicek di sumb
 - Latensi, dan token per pertanyaan (penting karena kuota, lihat Bagian 7)
 
 ### Celah saat ini
-- **Eval belum mengukur groundedness.** Yang diukur baru kebenaran terhadap referensi. Menambahkan faithfulness dan akurasi sitasi ke `scripts/eval.py` adalah prioritas.
+- **Groundedness sudah diukur** (`scripts/eval.py --answers`, baseline 9 Oktober 2026 di `eval/BASELINE.md`): faithfulness 0.874, fully grounded 0.714, sumber yang ditampilkan memuat halaman kunci hanya 0.591.
 - **Sumber yang ditampilkan belum tentu sumber yang dipakai.** UI menampilkan 3 chunk teratas hasil retrieval, sementara LLM membaca 30 chunk. Jawaban bisa berasal dari chunk yang tidak ditampilkan, sehingga fitur verifikasi sumber, yang merupakan inti produk, bisa menyesatkan. Contoh di baseline: kur-04 menampilkan halaman yang tidak memuat jawabannya.
 
 ## 7. Batasan: zero cost

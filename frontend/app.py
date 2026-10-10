@@ -33,7 +33,7 @@ def init_chat_handler():
     try:
         logger.info("Initializing RAG engine...")
         engine = RAGEngine()
-        handler = ChatHandler(engine.get_engine())
+        handler = ChatHandler(engine)
         logger.info("Initialization successful")
         return handler
     except ValueError as e:
@@ -66,13 +66,13 @@ chat_handler = init_chat_handler()
 render_pdf_preview()
 
 # Display Chat History
-for message in st.session_state.messages:
+for index, message in enumerate(st.session_state.messages):
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
         
         # Display sources if available (for assistant messages)
         if message["role"] == "assistant" and "sources" in message and message["sources"]:
-            display_sources(message["sources"])
+            display_sources(message["sources"], key_prefix=f"message_{index}")
 
 # Show retry UI if there's a pending retry with model options
 if st.session_state.pending_retry and st.session_state.available_models:
@@ -102,7 +102,8 @@ if st.session_state.pending_retry and st.session_state.available_models:
                     with st.spinner("Mencoba dengan model alternatif..."):
                         response_text, sources, error, model_options = chat_handler.process_query(
                             st.session_state.pending_retry,
-                            model_name=retry_model
+                            model_name=retry_model,
+                            history=st.session_state.messages[:-1]
                         )
                         
                         if error:
@@ -121,7 +122,7 @@ if st.session_state.pending_retry and st.session_state.available_models:
                             
                             # Display sources
                             if sources:
-                                display_sources(sources)
+                                display_sources(sources, key_prefix=f"message_{len(st.session_state.messages)}")
                             
                             # Save to session state
                             st.session_state.messages.append({
@@ -172,9 +173,7 @@ with st.sidebar:
     
     # Reset chat memory button
     st.markdown("---")
-    if st.button("🔄 Reset Chat", help="Reset memory jika respons mulai error"):
-        if chat_handler:
-            chat_handler.reset_memory()
+    if st.button("🔄 Reset Chat", help="Hapus riwayat percakapan"):
         st.session_state.messages = []
         st.session_state.pending_retry = None
         st.session_state.available_models = None
@@ -195,7 +194,8 @@ if prompt := st.chat_input("tanya apapun tentang akademik FILKOM..."):
                 # Process query with user-selected model
                 response_text, sources, error, model_options = chat_handler.process_query(
                     prompt, 
-                    model_name=st.session_state.selected_model
+                    model_name=st.session_state.selected_model,
+                    history=st.session_state.messages[:-1]
                 )
                 
                 if error and model_options:
@@ -234,9 +234,9 @@ if prompt := st.chat_input("tanya apapun tentang akademik FILKOM..."):
                     
                     message_placeholder.markdown(full_response)
                     
-                    # Display sources with PDF preview
+                    # Display the cited pages
                     if sources:
-                        display_sources(sources)
+                        display_sources(sources, key_prefix=f"message_{len(st.session_state.messages)}")
                     
                     # Save to session state (with sources for persistence)
                     st.session_state.messages.append({

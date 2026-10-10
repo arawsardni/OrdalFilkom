@@ -50,3 +50,78 @@ Cara kerja yang disarankan:
 | 3 | Bersihkan halaman karangan LlamaParse (parse ulang tanpa instruksi LLM, atau pakai teks PyMuPDF untuk halaman teks biasa) | retrieval + item `trap` | trap > 0 |
 | 4 | Sisipkan nama prodi/dokumen ke teks chunk (contextual chunk header) | item `disambiguation` | kur-04/05/07 masuk top 5 |
 | 5 | Hybrid search (BM25 + vektor) dan/atau reranker | retrieval | akd-01 naik ke top 5 |
+
+---
+
+# Baseline Groundedness (Fase 2, langkah 1)
+
+Run: `eval/results/20261009-2310_baseline-groundedness.json` (9 Oktober 2026)
+Config sama dengan baseline di atas (prompt anti-halusinasi masih tidak aktif). Judge pindah ke `gemini-3.5-flash-lite` supaya eval tidak memakai kuota Groq app live.
+
+## Angka
+
+**Groundedness** (metrik utama)
+
+| Faithfulness | Fully grounded | Sumber yang ditampilkan memuat halaman kunci | Penolakan out-of-scope | Penolakan yang salah |
+|---|---|---|---|---|
+| 0.874 | 0.714 | **0.591** | 1.00 | 0.045 (1 dari 22) |
+
+- **Faithfulness:** rata-rata porsi klaim jawaban yang didukung konteks yang diterima LLM (judge Gemini, per klaim).
+- **Fully grounded:** porsi jawaban yang semua klaimnya didukung konteks.
+- **Sumber yang ditampilkan:** porsi pertanyaan yang bisa dijawab, di mana salah satu dari 3 sumber yang ditampilkan ke pengguna adalah halaman kunci jawaban. Ini yang paling dekat dengan pengalaman pengguna: **di 41% pertanyaan, sumber yang ditampilkan tidak memuat jawabannya.**
+- **Penolakan yang salah:** akd-01 (jawabannya ada di dokumen 3 halaman yang rank-nya 26).
+
+**Kebenaran** (judge Gemini): skor 0.70 (16 benar, 3 sebagian, 6 salah). Tidak bisa dibandingkan langsung dengan skor 0.625 di baseline pertama karena judge-nya berbeda (Qwen → Gemini) dan generasi tidak deterministik.
+
+## Temuan
+
+1. **Klaim yang tidak didukung hampir semuanya angka dari prodi lain.** kur-02 menyebut komposisi "118 wajib + 27 pilihan" untuk Sistem Informasi, padahal itu milik PTI; kur-04 menyebut skripsi TIF 6 SKS (angka Teknik Komputer); kur-07 menambahkan aturan konversi PKL dari prodi lain. Ini konflik jenis D di `docs/PRODUCT.md`, dan aturan runtime #1 ("jangan mencampur angka dari cakupan berbeda") harus masuk ke prompt.
+2. **Jawaban benar belum tentu grounded.** kur-02 dinilai benar (145 SKS) tetapi faithfulness-nya 0.33 karena klaim tambahan yang dikarang. Mengukur kebenaran saja menyembunyikan masalah ini.
+3. **Sumber yang ditampilkan adalah titik lemah terbesar** (0.591). Ini mengonfirmasi bahwa UI harus menampilkan halaman yang dikutip jawaban, bukan 3 chunk teratas hasil retrieval.
+
+## Target langkah 2 (tulis ulang generasi)
+
+| Metrik | Baseline | Target |
+|---|---|---|
+| Sumber yang ditampilkan memuat halaman kunci | 0.591 | ≥ 0.90 (target akurasi sitasi di PRODUCT.md) |
+| Fully grounded | 0.714 | naik, tanpa klaim lintas prodi |
+| Penolakan out-of-scope | 1.00 | tetap 1.00 |
+| Penolakan yang salah | 0.045 | tidak naik |
+
+---
+
+# Langkah 2: generasi dengan sitasi inline (`citations-v1`)
+
+Run: `eval/results/20261009-2355_citations-v1.json`. Prompt baru aktif, LLM menulis sitasi `[n]`, UI menampilkan halaman yang dikutip, `top_k` 30 → 10.
+
+Catatan penilaian:
+- Sitasi run ini dinilai ulang secara offline setelah parser diperbaiki untuk format bawaan gpt-oss `【n】` (jawaban yang sama; faithfulness dan kebenaran tidak berubah).
+- Metrik sumber diperbaiki dan **kedua run dinilai ulang**: sumber dianggap tepat jika halamannya ada di kunci jawaban **atau** halaman PDF aslinya memuat teks bukti. Kunci jawaban tidak mungkin mencatat semua halaman yang menyebut suatu fakta.
+
+| Metrik | Baseline | citations-v1 |
+|---|---|---|
+| Faithfulness | 0.874 | **0.921** |
+| Fully grounded | 0.714 | **0.895** |
+| Jawaban dengan sitasi | – | **1.00** |
+| Jawaban dengan nomor sitasi tidak valid | – | **0.00** |
+| Sumber yang ditampilkan memuat bukti jawaban | 0.682 | 0.636 |
+| Penolakan out-of-scope | 1.00 | 1.00 |
+| Penolakan yang salah | 0.045 | 0.136 (akd-01, akd-03, kur-04) |
+| Kebenaran (judge) | 0.70 | 0.66 |
+| Latensi median | 6.8 s | **4.4 s** |
+
+Angka "sumber" baseline sedikit terbantu karena UI lama selalu menampilkan 3 chunk teratas apa pun isi jawabannya (mis. mhs-04 dihitung tepat padahal jawabannya salah).
+
+## Temuan
+
+1. **Lapisan generasi bekerja sesuai desain.** Klaim yang dikarang hampir hilang (fully grounded 0.71 → 0.90), setiap jawaban bersitasi valid, dan ketika bukti tidak ada di konteks model menolak alih-alih mengarang (kur-04 dulu menjawab "6 SKS" dari prodi lain, sekarang menolak).
+2. **Kegagalan yang tersisa hampir semuanya di retrieval dan data**, bukan di generasi:
+   - Halaman jawaban tidak ada di 10 sumber: akd-01 (rank 26), kur-04, kur-05, kur-07. Untuk kur-07 (Teknik Komputer) yang terambil hanya halaman PTI, sehingga jawabannya memakai aturan prodi lain.
+   - **Chunk memotong tabel:** akd-03 ditolak karena chunk berhenti tepat di baris `IP < 1,50 | ...` dan nilai "< 12 SKS" ada di chunk berikutnya.
+   - **Halaman karangan LlamaParse ikut dikutip:** kur-01 dan kur-02 mengutip sampul kurikulum (hal. 1) yang isinya dikarang parser.
+   - LlamaParse menyimpan `<` sebagai `&#x3C;`; sudah di-decode sebelum masuk prompt.
+3. **Konsekuensi:** penolakan yang salah naik (0.045 → 0.136). Ini sesuai prinsip produk #1 dan #3 (lebih baik menolak daripada mengarang), tetapi target berikutnya adalah menaikkan recall retrieval agar penolakan itu tidak perlu terjadi.
+
+## Prioritas berikutnya (Fase 3)
+
+Parser non-generatif (menghapus halaman karangan), chunk yang tidak memotong tabel/baris dan membawa konteks dokumen/prodi, lalu hybrid search untuk kata kunci eksak. Ukur dengan retrieval hit@10 (sekarang 0.727) dan penolakan yang salah.

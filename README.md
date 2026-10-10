@@ -94,14 +94,15 @@ OrdalFIlkom/
 │   │   ├── settings.py         # Centralized settings
 │   │   └── prompts.py          # Prompt templates
 │   ├── core/                   # Business logic
-│   │   ├── rag_engine.py       # RAG initialization
-│   │   └── chat_handler.py     # Query processing
+│   │   ├── rag_engine.py       # Retrieval (Pinecone) + Groq LLM clients
+│   │   ├── chat_handler.py     # Answer generation from numbered sources
+│   │   ├── citations.py        # [n] citations -> cited pages (+ highlight phrase)
+│   │   └── embeddings.py       # Pinecone inference embeddings
 │   ├── ui/                     # User interface
-│   │   ├── document_browser.py # Document browser UI
-│   │   └── source_display.py   # Source citation UI
+│   │   ├── dataset_browser.py  # Document browser + PDF.js viewer dialog
+│   │   └── source_display.py   # Cited pages under each answer
 │   └── utils/                  # Utilities
-│       ├── metadata.py         # Metadata extraction
-│       └── pdf_renderer.py     # PDF to image
+│       └── metadata.py         # Metadata extraction
 ├── scripts/                    # Standalone scripts
 │   ├── ingest.py               # Document ingestion
 │   └── eval.py                 # RAG evaluation
@@ -157,8 +158,10 @@ OrdalFIlkom/
 ```bash
 uv run scripts/eval.py --check-dataset          # cek kunci jawaban vs PDF asli (tanpa API)
 uv run scripts/eval.py --label <nama>           # retrieval: hit@k & MRR (cepat)
-uv run scripts/eval.py --answers --label <nama> # + jawaban dinilai LLM judge (~25 menit)
+uv run scripts/eval.py --answers --label <nama> # + jawaban: groundedness & kebenaran (~20 menit)
 ```
+
+`--answers` mengukur **groundedness** (metrik utama, lihat [docs/PRODUCT.md](docs/PRODUCT.md)): faithfulness klaim terhadap konteks, apakah sumber yang ditampilkan memuat halaman kunci jawaban, dan penolakan (out-of-scope ditolak, pertanyaan biasa tidak ditolak), plus kebenaran terhadap jawaban referensi. Judge-nya Gemini (`GOOGLE_API_KEY`), supaya eval tidak menghabiskan kuota Groq yang dipakai app live. Satu run penuh tetap memakai sekitar 170k token Groq untuk menghasilkan jawaban, jadi gunakan `--only` untuk percobaan kecil.
 
 Hasil tiap run tersimpan di `eval/results/` untuk dibandingkan antar eksperimen.
 

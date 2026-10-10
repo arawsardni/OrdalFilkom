@@ -3,8 +3,18 @@ Evaluate the RAG pipeline against eval/dataset.jsonl.
 
     uv run scripts/eval.py --check-dataset   # verify reference pages against the raw PDFs (no API calls)
     uv run scripts/eval.py                   # retrieval metrics only (fast, embeddings only)
-    uv run scripts/eval.py --answers         # + generate answers and grade them with an LLM judge (slow)
+    uv run scripts/eval.py --answers         # + generate answers, grade correctness and groundedness (slow)
 
+Answer metrics:
+- correctness vs the reference answer (Gemini judge)
+- groundedness (the primary metric, see docs/PRODUCT.md):
+  - faithfulness: share of the answer's claims supported by the context the LLM received (Gemini judge)
+  - displayed source hit: a source shown to the user (a page the answer cites) is one of the
+    reference pages (deterministic)
+  - citations: answers that cite sources, and answers citing numbers outside the given sources (deterministic)
+  - refusals: out-of-scope questions refused, answerable ones not refused (deterministic)
+
+The judge runs on Gemini so evals don't spend the live app's Groq quota (needs GOOGLE_API_KEY).
 Results are written to eval/results/<timestamp>_<label>.json so runs can be compared over time.
 """
 import os
@@ -14,6 +24,8 @@ import json
 import time
 import logging
 import argparse
+import urllib.error
+import urllib.request
 from pathlib import Path
 from datetime import datetime
 from collections import defaultdict
@@ -47,6 +59,33 @@ Aturan penilaian:
 - Abaikan gaya, panjang, dan format jawaban.
 
 Balas HANYA dengan JSON satu baris: {{"verdict": "correct|partial|incorrect", "reason": "<alasan singkat>"}}"""
+
+FAITHFULNESS_PROMPT = """Kamu memeriksa apakah jawaban chatbot didukung oleh KONTEKS dokumen yang diberikan kepada chatbot itu.
+
+KONTEKS:
+{context}
+
+PERTANYAAN: {question}
+
+JAWABAN CHATBOT:
+{answer}
+
+Langkah:
+1. Pecah jawaban menjadi klaim faktual atomik (angka, syarat, aturan, prosedur, nama/tahun dokumen). Abaikan kalimat pembuka/penutup, saran umum, dan pernyataan bahwa informasi tidak tersedia.
+2. Untuk setiap klaim, tentukan apakah klaim itu didukung oleh KONTEKS. Gunakan hanya KONTEKS, bukan pengetahuan umum. Klaim yang bertentangan dengan konteks atau tidak ada di konteks dianggap tidak didukung.
+
+Balas HANYA dengan JSON: {{"claims": [{{"claim": "<klaim singkat>", "supported": true}}]}}"""
+
+GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
+
+# Baseline heuristic: refusal phrasing near the start of the answer. Once the generation
+# prompt prescribes an exact refusal sentence, match that sentence instead.
+REFUSAL_PATTERN = re.compile(
+    r"tidak (tersedia|ditemukan|tercantum|disebutkan)"
+    r"|tidak (ada|terdapat) (informasi|ketentuan|data|keterangan|aturan)"
+    r"|tidak (dapat |bisa )?(menemukan|menjawab)|tidak memiliki informasi",
+    re.IGNORECASE,
+)
 
 
 def load_dataset():
@@ -119,7 +158,6 @@ def summarize_retrieval(results):
 
 def generate_answer(handler, question, max_attempts=3, wait=60):
     for attempt in range(1, max_attempts + 1):
-        handler.reset_memory()
         start = time.time()
         text, sources, error, _ = handler.process_query(question)
         if not error:
@@ -134,63 +172,180 @@ def generate_answer(handler, question, max_attempts=3, wait=60):
         time.sleep(wait)
 
 
-def judge_answer(judge_llm, item, answer):
+def gemini_json(model, prompt, max_attempts=4):
+    """Call the Gemini judge and parse its JSON reply, retrying the free tier's transient errors"""
+    body = json.dumps({
+        "contents": [{"parts": [{"text": prompt}]}],
+        "generationConfig": {"temperature": 0, "responseMimeType": "application/json"},
+    }).encode()
+    for attempt in range(1, max_attempts + 1):
+        request = urllib.request.Request(
+            GEMINI_URL.format(model=model),
+            data=body,
+            headers={"Content-Type": "application/json", "x-goog-api-key": Settings.get_google_api_key()},
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=120) as response:
+                reply = json.loads(response.read())
+            return json.loads(reply["candidates"][0]["content"]["parts"][0]["text"])
+        except urllib.error.HTTPError as e:
+            if e.code not in (429, 500, 503) or attempt == max_attempts:
+                raise
+        except (KeyError, IndexError, json.JSONDecodeError):
+            if attempt == max_attempts:
+                raise
+        time.sleep(15 * attempt)
+
+
+def judge_correctness(judge_model, item, answer):
     prompt = JUDGE_PROMPT.format(question=item["question"], reference=item["reference_answer"], answer=answer)
-    raw = judge_llm.complete(prompt).text
-    raw = re.sub(r"<think>.*?</think>", "", raw, flags=re.S)
-    match = re.search(r"\{.*\}", raw, re.S)
     try:
-        parsed = json.loads(match.group(0))
-        if parsed.get("verdict") in VERDICT_SCORE:
-            return parsed["verdict"], parsed.get("reason", "")
-    except (AttributeError, json.JSONDecodeError):
-        pass
-    return "incorrect", f"judge output unparseable: {raw[:200]}"
+        parsed = gemini_json(judge_model, prompt)
+    except Exception as e:
+        # Judge failures are not answer-quality signals, so they are kept out of the score
+        return "error", f"judge error: {str(e)[:150]}"
+    if parsed.get("verdict") not in VERDICT_SCORE:
+        return "error", f"judge output unparseable: {str(parsed)[:150]}"
+    return parsed["verdict"], parsed.get("reason", "")
+
+
+def format_context(nodes):
+    return "\n\n".join(
+        f"[{i}] {n.metadata.get('file_name')} hal. {n.metadata.get('page_label')}\n{n.get_content()}"
+        for i, n in enumerate(nodes, 1)
+    )
+
+
+def judge_faithfulness(judge_model, item, answer, nodes):
+    """Share of the answer's factual claims supported by the context the LLM received"""
+    prompt = FAITHFULNESS_PROMPT.format(context=format_context(nodes), question=item["question"], answer=answer)
+    try:
+        claims = gemini_json(judge_model, prompt).get("claims", [])
+    except Exception as e:
+        return None, [], f"judge error: {str(e)[:150]}"
+    if not claims:
+        return None, [], None  # nothing factual to check
+    supported = sum(1 for c in claims if c.get("supported") is True)
+    return supported / len(claims), claims, None
+
+
+def refusal_phrase(answer):
+    """The refusal phrase in the answer's first sentence, if any. Answers that give content and
+    only mention a missing detail later on are not refusals."""
+    first_sentence = re.split(r"(?<=[.!?])\s|\n", answer.strip(), maxsplit=1)[0][:300]
+    match = REFUSAL_PATTERN.search(first_sentence)
+    return match.group(0) if match else None
+
+
+_PDF_PATHS = None
+
+
+def _raw_page_text(file_name, page):
+    """Text of a page in the original PDF (not the parsed chunks, which can contain invented text)"""
+    import pymupdf
+
+    global _PDF_PATHS
+    if _PDF_PATHS is None:
+        _PDF_PATHS = {p.name: p for p in Path(Settings.DATASET_DIR).rglob("*.pdf")}
+    if file_name not in _PDF_PATHS or not str(page).isdigit():
+        return ""
+    with pymupdf.open(_PDF_PATHS[file_name]) as pdf:
+        index = int(page) - 1
+        return pdf[index].get_text() if 0 <= index < pdf.page_count else ""
+
+
+def displayed_source_hit(sources, item):
+    """Whether a source shown to the user actually backs the answer: it is one of the reference
+    pages, or its original PDF page contains the item's evidence text. The reference list can't
+    name every page that states a fact, so the evidence check avoids penalising valid citations."""
+    normalize = lambda text: re.sub(r"\s+", " ", text).lower()
+    for s in sources or []:
+        if any(s["file_name"] == ref["file"] and str(s["page"]) in map(str, ref["pages"]) for ref in item["sources"]):
+            return True
+        if item.get("evidence") and normalize(item["evidence"]) in normalize(_raw_page_text(s["file_name"], s["page"])):
+            return True
+    return False
 
 
 def evaluate_answers(engine, items, judge_model, sleep_seconds):
-    from llama_index.llms.groq import Groq
     from src.core.chat_handler import ChatHandler
 
-    handler = ChatHandler(engine.get_engine())
-    judge_llm = Groq(model=judge_model, api_key=Settings.get_groq_api_key(), temperature=0)
+    handler = ChatHandler(engine)
     results = []
     for i, item in enumerate(items):
         answer, sources, latency, error = generate_answer(handler, item["question"])
+        result = {"id": item["id"], "type": item["type"], "latency_s": round(latency, 1), "answer": answer}
         if error:
             # Infrastructure failures are not answer-quality signals, so keep them out of the score
-            verdict, reason = "error", f"generation error: {error}"
+            result.update(verdict="error", reason=f"generation error: {error}", generated=False)
         else:
-            verdict, reason = judge_answer(judge_llm, item, answer)
-        results.append({
-            "id": item["id"],
-            "type": item["type"],
-            "verdict": verdict,
-            "reason": reason,
-            "latency_s": round(latency, 1),
-            "answer": answer,
-            "displayed_sources": sources,
-        })
-        print(f"  {item['id']:8s} {verdict:9s} {latency:5.1f}s  {reason[:90]}")
+            nodes = handler.last_nodes
+            verdict, reason = judge_correctness(judge_model, item, answer)
+            refusal = refusal_phrase(answer)
+            refused = refusal is not None
+            faithfulness, claims, faith_error = (None, [], None) if refused else judge_faithfulness(judge_model, item, answer, nodes)
+            result.update(
+                verdict=verdict,
+                reason=reason,
+                generated=True,
+                refused=refused,
+                refusal_phrase=refusal,
+                displayed_sources=sources,
+                displayed_source_hit=displayed_source_hit(sources, item) if item["sources"] else None,
+                cited_pages=len(sources or []),
+                invalid_citations=handler.last_invalid_citations,
+                faithfulness=round(faithfulness, 3) if faithfulness is not None else None,
+                unsupported_claims=[c.get("claim") for c in claims if c.get("supported") is not True],
+                faithfulness_error=faith_error,
+                context_pages=[f"{n.metadata.get('file_name')} p{n.metadata.get('page_label')}" for n in nodes],
+            )
+        faith = "-" if result.get("faithfulness") is None else f"{result['faithfulness']:.2f}"
+        print(f"  {item['id']:8s} {result['verdict']:9s} faith={faith:4s} hit={str(result.get('displayed_source_hit')):5s} "
+              f"refused={str(result.get('refused')):5s} {latency:5.1f}s  {result['reason'][:70]}")
+        results.append(result)
         if i < len(items) - 1:
             time.sleep(sleep_seconds)  # stay under Groq's tokens-per-minute limit
     return results
 
 
+def _rate(values):
+    values = list(values)
+    return round(sum(values) / len(values), 3) if values else None
+
+
 def summarize_answers(results):
-    graded = [r for r in results if r["verdict"] != "error"]
+    generated = [r for r in results if r["generated"]]
+    graded = [r for r in generated if r["verdict"] in VERDICT_SCORE]
     by_type = defaultdict(list)
     for r in graded:
         by_type[r["type"]].append(VERDICT_SCORE[r["verdict"]])
-    latencies = sorted(r["latency_s"] for r in graded)
+    answerable = [r for r in generated if r["type"] != "out_of_scope"]
+    out_of_scope = [r for r in generated if r["type"] == "out_of_scope"]
+    faithfulness = [r["faithfulness"] for r in generated if r["faithfulness"] is not None]
+    latencies = sorted(r["latency_s"] for r in generated)
     return {
-        "score": round(sum(VERDICT_SCORE[r["verdict"]] for r in graded) / len(graded), 3),
-        "correct": sum(r["verdict"] == "correct" for r in results),
-        "partial": sum(r["verdict"] == "partial" for r in results),
-        "incorrect": sum(r["verdict"] == "incorrect" for r in results),
-        "errors": len(results) - len(graded),
-        "score_by_type": {t: round(sum(s) / len(s), 3) for t, s in sorted(by_type.items())},
-        "median_latency_s": latencies[len(latencies) // 2],
+        "groundedness": {
+            "faithfulness": _rate(faithfulness),
+            "fully_grounded": _rate(f == 1.0 for f in faithfulness),
+            "displayed_source_hit": _rate(r["displayed_source_hit"] for r in answerable),
+            "answers_with_citations": _rate(r["cited_pages"] > 0 for r in generated if not r["refused"]),
+            "answers_with_invalid_citations": _rate(r["invalid_citations"] > 0 for r in generated if not r["refused"]),
+            "out_of_scope_refusal": _rate(r["refused"] for r in out_of_scope),
+            "false_refusal": _rate(r["refused"] for r in answerable),
+        },
+        "correctness": {
+            "score": _rate(VERDICT_SCORE[r["verdict"]] for r in graded),
+            "correct": sum(r["verdict"] == "correct" for r in graded),
+            "partial": sum(r["verdict"] == "partial" for r in graded),
+            "incorrect": sum(r["verdict"] == "incorrect" for r in graded),
+            "score_by_type": {t: round(sum(s) / len(s), 3) for t, s in sorted(by_type.items())},
+        },
+        "errors": {
+            "generation": len(results) - len(generated),
+            "correctness_judge": len(generated) - len(graded),
+            "faithfulness_judge": sum(1 for r in generated if r["faithfulness_error"]),
+        },
+        "median_latency_s": latencies[len(latencies) // 2] if latencies else None,
     }
 
 
@@ -200,7 +355,7 @@ def main():
     parser.add_argument("--answers", action="store_true", help="also generate and judge answers")
     parser.add_argument("--only", help="comma-separated item ids to run")
     parser.add_argument("--top-k", type=int, default=Settings.SIMILARITY_TOP_K)
-    parser.add_argument("--judge-model", default=Settings.FALLBACK_MODELS[0][0])
+    parser.add_argument("--judge-model", default=Settings.JUDGE_MODEL)
     parser.add_argument("--sleep", type=int, default=30, help="seconds between answer generations")
     parser.add_argument("--label", default="run", help="short name for this run, used in the results filename")
     args = parser.parse_args()
